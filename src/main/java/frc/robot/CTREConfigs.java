@@ -1,9 +1,12 @@
 package frc.robot;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+
+// import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+// import com.ctre.phoenix.sensors.CANCoderConfiguration;
+// import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+// import com.ctre.phoenix.sensors.SensorTimeBase;
 
 /**
  * Todo, integrate this with constants and swerve module io spark, this class kinda made sense when
@@ -22,12 +25,12 @@ public final class CTREConfigs {
         return instance;
     }
 
-    public final CANCoderConfiguration swerveCanCoderConfig;
+    public final CANcoderConfiguration swerveCanCoderConfig;
 
     private CTREConfigs() {
-        swerveCanCoderConfig = new CANCoderConfiguration();
+        swerveCanCoderConfig = new CANcoderConfiguration();
 
-        swerveCanCoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
+        swerveCanCoderConfig.ab = AbsoluteSen.Unsigned_0_to_360;
         swerveCanCoderConfig.sensorDirection = Constants.Swerve.CAN_CODER_INVERT;
         swerveCanCoderConfig.initializationStrategy =
                 SensorInitializationStrategy.BootToAbsolutePosition;
