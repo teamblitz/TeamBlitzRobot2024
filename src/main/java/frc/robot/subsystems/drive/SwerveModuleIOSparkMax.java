@@ -1,8 +1,11 @@
 package frc.robot.subsystems.drive;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.*;
-import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkPIDController.ArbFFUnits;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.CTREConfigs;
@@ -13,13 +16,13 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
 
     private final CANSparkMax angleMotor;
     private final CANSparkMax driveMotor;
-    private final CANCoder absoluteEncoder;
+    private final CANcoder absoluteEncoder;
 
     private final RelativeEncoder driveEncoder;
     private final RelativeEncoder angleEncoder;
 
-    private final SparkMaxPIDController drivePIDController;
-    private final SparkMaxPIDController anglePIDController;
+    private final SparkPIDController drivePIDController;
+    private final SparkPIDController anglePIDController;
 
     private boolean lastBrake = false;
 
@@ -27,13 +30,13 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         this.angleOffset = moduleConstants.angleOffset;
 
         /* Absolute Encoder */
-        absoluteEncoder = new CANCoder(moduleConstants.cancoderID);
+        absoluteEncoder = new CANcoder(moduleConstants.cancoderID);
         configAngleEncoder();
 
         /* Angle Motor */
         angleMotor =
                 new CANSparkMax(
-                        moduleConstants.angleMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+                        moduleConstants.angleMotorID, MotorType.kBrushless);
         angleEncoder = angleMotor.getEncoder();
         anglePIDController = angleMotor.getPIDController();
         configAngleMotor();
@@ -41,7 +44,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         /* Drive motor */
         driveMotor =
                 new CANSparkMax(
-                        moduleConstants.driveMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
+                        moduleConstants.driveMotorID, MotorType.kBrushless);
         driveEncoder = driveMotor.getEncoder();
         drivePIDController = driveMotor.getPIDController();
         configDriveMotor();
@@ -52,7 +55,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         inputs.anglePositionDegrees = angleEncoder.getPosition();
         inputs.drivePositionMeters = driveEncoder.getPosition();
         inputs.speedMetersPerSecond = driveEncoder.getVelocity();
-        inputs.absoluteEncoderPositionDegrees = absoluteEncoder.getAbsolutePosition();
+        inputs.absoluteEncoderPositionDegrees = absoluteEncoder.getAbsolutePosition().getValue();
     }
 
     @Override
@@ -64,10 +67,10 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     public void setDriveSetpoint(double setpoint, double ffVolts) {
         drivePIDController.setReference(
                 setpoint,
-                CANSparkMax.ControlType.kVelocity,
+                ControlType.kVelocity,
                 0,
                 ffVolts,
-                SparkMaxPIDController.ArbFFUnits.kVoltage);
+                ArbFFUnits.kVoltage);
     }
 
     @Override
@@ -90,7 +93,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     }
 
     private void configAngleEncoder() {
-        absoluteEncoder.configFactoryDefault();
+        absoluteEncoder.restoreFactoryDefaults();
         absoluteEncoder.configAllSettings(CTREConfigs.getInstance().swerveCanCoderConfig);
     }
 
