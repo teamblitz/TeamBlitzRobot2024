@@ -1,8 +1,11 @@
 package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.*;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
@@ -93,12 +96,12 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     }
 
     private void configAngleEncoder() {
-        absoluteEncoder.restoreFactoryDefaults();
-        absoluteEncoder.configAllSettings(CTREConfigs.getInstance().swerveCanCoderConfig);
+        // absoluteEncoder.
+        absoluteEncoder.getConfigurator().apply(CTREConfigs.getInstance().swerveCanCoderConfig);
     }
 
     private void resetToAbsolute() {
-        angleEncoder.setPosition(absoluteEncoder.getAbsolutePosition() - angleOffset.getDegrees());
+        angleEncoder.setPosition(absoluteEncoder.getAbsolutePosition().getValueAsDouble() - angleOffset.getDegrees());
     }
 
     private void configAngleMotor() {
