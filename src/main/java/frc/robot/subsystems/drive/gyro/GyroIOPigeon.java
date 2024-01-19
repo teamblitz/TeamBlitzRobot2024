@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive.gyro;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
+
 import frc.robot.Constants;
 
 public class GyroIOPigeon implements GyroIO {
@@ -29,16 +30,13 @@ public class GyroIOPigeon implements GyroIO {
 
     @Override
     public void updateInputs(GyroIOInputs inputs) {
-        gyro.getRawGyro(rateArray);
-        inputs.yaw = gyro.getYaw();
-        inputs.pitch = gyro.getPitch();
-        inputs.roll = gyro.getRoll();
-        inputs.yawRate = rateArray[2];
-        inputs.pitchRate = rateArray[1];
-        inputs.rollRate = rateArray[0];
-        inputs.connected = gyro.getFirmwareVersion() > 0;
-        // TODO: I would assume that 0 or below is what is returned if the device is not connected
-        // but this needs to be tested.
+        inputs.yaw = gyro.getYaw().getValueAsDouble();
+        inputs.pitch = gyro.getPitch().getValueAsDouble();
+        inputs.roll = gyro.getRoll().getValueAsDouble();
+        inputs.yawRate = gyro.getAngularVelocityZDevice().getValue();
+        inputs.pitchRate = gyro.getAngularVelocityYDevice().getValue();
+        inputs.rollRate = gyro.getAngularVelocityXDevice().getValue();
+        inputs.connected = gyro.getUpTime().getValueAsDouble() > 0;
     }
 
     @Override
