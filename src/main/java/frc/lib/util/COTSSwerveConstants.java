@@ -40,7 +40,7 @@ public class COTSSwerveConstants {
         this.canCoderInvert = canCoderInvert;
     }
 
-    /** DriveSubsystem Drive Specialties - MK4 Module */
+    /** Drive Drive Specialties - MK4 Module */
     public static COTSSwerveConstants SDSMK4(double driveGearRatio) {
         double wheelDiameter = Units.inchesToMeters(4.0);
 
@@ -68,7 +68,7 @@ public class COTSSwerveConstants {
                 canCoderInvert);
     }
 
-    /** DriveSubsystem Drive Specialties - MK4i Module */
+    /** Drive Drive Specialties - MK4i Module */
     public static COTSSwerveConstants SDSMK4i(double driveGearRatio) {
         double wheelDiameter = Units.inchesToMeters(4.0);
 

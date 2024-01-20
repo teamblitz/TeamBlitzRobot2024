@@ -38,13 +38,13 @@ import org.littletonrobotics.junction.Logger;
  * Here we can probably do some cleanup, main thing we can probably do here is separate
  * telemetry/hardware io. Also, we need a better way to do dynamic pid loop tuning.
  */
-public class DriveSubsystem extends SubsystemBase implements BlitzSubsystem {
+public class Drive extends SubsystemBase implements BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
     private final Logger logger;
-    private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("DriveSubsystem");
+    private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drive");
     private final ShuffleboardTab tuningTab = Shuffleboard.getTab("DriveTuning");
     private final ShuffleboardLayout anglePidLayout =
             tuningTab.getLayout("AnglePid", BuiltInLayouts.kList);
@@ -80,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase implements BlitzSubsystem {
     private final PIDController keepHeadingPid;
     private final ProfiledPIDController rotateToHeadingPid;
 
-    public DriveSubsystem(
+    public Drive(
             SwerveModuleIO frontLeft,
             SwerveModuleIO frontRight,
             SwerveModuleIO backLeft,
@@ -94,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase implements BlitzSubsystem {
                 gyroIO);
     }
 
-    public DriveSubsystem(
+    public Drive(
             SwerveModule frontLeft,
             SwerveModule frontRight,
             SwerveModule backLeft,

@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.SwerveModuleIOSparkMax;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
@@ -34,11 +34,9 @@ import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
 public class RobotContainer {
 
     /* ***** --- Subsystems --- ***** */
-
-    private DriveSubsystem driveSubsystem;
+    private Drive drive;
 
     /* ***** --- Controllers --- ***** */
-
     private Controller controller;
     //     private SaitekX52Joystick driveController;
     private Joystick driveController;
@@ -76,10 +74,10 @@ public class RobotContainer {
         //        CameraServer.startAutomaticCapture();
 
         DriverStation.silenceJoystickConnectionWarning(true);
-        Shuffleboard.getTab("DriveSubsystem")
+        Shuffleboard.getTab("Drive")
                 .add(
                         "ResetOdometry",
-                        Commands.runOnce(() -> driveSubsystem.resetOdometry(new Pose2d())));
+                        Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
         for (String auto : autonomousCommands) {
             chooser.addOption(auto, auto);
@@ -89,9 +87,9 @@ public class RobotContainer {
     }
 
     private void setDefaultCommands() {
-        driveSubsystem.setDefaultCommand(
+        drive.setDefaultCommand(
                 new TeleopSwerve(
-                        driveSubsystem,
+                        drive,
                         () ->
                                 OIConstants.inputCurve.apply(
                                         -driveController.getY() * calculateDriveMultiplier()),
@@ -116,8 +114,8 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-        driveSubsystem =
-                new DriveSubsystem(
+        drive =
+                new Drive(
                         new SwerveModuleIOSparkMax(Constants.Swerve.Mod0.CONSTANTS),
                         new SwerveModuleIOSparkMax(Constants.Swerve.Mod1.CONSTANTS),
                         new SwerveModuleIOSparkMax(Constants.Swerve.Mod2.CONSTANTS),
@@ -136,25 +134,25 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        controller.restGyroTrigger().onTrue(Commands.runOnce(driveSubsystem::zeroGyro));
-        controller.xBrakeTrigger().onTrue(driveSubsystem.buildParkCommand());
+        controller.restGyroTrigger().onTrue(Commands.runOnce(drive::zeroGyro));
+        controller.xBrakeTrigger().onTrue(drive.buildParkCommand());
 
         controller
                 .brakeModeTrigger()
-                .onTrue(Commands.runOnce(() -> driveSubsystem.setBrakeMode(true)));
+                .onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         controller
                 .coastModeTrigger()
-                .onTrue(Commands.runOnce(() -> driveSubsystem.setBrakeMode(false)));
+                .onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        controller.getStartTrigger().whileTrue(driveSubsystem.driveSpeedTestCommand(1, 4));
-        controller.getBackTrigger().whileTrue(driveSubsystem.driveSpeedTestCommand(-1, 4));
+        controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
+        controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
         String autoCommand = chooser.getSelected();
         //     AutonomousPathCommand autonomousPathCommand =
         //             new AutonomousPathCommand(
-        //                     driveSubsystem, armSubsystem, intakeSubsystem,
+        //                     drive, armSubsystem, intakeSubsystem,
         // manipulatorCommandFactory);
         //     return autonomousPathCommand.generateAutonomous(autoCommand);
         return null;

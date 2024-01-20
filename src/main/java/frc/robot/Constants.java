@@ -130,7 +130,7 @@ public final class Constants {
         public static final double DRIVE_KV = (2.3923);
         public static final double DRIVE_KA = (0.47987);
 
-        /* DriveSubsystem Profiling Values */
+        /* Drive Profiling Values */
         /** Meters per Second */
         public static final double MAX_SPEED = 4.6; // TODO: This must be tuned to specific robot
 

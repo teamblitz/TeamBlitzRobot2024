@@ -6,21 +6,21 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.Drive;
 
 public class SwerveTuning extends Command {
-    private final DriveSubsystem driveSubsystem;
+    private final Drive drive;
 
     private final ShuffleboardTab tab;
 
     private double angle;
     private double speed;
 
-    public SwerveTuning(DriveSubsystem driveSubsystem) {
-        this.driveSubsystem = driveSubsystem;
+    public SwerveTuning(Drive drive) {
+        this.drive = drive;
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
-        addRequirements(this.driveSubsystem);
+        addRequirements(this.drive);
 
         this.tab = Shuffleboard.getTab("DriveTuning");
     }
@@ -33,7 +33,7 @@ public class SwerveTuning extends Command {
     @Override
     public void execute() {
         // if (DriverStation.isTest()) {
-        driveSubsystem.setModuleStates(
+        drive.setModuleStates(
                 new SwerveModuleState[] {
                     new SwerveModuleState(speed, Rotation2d.fromDegrees(angle)),
                     new SwerveModuleState(speed, Rotation2d.fromDegrees(angle)),
@@ -54,7 +54,7 @@ public class SwerveTuning extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        driveSubsystem.drive(new Translation2d(0, 0), 0, false, true, false);
+        drive.drive(new Translation2d(0, 0), 0, false, true, false);
         System.out.println("swervetuningend");
     }
 
