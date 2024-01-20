@@ -111,7 +111,7 @@ public class DriveSubsystem extends SubsystemBase implements BlitzSubsystem {
         keepHeadingPid = new PIDController(.1, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
 
-        rotateToHeadingPid = new ProfiledPIDController(.1, 0, 0, new Constraints(360, 360*3));
+        rotateToHeadingPid = new ProfiledPIDController(.1, 0, 0, new Constraints(360, 360 * 3));
         rotateToHeadingPid.enableContinuousInput(-180, 180);
         initTelemetry();
 
@@ -132,23 +132,17 @@ public class DriveSubsystem extends SubsystemBase implements BlitzSubsystem {
             boolean isOpenLoop,
             boolean maintainHeading) {
 
-        angleDrive(
-                translation,
-                rotation,
-                0,
-                fieldRelative,
-                isOpenLoop,
-                maintainHeading,
-                false);
+        angleDrive(translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false);
     }
 
-    public void angleDrive(Translation2d translation,
-                           double rotation,
-                           double rotationSetpoint,
-                           boolean fieldRelative,
-                           boolean isOpenLoop,
-                           boolean maintainHeading,
-                           boolean doRotationPid) {
+    public void angleDrive(
+            Translation2d translation,
+            double rotation,
+            double rotationSetpoint,
+            boolean fieldRelative,
+            boolean isOpenLoop,
+            boolean maintainHeading,
+            boolean doRotationPid) {
         if (doRotationPid) {
             keepHeadingSetpointSet = false;
 
@@ -171,7 +165,6 @@ public class DriveSubsystem extends SubsystemBase implements BlitzSubsystem {
             }
         }
 
-        
         logger.recordOutput("Swerve/keepHeadingSetpointSet", keepHeadingSetpointSet);
         logger.recordOutput("Swerve/keepSetpoint", keepHeadingPid.getSetpoint());
 
@@ -179,15 +172,14 @@ public class DriveSubsystem extends SubsystemBase implements BlitzSubsystem {
                 KINEMATICS.toSwerveModuleStates(
                         fieldRelative
                                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                translation.getX(), translation.getY(), rotation, getYaw())
+                                        translation.getX(), translation.getY(), rotation, getYaw())
                                 : new ChassisSpeeds(
-                                translation.getX(), translation.getY(), rotation));
+                                        translation.getX(), translation.getY(), rotation));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
 
         for (SwerveModule mod : swerveModules) {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop, false, false);
         }
-
     }
 
     /* Used by SwerveControllerCommand in Auto */

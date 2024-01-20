@@ -7,20 +7,17 @@
 
 package frc.robot;
 
-
+import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import frc.lib.oi.ButtonBox;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
-import com.revrobotics.CANSparkBase.IdleMode;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -43,9 +40,6 @@ public final class Constants {
         /** Replaying from a log file. */
         REPLAY
     }
-
-    
-    
 
     public static final class Swerve {
         public static final int PIGEON_ID = 30;
@@ -139,6 +133,7 @@ public final class Constants {
         /* DriveSubsystem Profiling Values */
         /** Meters per Second */
         public static final double MAX_SPEED = 4.6; // TODO: This must be tuned to specific robot
+
         /**
          * Radians per Second
          *
@@ -245,10 +240,6 @@ public final class Constants {
         }
 
         public static final class SaitekMappings {}
-
-       
-
-        
     }
 
     // TODO: Calculate needed deadband for controller (should be like 6% or less)

@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -19,15 +18,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.ManipulatorCommandFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.SwerveModuleIOSparkMax;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -40,9 +36,6 @@ public class RobotContainer {
     /* ***** --- Subsystems --- ***** */
 
     private DriveSubsystem driveSubsystem;
-
-
-    private ManipulatorCommandFactory manipulatorCommandFactory;
 
     /* ***** --- Controllers --- ***** */
 
@@ -80,7 +73,7 @@ public class RobotContainer {
         configureButtonBindings();
         setDefaultCommands();
 
-//        CameraServer.startAutomaticCapture();
+        //        CameraServer.startAutomaticCapture();
 
         DriverStation.silenceJoystickConnectionWarning(true);
         Shuffleboard.getTab("DriveSubsystem")
@@ -142,7 +135,7 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        
+
         controller.restGyroTrigger().onTrue(Commands.runOnce(driveSubsystem::zeroGyro));
         controller.xBrakeTrigger().onTrue(driveSubsystem.buildParkCommand());
 
@@ -159,10 +152,11 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() { // Autonomous code goes here
         String autoCommand = chooser.getSelected();
-    //     AutonomousPathCommand autonomousPathCommand =
-    //             new AutonomousPathCommand(
-    //                     driveSubsystem, armSubsystem, intakeSubsystem, manipulatorCommandFactory);
-    //     return autonomousPathCommand.generateAutonomous(autoCommand);
+        //     AutonomousPathCommand autonomousPathCommand =
+        //             new AutonomousPathCommand(
+        //                     driveSubsystem, armSubsystem, intakeSubsystem,
+        // manipulatorCommandFactory);
+        //     return autonomousPathCommand.generateAutonomous(autoCommand);
         return null;
     }
 }

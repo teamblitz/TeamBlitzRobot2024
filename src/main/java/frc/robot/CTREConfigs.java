@@ -2,11 +2,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-
-// import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-// import com.ctre.phoenix.sensors.CANCoderConfiguration;
-// import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-// import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 /**
  * Todo, integrate this with constants and swerve module io spark, this class kinda made sense when
@@ -30,10 +26,13 @@ public final class CTREConfigs {
     private CTREConfigs() {
         swerveCanCoderConfig = new CANcoderConfiguration();
 
-        swerveCanCoderConfig.ab = AbsoluteSen.Unsigned_0_to_360;
-        swerveCanCoderConfig.sensorDirection = Constants.Swerve.CAN_CODER_INVERT;
-        swerveCanCoderConfig.initializationStrategy =
-                SensorInitializationStrategy.BootToAbsolutePosition;
-        swerveCanCoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
+        // TODO: this sucks, I hate this, this is awful, I don't know why this exists. if this still
+        // exists at competition idk.
+        swerveCanCoderConfig.MagnetSensor.AbsoluteSensorRange =
+                AbsoluteSensorRangeValue.Unsigned_0To1;
+        swerveCanCoderConfig.MagnetSensor.SensorDirection =
+                Constants.Swerve.CAN_CODER_INVERT
+                        ? SensorDirectionValue.Clockwise_Positive
+                        : SensorDirectionValue.CounterClockwise_Positive;
     }
 }

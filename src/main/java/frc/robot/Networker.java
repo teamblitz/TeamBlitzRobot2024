@@ -12,6 +12,7 @@ public class Networker {
     private final Notifier notifier;
     private final DatagramSocket socket;
     private final InetAddress address;
+
     // private volatile boolean running;
 
     public Networker() throws SocketException, UnknownHostException {

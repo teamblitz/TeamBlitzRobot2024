@@ -18,6 +18,7 @@ public class Utils {
             CommandScheduler.getInstance().run();
         }
     }
+
     /**
      * Runs the command scheduler at the default rate for the specified amount of iterations
      *

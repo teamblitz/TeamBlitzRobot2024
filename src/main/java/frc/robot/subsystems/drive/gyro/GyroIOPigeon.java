@@ -1,7 +1,6 @@
 package frc.robot.subsystems.drive.gyro;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-
 import frc.robot.Constants;
 
 public class GyroIOPigeon implements GyroIO {

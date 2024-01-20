@@ -1,14 +1,13 @@
 package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.CTREConfigs;
@@ -37,17 +36,13 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
         configAngleEncoder();
 
         /* Angle Motor */
-        angleMotor =
-                new CANSparkMax(
-                        moduleConstants.angleMotorID, MotorType.kBrushless);
+        angleMotor = new CANSparkMax(moduleConstants.angleMotorID, MotorType.kBrushless);
         angleEncoder = angleMotor.getEncoder();
         anglePIDController = angleMotor.getPIDController();
         configAngleMotor();
 
         /* Drive motor */
-        driveMotor =
-                new CANSparkMax(
-                        moduleConstants.driveMotorID, MotorType.kBrushless);
+        driveMotor = new CANSparkMax(moduleConstants.driveMotorID, MotorType.kBrushless);
         driveEncoder = driveMotor.getEncoder();
         drivePIDController = driveMotor.getPIDController();
         configDriveMotor();
@@ -69,11 +64,7 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     @Override
     public void setDriveSetpoint(double setpoint, double ffVolts) {
         drivePIDController.setReference(
-                setpoint,
-                ControlType.kVelocity,
-                0,
-                ffVolts,
-                ArbFFUnits.kVoltage);
+                setpoint, ControlType.kVelocity, 0, ffVolts, ArbFFUnits.kVoltage);
     }
 
     @Override
@@ -101,7 +92,9 @@ public class SwerveModuleIOSparkMax implements SwerveModuleIO {
     }
 
     private void resetToAbsolute() {
-        angleEncoder.setPosition(absoluteEncoder.getAbsolutePosition().getValueAsDouble() - angleOffset.getDegrees());
+        angleEncoder.setPosition(
+                absoluteEncoder.getAbsolutePosition().getValueAsDouble()
+                        - angleOffset.getDegrees());
     }
 
     private void configAngleMotor() {
