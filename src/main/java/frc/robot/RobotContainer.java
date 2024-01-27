@@ -75,9 +75,7 @@ public class RobotContainer {
 
         DriverStation.silenceJoystickConnectionWarning(true);
         Shuffleboard.getTab("Drive")
-                .add(
-                        "ResetOdometry",
-                        Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
+                .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
         for (String auto : autonomousCommands) {
             chooser.addOption(auto, auto);
@@ -137,12 +135,8 @@ public class RobotContainer {
         controller.restGyroTrigger().onTrue(Commands.runOnce(drive::zeroGyro));
         controller.xBrakeTrigger().onTrue(drive.buildParkCommand());
 
-        controller
-                .brakeModeTrigger()
-                .onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
-        controller
-                .coastModeTrigger()
-                .onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
+        controller.brakeModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
+        controller.coastModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
         controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
         controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));

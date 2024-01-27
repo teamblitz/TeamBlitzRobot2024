@@ -26,6 +26,8 @@ import java.util.function.Function;
  *
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
+ *
+ * <p>Units: Distance in meters Rotation in radians Time in seconds
  */
 public final class Constants {
 
@@ -200,6 +202,14 @@ public final class Constants {
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
         }
+    }
+
+    public static final class Arm {
+        public static final double MIN_ROT = Units.degreesToRadians(0);
+        public static final double MAX_ROT = Units.degreesToRadians(90);
+
+        public static final double ROTATION_VELOCITY = Units.degreesToRadians(30);
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(60);
     }
 
     public static final class AutoConstants {
