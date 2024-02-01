@@ -210,6 +210,22 @@ public final class Constants {
 
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(30);
         public static final double ROTATION_ACCELERATION = Units.degreesToRadians(60);
+
+        public static final int ARM_ROT_LEADER = 18; // Right
+        public static final int ARM_ROT_FOLLOWER = 19; // Left
+
+        public static final int ABS_ENCODER = 1;
+
+        public static final int TOP_LIMIT_SWITCH = 2;
+        public static final int BOTTOM_LIMIT_SWITCH = 3;
+
+        public static final double RAMP_RATE = 2;
+
+        public static final class PidConstants {
+            public static final double P = 0;
+            public static final double I = 0;
+            public static final double D = 0;
+        }
     }
 
     public static final class AutoConstants {

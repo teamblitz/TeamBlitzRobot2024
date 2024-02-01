@@ -3,7 +3,7 @@ package frc.robot.subsystems.arm;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ArmIO {
-    /** All units are meters and degrees */
+    /** All units are meters and radians */
     @AutoLog
     public class ArmIOInputs {
         public double armRot;
@@ -11,13 +11,9 @@ public interface ArmIO {
         public double absArmRot;
 
         public double absArmEncoder;
-        public double armExtension;
-        public double armExtensionSpeed;
 
         public boolean topRotationLimit;
         public boolean bottomRotationLimit;
-        public boolean maxExtensionLimit;
-        public boolean minExtensionLimit;
 
         public boolean encoderConnected;
     }

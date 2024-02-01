@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -90,28 +91,33 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                 updateRotation(profile.get().calculate(timer.get()).position, 0));
     }
 
-//    public Command rotateToCommand(double goal) {
-//        TrapezoidProfile profile = new TrapezoidProfile(
-//                new TrapezoidProfile.Constraints(
-//                        Constants.Arm.ROTATION_VELOCITY,
-//                        Constants.Arm.ROTATION_ACCELERATION));
-//
-//        MutableReference<TrapezoidProfile.State> lastState = new MutableReference<>();
-//
-//        runOnce(
-//                () -> lastState.set(new TrapezoidProfile.State(
-//                        inputs.armRot,
-//                        inputs.armRotationSpeed
-//                ))
-//        ).andThen(
-//                run(
-//                        () -> {
-//                            TrapezoidProfile.State setpoint =
-//                                    profile.calculate(Robot.g);
-//                            updateRotation(setpoint.position, setpoint.velocity);
-//                        }
-//                )
-//        )
-//        return null;
-//    }
+    public Command rotateToCommand(double goal) {
+        TrapezoidProfile profile =
+                new TrapezoidProfile(
+                        new TrapezoidProfile.Constraints(
+                                Constants.Arm.ROTATION_VELOCITY,
+                                Constants.Arm.ROTATION_ACCELERATION));
+
+        MutableReference<TrapezoidProfile.State> lastState = new MutableReference<>();
+
+        TrapezoidProfile.State goalState = new TrapezoidProfile.State(goal, 0);
+
+        return runOnce(
+                        () ->
+                                lastState.set(
+                                        new TrapezoidProfile.State(
+                                                inputs.armRot, inputs.armRotationSpeed)))
+                .andThen(
+                        run(
+                                () -> {
+                                    TrapezoidProfile.State setpoint =
+                                            profile.calculate(
+                                                    Robot.defaultPeriodSecs,
+                                                    lastState.get(),
+                                                    goalState);
+                                    updateRotation(setpoint.position, setpoint.velocity);
+                                }))
+                .until(() -> profile.timeLeftUntil(goal) == 0)
+                .finallyDo(() -> updateRotation(goal, 0));
+    }
 }
