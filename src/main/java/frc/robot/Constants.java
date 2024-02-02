@@ -7,7 +7,12 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+
 import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -15,9 +20,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -207,25 +209,33 @@ public final class Constants {
     public static final class Arm {
         public static final double MIN_ROT = Units.degreesToRadians(0);
         public static final double MAX_ROT = Units.degreesToRadians(90);
+        
 
+        public static final double STARTING_POS = 0; //TODO CONFIG
+        public static final double ABS_ENCODER_OFFSET = 0; //TODO CONFIG
+
+        //TODO CONFIG
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(30);
         public static final double ROTATION_ACCELERATION = Units.degreesToRadians(60);
 
-        public static final int ARM_ROT_LEADER = 18; // Right
-        public static final int ARM_ROT_FOLLOWER = 19; // Left
+        public static final int ARM_ROT_LEADER = 18; // Right //TODO CONFIG
+        public static final int ARM_ROT_FOLLOWER = 19; // Left //TODO CONFIG
 
-        public static final int ABS_ENCODER = 1;
+        public static final int ABS_ENCODER = 1; //TODO CONFIG
 
-        public static final int TOP_LIMIT_SWITCH = 2;
-        public static final int BOTTOM_LIMIT_SWITCH = 3;
+        public static final int TOP_LIMIT_SWITCH = 2; //TODO CONFIG
+        public static final int BOTTOM_LIMIT_SWITCH = 3; //TODO CONFIG
 
         public static final double RAMP_RATE = 2;
 
-        public static final class PidConstants {
+        public static final class PidConstants { //TODO CONFIG
             public static final double P = 0;
             public static final double I = 0;
             public static final double D = 0;
         }
+
+
+        public static final double GEAR_RATIO = (20.0 / 1.0) * (62.0 / 12.0); //TODO CONFIG
     }
 
     public static final class AutoConstants {

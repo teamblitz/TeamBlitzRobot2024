@@ -3,16 +3,16 @@ package frc.lib.math;
 public class Angles {
     private Angles() {}
 
-    public static double wrapAngle180(double degrees) {
-        return wrapAngle(degrees, -180, 180);
+    public static double wrapAnglePi(double degrees) {
+        return wrapAngle(degrees, -Math.PI, Math.PI);
     }
 
-    public static double wrapAngle(double degrees, double min, double max) {
-        double angle = degrees % 360;
+    public static double wrapAngle(double radians, double min, double max) {
+        double angle = radians % (2*Math.PI);
         if (angle > max) {
-            angle -= 360;
+            angle -= 2*Math.PI;
         } else if (angle < min) {
-            angle += 360;
+            angle += 2*Math.PI;
         }
         return angle;
     }

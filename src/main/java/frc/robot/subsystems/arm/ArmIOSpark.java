@@ -5,7 +5,6 @@ import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.lib.math.Angles;
-import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
 
@@ -40,12 +39,9 @@ public class ArmIOSpark implements ArmIO {
 
         angleEncoder = armRotLeader.getEncoder();
 
-        //TODO Fix this ratio
         armRotLeader.getEncoder().setPositionConversionFactor(
-                (1 / Constants.Swerve.ANGLE_GEAR_RATIO) // We do 1 over the gear ratio because 1
-                        // rotation of the motor is < 1 rotation of
-                        // the module
-                        * 360); // 1/360 rotations is 1 degree, 1 rotation is 360 degrees.
+                (1 / Constants.Arm.GEAR_RATIO) // Rotations of motor shaft devided by reduction = rotations of mechanism
+                        * (2*Math.PI)); // Rotations * 2pi = rotation in radians
 
 
         anglePid = armRotLeader.getPIDController();
@@ -70,14 +66,11 @@ public class ArmIOSpark implements ArmIO {
     @Override
     public void updateInputs(ArmIOInputs inputs) {
         inputs.armRot =
-                Conversions.falconToDegrees(
-                        armRotLeader.getSelectedSensorPosition(), Arm.ROTATION_GEAR_RATIO);
+                angleEncoder.getPosition();
         inputs.armRotationSpeed =
-                Conversions.falconToDegrees(
-                                armRotLeader.getSelectedSensorVelocity(), Arm.ROTATION_GEAR_RATIO)
-                        / 10.0;
+                angleEncoder.getVelocity();
         inputs.absArmRot = getAbsolutePosition();
-        inputs.absArmEncoder = Angles.wrapAngle180(-absRotationEncoder.getAbsolutePosition() * 360);
+        inputs.absArmEncoder = Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2*Math.PI);
 
         inputs.topRotationLimit = armTopLimitSwitch.get();
         inputs.bottomRotationLimit = armBottomLimitSwitch.get();
@@ -98,10 +91,10 @@ public class ArmIOSpark implements ArmIO {
 
     @Override
     public void setArmRotationSpeed(double percent) {
-        armRotLeader.set(ControlMode.PercentOutput, percent);
+        armRotLeader.set(percent);
     }
 
-
+    // TODO: ADD LIMIT SWITCH IMPL
     @Override
     public void checkLimitSwitches() {
         // If velocity 0 return
@@ -113,27 +106,23 @@ public class ArmIOSpark implements ArmIO {
         //        if (armBottomLimitSwitch.get() && armRotLeader.getSelectedSensorVelocity() < 0)
         //            armRotLeader.set(ControlMode.PercentOutput, 0);
 
-//        if (extensionBottomLimitSwitch.get() && armExtension.getSelectedSensorVelocity() < 0)
-//            armExtension.set(ControlMode.PercentOutput, 0);
+    //    if (extensionBottomLimitSwitch.get() && armExtension.getSelectedSensorVelocity() < 0)
+    //        armExtension.set(ControlMode.PercentOutput, 0);
     }
 
     @Override
     public void seedArmPosition() {
         if (absRotationEncoder.isConnected()) {
-            armRotLeader.setSelectedSensorPosition(
-                    Conversions.degreesToFalcon(getAbsolutePosition(), Arm.ROTATION_GEAR_RATIO));
+            angleEncoder.setPosition(getAbsolutePosition());
         } else {
             System.out.printf(
                     "Arm absolute rotation encoder disconnected, assuming position %s%n",
-                    Arm.STARTING_ROTATION);
-            armRotLeader.setSelectedSensorPosition(
-                    Conversions.degreesToFalcon(Arm.STARTING_ROTATION, Arm.ROTATION_GEAR_RATIO));
+                    Arm.STARTING_POS);
+            angleEncoder.setPosition(Arm.STARTING_POS);
         }
     }
 
     private double getAbsolutePosition() {
-        return Angles.wrapAngle180(
-                Angles.wrapAngle180(
-                        -absRotationEncoder.getAbsolutePosition() * 360 - Arm.ARM_ROT_OFFSET));
+        return Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2*Math.PI - Arm.ABS_ENCODER_OFFSET);
     }
 }
