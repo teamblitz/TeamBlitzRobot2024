@@ -14,23 +14,27 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
         this.io = io;
     }
 
-    public void shooter() {
-        io.set(0.5);
+    public void shootOpenLoop() {
+        io.setPercent(0.5); // TODO CONST
+    }
+    public void shootClosedLoop() {
+        io.setSetpoint(0); // TODO, CONST
     }
 
-    public void eject() {
-        io.set(-0.2);
+
+    public void reverse() {
+        io.setPercent(-0.2);
     }
 
     public void stop() {
-        io.set(0);
+        io.setPercent(0);
     }
 
-    public Command shooterCommand() {
-        return startEnd(this::shooter, this::stop);
+    public Command shootCommand() {
+        return startEnd(this::shootOpenLoop, this::stop);
     }
 
-    public Command ejectCommand() {
-        return startEnd(this::eject, this::stop);
+    public Command reverseCommand() {
+        return startEnd(this::reverse, this::stop);
     }
 }

@@ -36,19 +36,15 @@ public final class Constants {
     public static final boolean tuningMode = true;
 
     public enum Mode {
-        /** Running a physics simulator. */
+        /**
+         * Running a physics simulator.
+         */
         SIM,
 
-        /** Replaying from a log file. */
+        /**
+         * Replaying from a log file.
+         */
         REPLAY
-    }
-
-    public static class Intake {
-        public static final int CURRENT_LIMIT = 60;
-
-        public static final class Spark {
-            public static final int MOTOR_ID = 15;
-        }
     }
 
     public static final class Swerve {
@@ -240,6 +236,22 @@ public final class Constants {
         }
 
         public static final double GEAR_RATIO = (20.0 / 1.0) * (62.0 / 12.0); // TODO CONFIG
+    }
+
+    public static class Intake {
+        public static final int CURRENT_LIMIT = 60;
+
+        public static final class Spark {
+            public static final int MOTOR_ID = 15;
+        }
+    }
+
+    public static class Shooter {
+        public static final int TOP = 0; // TODO SET
+        public static final int BOTTOM = 0; // TODO SET
+
+        public static final int CURRENT_LIMIT = 0; // TODO SET
+
     }
 
     public static final class AutoConstants {

@@ -6,11 +6,15 @@ public interface ShooterIO {
 
     @AutoLog
     public class ShooterIOInputs {
-        public double rpm;
-        public double current;
+        public double rpmTop;
+        public double rpmBottom;
+        public double currentTop;
+        public double currentBottom;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}
 
-    public default void set(double speed) {}
+    public default void setPercent(double percent) {}
+
+    public default void setSetpoint(double velocity) {}
 }
