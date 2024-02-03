@@ -1,6 +1,5 @@
 package frc.robot.subsystems.arm;
 
-
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -19,11 +18,11 @@ public class ArmIOSpark implements ArmIO {
     private final DigitalInput armTopLimitSwitch;
     private final DigitalInput armBottomLimitSwitch;
 
-
     public ArmIOSpark() {
         /* Arm Rotation */
         armRotLeader = new CANSparkMax(Arm.ARM_ROT_LEADER, CANSparkLowLevel.MotorType.kBrushless);
-        armRotFollower = new CANSparkMax(Arm.ARM_ROT_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless);
+        armRotFollower =
+                new CANSparkMax(Arm.ARM_ROT_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless);
 
         armRotLeader.restoreFactoryDefaults();
         armRotFollower.restoreFactoryDefaults();
@@ -39,13 +38,14 @@ public class ArmIOSpark implements ArmIO {
 
         angleEncoder = armRotLeader.getEncoder();
 
-        armRotLeader.getEncoder().setPositionConversionFactor(
-                (1 / Constants.Arm.GEAR_RATIO) // Rotations of motor shaft devided by reduction = rotations of mechanism
-                        * (2*Math.PI)); // Rotations * 2pi = rotation in radians
-
+        armRotLeader
+                .getEncoder()
+                .setPositionConversionFactor(
+                        (1 / Constants.Arm.GEAR_RATIO) // Rotations of motor shaft devided by
+                                // reduction = rotations of mechanism
+                                * (2 * Math.PI)); // Rotations * 2pi = rotation in radians
 
         anglePid = armRotLeader.getPIDController();
-
 
         anglePid.setP(Arm.PidConstants.P);
         anglePid.setI(Arm.PidConstants.I);
@@ -65,12 +65,11 @@ public class ArmIOSpark implements ArmIO {
 
     @Override
     public void updateInputs(ArmIOInputs inputs) {
-        inputs.armRot =
-                angleEncoder.getPosition();
-        inputs.armRotationSpeed =
-                angleEncoder.getVelocity();
+        inputs.armRot = angleEncoder.getPosition();
+        inputs.armRotationSpeed = angleEncoder.getVelocity();
         inputs.absArmRot = getAbsolutePosition();
-        inputs.absArmEncoder = Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2*Math.PI);
+        inputs.absArmEncoder =
+                Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2 * Math.PI);
 
         inputs.topRotationLimit = armTopLimitSwitch.get();
         inputs.bottomRotationLimit = armBottomLimitSwitch.get();
@@ -82,11 +81,11 @@ public class ArmIOSpark implements ArmIO {
     @Override
     public void setRotationSetpoint(double rot, double arbFFVolts) {
         anglePid.setReference(
-                        rot,
-                        CANSparkMax.ControlType.kPosition,
-                        0,
-                        arbFFVolts,
-                        SparkPIDController.ArbFFUnits.kVoltage);
+                rot,
+                CANSparkMax.ControlType.kPosition,
+                0,
+                arbFFVolts,
+                SparkPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
@@ -106,8 +105,8 @@ public class ArmIOSpark implements ArmIO {
         //        if (armBottomLimitSwitch.get() && armRotLeader.getSelectedSensorVelocity() < 0)
         //            armRotLeader.set(ControlMode.PercentOutput, 0);
 
-    //    if (extensionBottomLimitSwitch.get() && armExtension.getSelectedSensorVelocity() < 0)
-    //        armExtension.set(ControlMode.PercentOutput, 0);
+        //    if (extensionBottomLimitSwitch.get() && armExtension.getSelectedSensorVelocity() < 0)
+        //        armExtension.set(ControlMode.PercentOutput, 0);
     }
 
     @Override
@@ -123,6 +122,7 @@ public class ArmIOSpark implements ArmIO {
     }
 
     private double getAbsolutePosition() {
-        return Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2*Math.PI - Arm.ABS_ENCODER_OFFSET);
+        return Angles.wrapAnglePi(
+                -absRotationEncoder.getAbsolutePosition() * 2 * Math.PI - Arm.ABS_ENCODER_OFFSET);
     }
 }

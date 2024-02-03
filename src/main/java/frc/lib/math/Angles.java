@@ -8,11 +8,11 @@ public class Angles {
     }
 
     public static double wrapAngle(double radians, double min, double max) {
-        double angle = radians % (2*Math.PI);
+        double angle = radians % (2 * Math.PI);
         if (angle > max) {
-            angle -= 2*Math.PI;
+            angle -= 2 * Math.PI;
         } else if (angle < min) {
-            angle += 2*Math.PI;
+            angle += 2 * Math.PI;
         }
         return angle;
     }
