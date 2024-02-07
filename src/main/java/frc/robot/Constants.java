@@ -252,6 +252,14 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 0; // TODO SET
 
+        public static final int PID_TOP_P = 0; // TODO SET
+        public static final int PID_TOP_I = 0; // TODO SET
+        public static final int PID_TOP_D = 0; // TODO SET
+
+        public static final int PID_BOTTOM_P = 0; // TODO SET
+        public static final int PID_BOTTOM_I = 0; // TODO SET
+        public static final int PID_BOTTOM_D = 0; // TODO SET
+
     }
 
     public static final class AutoConstants {
