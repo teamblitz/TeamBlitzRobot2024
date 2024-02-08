@@ -25,6 +25,10 @@ import frc.robot.subsystems.drive.SwerveModuleIOSparkMax;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
 
+import frc.robot.Constants.Shooter.Spark;
+import frc.robot.Constants.Shooter.Talon;
+
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
