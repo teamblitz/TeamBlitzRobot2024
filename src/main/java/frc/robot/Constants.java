@@ -244,7 +244,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
 
         public static final class Spark {
-            public static final int MOTOR_ID = 1;
+            public static final int MOTOR_ID = 15;
         }
     }
 
@@ -252,8 +252,8 @@ public final class Constants {
 
         public static class Spark {
 
-        public static final int SPARK_TOP = 0; // TODO SET
-        public static final int SPARK_BOTTOM = 0; // TODO SET
+        public static final int SPARK_TOP = 22; // TODO SET
+        public static final int SPARK_BOTTOM = 23; // TODO SET
 
         public static final int PID_TOP_P = 0; // TODO SET
         public static final int PID_TOP_I = 0; // TODO SET
