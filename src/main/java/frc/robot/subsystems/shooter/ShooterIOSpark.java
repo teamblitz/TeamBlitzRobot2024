@@ -77,4 +77,4 @@ public class ShooterIOSpark implements ShooterIO {
         inputs.currentTop = top.getOutputCurrent();
         inputs.currentBottom = top.getOutputCurrent();
     }
-}
+} 
