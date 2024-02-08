@@ -24,6 +24,10 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.SwerveModuleIOSparkMax;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOSpark;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIOTalon;
 
 import frc.robot.Constants.Shooter.Spark;
 import frc.robot.Constants.Shooter.Talon;
@@ -39,6 +43,8 @@ public class RobotContainer {
 
     /* ***** --- Subsystems --- ***** */
     private Drive drive;
+    private Intake intake;
+    private Shooter shooter;
 
     /* ***** --- Controllers --- ***** */
     private Controller controller;
@@ -124,6 +130,9 @@ public class RobotContainer {
                         new SwerveModuleIOSparkMax(Constants.Swerve.Mod3.CONSTANTS),
                         Constants.Swerve.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
 
+        intake = new Intake(new IntakeIOSpark());
+        shooter = new Shooter(new ShooterIOTalon());
+
         driveController = new Joystick(0); // Move this to Controller (and I never did)
         controller = new Controller(0, 1);
     }
@@ -144,6 +153,9 @@ public class RobotContainer {
 
         controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
         controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
+
+        OIConstants.intake.whileTrue(intake.intakeCommand());
+        OIConstants.shooter.whileTrue(shooter.shootCommand());
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here

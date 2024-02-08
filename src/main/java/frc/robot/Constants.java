@@ -13,6 +13,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
@@ -242,7 +244,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
 
         public static final class Spark {
-            public static final int MOTOR_ID = 15;
+            public static final int MOTOR_ID = 1;
         }
     }
 
@@ -294,25 +296,6 @@ public final class Constants {
                         MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
     }
 
-    public static final class OIConstants {
-
-        // public static final Function<Double, Double> inputCurve = (x) -> x;
-        public static final Function<Double, Double> inputCurve = (x) -> .8 * x + .2 * (x * x * x);
-
-        // Choose 1, not both.
-        public static final boolean USE_XBOX_CONTROLLER = false;
-        public static final boolean USE_SAITEK_CONTROLLER = true;
-
-        public static final int DRIVE_CONTROLLER_PORT = 0;
-        public static final int BUTTON_BOX_PORT = 1;
-
-        public static final class XboxMappings {
-            // We might not use xbox controller
-        }
-
-        public static final class SaitekMappings {}
-    }
-
     // TODO: Calculate needed deadband for controller (should be like 6% or less)
     // Ran this in the pit; had issues with 10% upped to 12%
     // Have you not seen the comment above, anyways we could probably just shift the deadband or
@@ -324,5 +307,22 @@ public final class Constants {
         public static final String JETSON_IP_ADDRESS = "10.20.83.130";
         public static final int PORT = 5810;
         public static final int INTERVAL = 5;
+    }
+
+    public static final class OIConstants {
+        public static final CommandXboxController operatorController = new CommandXboxController(1);
+
+        public static final Trigger intake = operatorController.leftTrigger();
+        public static final Trigger shooter = operatorController.rightTrigger();
+
+
+        public static final Function<Double, Double> inputCurve = (x) -> .8 * x + .2 * (x * x * x);
+
+        // Choose 1, not both.
+        public static final boolean USE_XBOX_CONTROLLER = false;
+        public static final boolean USE_SAITEK_CONTROLLER = true;
+
+        public static final int DRIVE_CONTROLLER_PORT = 0;
+        public static final int BUTTON_BOX_PORT = 1;
     }
 }

@@ -15,8 +15,8 @@ public class ShooterIOTalon implements ShooterIO {
     private final WPI_TalonSRX bottom;
 
     public ShooterIOTalon() {
-        top = new WPI_TalonSRX(22); //CHECK CONSTANTS FOR THIS ID
-        bottom = new WPI_TalonSRX(23); //CHECK CONSTANTS FOR THIS ID
+        top = new WPI_TalonSRX(Constants.Shooter.Talon.TALON_TOP); //CHECK CONSTANTS FOR THIS ID
+        bottom = new WPI_TalonSRX(Constants.Shooter.Talon.TALON_BOTTOM); //CHECK CONSTANTS FOR THIS ID
     }
 
      @Override
