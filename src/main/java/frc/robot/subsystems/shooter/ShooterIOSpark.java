@@ -19,8 +19,8 @@ public class ShooterIOSpark implements ShooterIO {
     private final SimpleMotorFeedforward feedforwardBottom;
 
     public ShooterIOSpark() {
-        top = new CANSparkMax(Constants.Shooter.TOP, MotorType.kBrushless);
-        bottom = new CANSparkMax(Constants.Shooter.BOTTOM, MotorType.kBrushless);
+        top = new CANSparkMax(Constants.Shooter.Spark.SPARK_TOP, MotorType.kBrushless);
+        bottom = new CANSparkMax(Constants.Shooter.Spark.SPARK_BOTTOM, MotorType.kBrushless);
 
         top.restoreFactoryDefaults();
         top.setSmartCurrentLimit(Constants.Shooter.CURRENT_LIMIT);

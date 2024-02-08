@@ -247,10 +247,11 @@ public final class Constants {
     }
 
     public static class Shooter {
-        public static final int TOP = 0; // TODO SET
-        public static final int BOTTOM = 0; // TODO SET
 
-        public static final int CURRENT_LIMIT = 0; // TODO SET
+        public static class Spark {
+
+        public static final int SPARK_TOP = 0; // TODO SET
+        public static final int SPARK_BOTTOM = 0; // TODO SET
 
         public static final int PID_TOP_P = 0; // TODO SET
         public static final int PID_TOP_I = 0; // TODO SET
@@ -259,6 +260,16 @@ public final class Constants {
         public static final int PID_BOTTOM_P = 0; // TODO SET
         public static final int PID_BOTTOM_I = 0; // TODO SET
         public static final int PID_BOTTOM_D = 0; // TODO SET
+
+        }
+
+        public static class Talon {
+
+        public static final int TALON_TOP = 22; //TODO SET
+        public static final int TALON_BOTTOM = 23; //TODO SET    
+        }
+
+        public static final int CURRENT_LIMIT = 0; // TODO SET
 
     }
 

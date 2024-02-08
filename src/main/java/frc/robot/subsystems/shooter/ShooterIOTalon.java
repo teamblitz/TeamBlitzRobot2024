@@ -14,11 +14,18 @@ public class ShooterIOTalon implements ShooterIO {
     private final WPI_TalonSRX top;
     private final WPI_TalonSRX bottom;
 
+    public ShooterIOTalon() {
+        top = new WPI_TalonSRX(22); //CHECK CONSTANTS FOR THIS ID
+        bottom = new WPI_TalonSRX(23); //CHECK CONSTANTS FOR THIS ID
+    }
+
      @Override
     public void setPercent(double speed) {
         top.set(speed);
         bottom.set(speed);
     }
+
+    
 }
 
    
