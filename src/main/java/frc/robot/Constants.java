@@ -19,6 +19,7 @@ import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
 /**
@@ -314,6 +315,8 @@ public final class Constants {
 
         public static final Trigger intake = operatorController.leftTrigger();
         public static final Trigger shooter = operatorController.rightTrigger();
+
+        public static final DoubleSupplier armSpeed = () -> operatorController.getLeftY() * .2;
 
 
         public static final Function<Double, Double> inputCurve = (x) -> .8 * x + .2 * (x * x * x);
