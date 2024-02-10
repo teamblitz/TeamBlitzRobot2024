@@ -51,7 +51,7 @@ public final class Constants {
     }
 
     public static final class Swerve {
-        public static final int PIGEON_ID = 30;
+        public static final int PIGEON_ID = 14;
         public static final boolean USE_PIGEON = true;
 
         public static final COTSSwerveConstants chosenModule =
@@ -222,8 +222,8 @@ public final class Constants {
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(30);
         public static final double ROTATION_ACCELERATION = Units.degreesToRadians(60);
 
-        public static final int ARM_ROT_LEADER = 18; // Right //TODO CONFIG
-        public static final int ARM_ROT_FOLLOWER = 19; // Left //TODO CONFIG
+        public static final int ARM_ROT_LEADER = 15; // Right //TODO CONFIG
+        public static final int ARM_ROT_FOLLOWER = 16; // Left //TODO CONFIG
 
         public static final int ABS_ENCODER = 1; // TODO CONFIG
 
@@ -245,7 +245,7 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
 
         public static final class Spark {
-            public static final int MOTOR_ID = 15;
+            public static final int MOTOR_ID = 19;
         }
     }
 
@@ -271,6 +271,8 @@ public final class Constants {
         public static final int TALON_TOP = 22; //TODO SET
         public static final int TALON_BOTTOM = 23; //TODO SET    
         }
+        public static final int TOP = 17; // TODO SET
+        public static final int BOTTOM = 18; // TODO SET
 
         public static final int CURRENT_LIMIT = 0; // TODO SET
 
