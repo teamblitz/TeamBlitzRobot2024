@@ -58,15 +58,13 @@ public class ShooterIOSpark implements ShooterIO {
                 CANSparkBase.ControlType.kVelocity,
                 0,
                 feedforwardTop.calculate(velocity),
-                SparkPIDController.ArbFFUnits.kVoltage
-        );
+                SparkPIDController.ArbFFUnits.kVoltage);
         pidBottom.setReference(
                 velocity,
                 CANSparkBase.ControlType.kVelocity,
                 0,
                 feedforwardBottom.calculate(velocity),
-                SparkPIDController.ArbFFUnits.kVoltage
-        );
+                SparkPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
@@ -77,4 +75,4 @@ public class ShooterIOSpark implements ShooterIO {
         inputs.currentTop = top.getOutputCurrent();
         inputs.currentBottom = top.getOutputCurrent();
     }
-} 
+}

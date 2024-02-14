@@ -22,22 +22,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSpark;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.SwerveModuleIO;
-import frc.robot.subsystems.drive.SwerveModuleIOSparkMax;
 import frc.robot.subsystems.drive.gyro.GyroIO;
-import frc.robot.subsystems.drive.gyro.GyroIONavx;
-import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOTalon;
-
-import frc.robot.Constants.Shooter.Spark;
-import frc.robot.Constants.Shooter.Talon;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,7 +44,6 @@ public class RobotContainer {
     private Intake intake;
     private Shooter shooter;
     private Arm arm;
-
 
     /* ***** --- Controllers --- ***** */
     private Controller controller;
@@ -119,12 +110,12 @@ public class RobotContainer {
         new Trigger(() -> Math.abs(OIConstants.armSpeed.getAsDouble()) > .08)
                 .whileTrue(
                         Commands.run(
-                                () -> {
-                                    arm.setArmRotationSpeed(OIConstants.armSpeed.getAsDouble());
-                                },
-                                arm).finallyDo(() -> arm.setArmRotationSpeed(0)));
-
-
+                                        () -> {
+                                            arm.setArmRotationSpeed(
+                                                    OIConstants.armSpeed.getAsDouble());
+                                        },
+                                        arm)
+                                .finallyDo(() -> arm.setArmRotationSpeed(0)));
     }
 
     private final SlewRateLimiter driveMultiplierLimiter = new SlewRateLimiter(.25);
@@ -148,13 +139,13 @@ public class RobotContainer {
         //                 new SwerveModuleIOSparkMax(Constants.Swerve.Mod3.CONSTANTS),
         //                 Constants.Swerve.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
 
-        drive = new Drive(
-            new SwerveModuleIO() {},
-            new SwerveModuleIO() {},
-            new SwerveModuleIO() {},
-            new SwerveModuleIO() {},
-            new GyroIO() {}
-        );
+        drive =
+                new Drive(
+                        new SwerveModuleIO() {},
+                        new SwerveModuleIO() {},
+                        new SwerveModuleIO() {},
+                        new SwerveModuleIO() {},
+                        new GyroIO() {});
 
         intake = new Intake(new IntakeIOSpark());
         shooter = new Shooter(new ShooterIOTalon());
@@ -171,7 +162,6 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        
 
         controller.restGyroTrigger().onTrue(Commands.runOnce(drive::zeroGyro));
         controller.xBrakeTrigger().onTrue(drive.buildParkCommand());

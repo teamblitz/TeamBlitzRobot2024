@@ -39,14 +39,10 @@ public final class Constants {
     public static final boolean tuningMode = true;
 
     public enum Mode {
-        /**
-         * Running a physics simulator.
-         */
+        /** Running a physics simulator. */
         SIM,
 
-        /**
-         * Replaying from a log file.
-         */
+        /** Replaying from a log file. */
         REPLAY
     }
 
@@ -253,29 +249,28 @@ public final class Constants {
 
         public static class Spark {
 
-        public static final int SPARK_TOP = 22; // TODO SET
-        public static final int SPARK_BOTTOM = 23; // TODO SET
+            public static final int SPARK_TOP = 22; // TODO SET
+            public static final int SPARK_BOTTOM = 23; // TODO SET
 
-        public static final int PID_TOP_P = 0; // TODO SET
-        public static final int PID_TOP_I = 0; // TODO SET
-        public static final int PID_TOP_D = 0; // TODO SET
+            public static final int PID_TOP_P = 0; // TODO SET
+            public static final int PID_TOP_I = 0; // TODO SET
+            public static final int PID_TOP_D = 0; // TODO SET
 
-        public static final int PID_BOTTOM_P = 0; // TODO SET
-        public static final int PID_BOTTOM_I = 0; // TODO SET
-        public static final int PID_BOTTOM_D = 0; // TODO SET
-
+            public static final int PID_BOTTOM_P = 0; // TODO SET
+            public static final int PID_BOTTOM_I = 0; // TODO SET
+            public static final int PID_BOTTOM_D = 0; // TODO SET
         }
 
         public static class Talon {
 
-        public static final int TALON_TOP = 22; //TODO SET
-        public static final int TALON_BOTTOM = 23; //TODO SET    
+            public static final int TALON_TOP = 22; // TODO SET
+            public static final int TALON_BOTTOM = 23; // TODO SET
         }
+
         public static final int TOP = 17; // TODO SET
         public static final int BOTTOM = 18; // TODO SET
 
         public static final int CURRENT_LIMIT = 0; // TODO SET
-
     }
 
     public static final class AutoConstants {
@@ -319,7 +314,6 @@ public final class Constants {
         public static final Trigger shooter = operatorController.rightTrigger();
 
         public static final DoubleSupplier armSpeed = () -> operatorController.getLeftY() * .2;
-
 
         public static final Function<Double, Double> inputCurve = (x) -> .8 * x + .2 * (x * x * x);
 

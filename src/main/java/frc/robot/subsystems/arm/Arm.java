@@ -19,7 +19,6 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-
     public Arm(ArmIO io) {
         this.io = io;
 

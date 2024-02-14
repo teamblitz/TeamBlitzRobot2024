@@ -3,7 +3,7 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.BlitzSubsystem;
-//import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+// import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
 import frc.robot.subsystems.shooter.ShooterIO.ShooterIOInputs;
 
 public class Shooter extends SubsystemBase implements BlitzSubsystem {
@@ -18,10 +18,10 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     public void shootOpenLoop() {
         io.setPercent(0.5); // TODO CONST
     }
+
     public void shootClosedLoop() {
         io.setSetpoint(0); // TODO, CONST
     }
-
 
     public void reverse() {
         io.setPercent(-0.2);
