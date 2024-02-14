@@ -310,8 +310,8 @@ public final class Constants {
     public static final class OIConstants {
         public static final CommandXboxController operatorController = new CommandXboxController(1);
 
-        public static final Trigger intake = operatorController.leftTrigger();
-        public static final Trigger shooter = operatorController.rightTrigger();
+        public static final Trigger intake = operatorController.leftBumper();
+        public static final Trigger shooter = operatorController.rightBumper();
 
         public static final DoubleSupplier armSpeed = () -> operatorController.getLeftY() * .2;
 
