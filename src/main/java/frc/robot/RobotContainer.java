@@ -29,7 +29,7 @@ import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterIOTalon;
+import frc.robot.subsystems.shooter.ShooterIOVictor;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -148,7 +148,7 @@ public class RobotContainer {
                         new GyroIO() {});
 
         intake = new Intake(new IntakeIOSpark());
-        shooter = new Shooter(new ShooterIOTalon());
+        shooter = new Shooter(new ShooterIOVictor());
         arm = new Arm(new ArmIOSpark());
 
         driveController = new Joystick(0); // Move this to Controller (and I never did)
