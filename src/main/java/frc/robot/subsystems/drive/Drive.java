@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
+import frc.robot.subsystems.drive.SwerveModule.SwerveModule;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
