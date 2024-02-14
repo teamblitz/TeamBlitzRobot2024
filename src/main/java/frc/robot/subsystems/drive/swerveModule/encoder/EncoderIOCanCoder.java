@@ -1,5 +1,4 @@
 package frc.robot.subsystems.drive.swerveModule.encoder;
 
-public class EncoderIOCanCoder {
-    
+public class EncoderIOCanCoder implements EncoderIO {
 }

@@ -4,7 +4,9 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface EncoderIO {
     @AutoLog
-    public static class SwerveModuleInputs {
-        public double absoluteEncoderPosition;
+    public static class EncoderIOInputs {
+        public double position;
     }
+
+    public default void updateInputs(EncoderIOInputs inputs) {}
 }

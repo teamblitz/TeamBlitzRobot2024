@@ -23,4 +23,6 @@ public interface AngleMotorIO {
 
     /** Configure the PID constants */
     public default void configurePID(double p, double i, double d) {}
+
+    public default void seedPosition(double position) {}
 }
