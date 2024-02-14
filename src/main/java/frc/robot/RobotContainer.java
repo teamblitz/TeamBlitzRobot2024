@@ -116,13 +116,13 @@ public class RobotContainer {
                         () -> false,
                         () -> driveController.getPOV()));
 
-        new Trigger(() -> Math.abs(OIConstants.armSpeed.getAsDouble()) > .02)
+        new Trigger(() -> Math.abs(OIConstants.armSpeed.getAsDouble()) > .08)
                 .whileTrue(
                         Commands.run(
                                 () -> {
                                     arm.setArmRotationSpeed(OIConstants.armSpeed.getAsDouble());
                                 },
-                                arm));
+                                arm).finallyDo(() -> arm.setArmRotationSpeed(0)));
 
 
     }
