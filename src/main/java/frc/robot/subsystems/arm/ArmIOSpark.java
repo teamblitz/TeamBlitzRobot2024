@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import com.revrobotics.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.lib.math.Angles;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
@@ -38,12 +39,13 @@ public class ArmIOSpark implements ArmIO {
 
         angleEncoder = armRotLeader.getEncoder();
 
-        armRotLeader
-                .getEncoder()
-                .setPositionConversionFactor(
-                        (1 / Constants.Arm.GEAR_RATIO) // Rotations of motor shaft devided by
-                                // reduction = rotations of mechanism
-                                * (2 * Math.PI)); // Rotations * 2pi = rotation in radians
+        angleEncoder.setPositionConversionFactor(
+                (1 / Constants.Arm.GEAR_RATIO) // Rotations of motor shaft devided by
+                        // reduction = rotations of mechanism
+                        * (2 * Math.PI)); // Rotations * 2pi = rotation in radians
+
+        angleEncoder.setVelocityConversionFactor(
+                (1 / Constants.Arm.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
 
         anglePid = armRotLeader.getPIDController();
 
@@ -65,7 +67,7 @@ public class ArmIOSpark implements ArmIO {
 
     @Override
     public void updateInputs(ArmIOInputs inputs) {
-        inputs.armRot = angleEncoder.getPosition();
+        inputs.rotation = angleEncoder.getPosition();
         inputs.armRotationSpeed = angleEncoder.getVelocity();
         inputs.absArmRot = getAbsolutePosition();
         inputs.absArmEncoder =
@@ -75,6 +77,7 @@ public class ArmIOSpark implements ArmIO {
         inputs.bottomRotationLimit = armBottomLimitSwitch.get();
 
         inputs.encoderConnected = absRotationEncoder.isConnected();
+        inputs.volts = armRotLeader.get() * RobotController.getBatteryVoltage();
     }
 
     /** Updates the arm position setpoint. */
@@ -89,8 +92,13 @@ public class ArmIOSpark implements ArmIO {
     }
 
     @Override
-    public void setArmRotationSpeed(double percent) {
+    public void setArmSpeed(double percent) {
         armRotLeader.set(percent);
+    }
+
+    @Override
+    public void setArmVolts(double volts) {
+        armRotLeader.setVoltage(volts);
     }
 
     // TODO: ADD LIMIT SWITCH IMPL

@@ -1,9 +1,14 @@
 package frc.robot.subsystems.arm;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
 import frc.robot.Constants;
@@ -19,19 +24,38 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
+    private final SysIdRoutine routine;
+
     public Arm(ArmIO io) {
         this.io = io;
 
         // Do this, but smarter
         Commands.waitSeconds(8)
                 .andThen(io::seedArmPosition)
-                .andThen(() -> io.setArmRotationSpeed(0)) // Set the arm to 0 to end on board pid
+                .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
                 // loop
                 .ignoringDisable(true)
                 .schedule();
 
         // Constructor of armio?
         io.seedArmPosition();
+
+        routine =
+                new SysIdRoutine(
+                        new SysIdRoutine.Config(null, Volts.of(5), null, null),
+                        new SysIdRoutine.Mechanism(
+                                (Measure<Voltage> volts) -> {
+                                    io.setArmVolts(volts.in(Volts));
+                                },
+                                log -> {
+                                    // Record a frame for the shooter motor.
+                                    log.motor("arm")
+                                            .voltage(Volts.of(inputs.volts))
+                                            .angularPosition(Radians.of(inputs.rotation))
+                                            .angularVelocity(
+                                                    RadiansPerSecond.of(inputs.armRotationSpeed));
+                                },
+                                this));
     }
 
     @Override
@@ -49,7 +73,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     }
 
     public double getRotation() {
-        return inputs.armRot;
+        return inputs.rotation;
     }
 
     public double getRotationSpeed() {
@@ -57,7 +81,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void setArmRotationSpeed(double percent) {
-        io.setArmRotationSpeed(percent);
+        io.setArmSpeed(percent);
     }
 
     public Command rotateToCommandOld(double degrees) {
@@ -106,7 +130,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                         () ->
                                 lastState.set(
                                         new TrapezoidProfile.State(
-                                                inputs.armRot, inputs.armRotationSpeed)))
+                                                inputs.rotation, inputs.armRotationSpeed)))
                 .andThen(
                         run(
                                 () -> {
@@ -119,5 +143,16 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                 }))
                 .until(() -> profile.timeLeftUntil(goal) == 0)
                 .finallyDo(() -> updateRotation(goal, 0));
+    }
+
+    /* SYSID STUFF */
+    // Creates a SysIdRoutine
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction);
     }
 }

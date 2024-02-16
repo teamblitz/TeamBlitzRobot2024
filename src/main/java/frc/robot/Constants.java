@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.COTSSwerveConstants;
@@ -212,15 +213,15 @@ public final class Constants {
         public static final double MIN_ROT = Units.degreesToRadians(0);
         public static final double MAX_ROT = Units.degreesToRadians(90);
 
-        public static final double STARTING_POS = 0; // TODO CONFIG
+        public static final double STARTING_POS = 0;
         public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
 
         // TODO CONFIG
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(30);
         public static final double ROTATION_ACCELERATION = Units.degreesToRadians(60);
 
-        public static final int ARM_ROT_LEADER = 15; // Right //TODO CONFIG
-        public static final int ARM_ROT_FOLLOWER = 16; // Left //TODO CONFIG
+        public static final int ARM_ROT_LEADER = 16;
+        public static final int ARM_ROT_FOLLOWER = 15;
 
         public static final int ABS_ENCODER = 1; // TODO CONFIG
 
@@ -235,7 +236,7 @@ public final class Constants {
             public static final double D = 0;
         }
 
-        public static final double GEAR_RATIO = (20.0 / 1.0) * (62.0 / 12.0); // TODO CONFIG
+        public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0); // TODO CONFIG
     }
 
     public static class Intake {
@@ -309,14 +310,39 @@ public final class Constants {
     }
 
     public static final class OIConstants {
-        public static final CommandXboxController operatorController = new CommandXboxController(1);
+        public static final boolean TEST_CONTROLS = true;
 
-        public static final Trigger intake = operatorController.leftBumper();
-        public static final Trigger shooter = operatorController.rightBumper();
+        public static final CommandGenericHID DRIVE_CONTROLLER = null;
+        public static final CommandXboxController OPERATOR_CONTROLLER =
+                new CommandXboxController(1);
+        public static final CommandXboxController TEST_CONTROLLER =
+                TEST_CONTROLS ? new CommandXboxController(2) : null;
 
-        public static final Trigger zeroAbsEncoders = operatorController.b().and(DriverStation::isTest);
+        public static final class SuperStructure {
+            public static final Trigger intakeFwd = OPERATOR_CONTROLLER.leftBumper();
+            public static final Trigger intakeRev = OPERATOR_CONTROLLER.leftTrigger();
+            public static final Trigger shooterSpeaker = OPERATOR_CONTROLLER.rightBumper();
+            public static final Trigger shooterAmp = OPERATOR_CONTROLLER.start();
+            public static final Trigger shooterRev = OPERATOR_CONTROLLER.rightTrigger();
+        }
 
-        public static final DoubleSupplier armSpeed = () -> operatorController.getLeftY() * .2;
+        public static final class TestMode {
+            public static final Trigger zeroAbsEncoders =
+                    TEST_CONTROLLER.b().and(DriverStation::isTest);
+
+            public static final class SysId {
+                public static final class Arm {
+                    public static final Trigger enabled =
+                            TEST_CONTROLLER.povLeft().and(DriverStation::isTest);
+                    public static final Trigger quasistaticFwd = enabled.and(TEST_CONTROLLER.y());
+                    public static final Trigger quasistaticRev = enabled.and(TEST_CONTROLLER.x());
+                    public static final Trigger dynamicFwd = enabled.and(TEST_CONTROLLER.b());
+                    public static final Trigger dynamicRev = enabled.and(TEST_CONTROLLER.a());
+                }
+            }
+        }
+
+        public static final DoubleSupplier armSpeed = () -> -OPERATOR_CONTROLLER.getLeftY() * .2;
 
         public static final Function<Double, Double> inputCurve = (x) -> .8 * x + .2 * (x * x * x);
 

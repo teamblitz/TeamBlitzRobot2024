@@ -1,9 +1,8 @@
 package frc.robot.subsystems.drive.swerveModule.encoder;
 
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
-import frc.robot.Constants;
 
-public class EncoderIOHelium implements EncoderIO{
+public class EncoderIOHelium implements EncoderIO {
 
     private final Canandcoder encoder;
 
@@ -25,4 +24,3 @@ public class EncoderIOHelium implements EncoderIO{
         System.out.println("zeroed");
     }
 }
-

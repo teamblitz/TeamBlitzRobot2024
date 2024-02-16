@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
@@ -92,6 +93,8 @@ public class RobotContainer {
         }
         chooser.setDefaultOption("Nothing", "Nothing");
         SmartDashboard.putData("Autonomous Choices", chooser);
+
+        DriverStation.silenceJoystickConnectionWarning(true);
     }
 
     private void setDefaultCommands() {
@@ -177,12 +180,22 @@ public class RobotContainer {
         controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
         controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
 
-        OIConstants.intake.whileTrue(intake.intakeCommand());
-        OIConstants.shooter.whileTrue(shooter.shootCommand());
+        OIConstants.SuperStructure.intakeFwd.whileTrue(intake.intakeCommand());
+        OIConstants.SuperStructure.intakeRev.whileTrue(intake.ejectCommand());
+        OIConstants.SuperStructure.shooterSpeaker.whileTrue(shooter.shootCommand());
+        OIConstants.SuperStructure.shooterAmp.whileTrue(shooter.shootCommand());
+        OIConstants.SuperStructure.shooterRev.whileTrue(shooter.reverseCommand());
 
-        OIConstants.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
-
-    
+        // TEST STUFF
+        OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
+        OIConstants.TestMode.SysId.Arm.quasistaticFwd.whileTrue(
+                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        OIConstants.TestMode.SysId.Arm.quasistaticRev.whileTrue(
+                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        OIConstants.TestMode.SysId.Arm.dynamicFwd.whileTrue(
+                arm.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        OIConstants.TestMode.SysId.Arm.dynamicRev.whileTrue(
+                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here

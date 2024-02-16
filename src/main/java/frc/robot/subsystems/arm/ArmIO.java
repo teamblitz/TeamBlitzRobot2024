@@ -6,7 +6,7 @@ public interface ArmIO {
     /** All units are meters and radians */
     @AutoLog
     public class ArmIOInputs {
-        public double armRot;
+        public double rotation;
         public double armRotationSpeed;
         public double absArmRot;
 
@@ -16,6 +16,8 @@ public interface ArmIO {
         public boolean bottomRotationLimit;
 
         public boolean encoderConnected;
+
+        public double volts;
     }
 
     /** Updates the set of loggable inputs. */
@@ -23,11 +25,9 @@ public interface ArmIO {
 
     public default void setRotationSetpoint(double degrees, double arbFFPercent) {}
 
-    public default void setExtensionSetpoint(double meters) {}
+    public default void setArmSpeed(double percent) {}
 
-    public default void setArmRotationSpeed(double percent) {}
-
-    public default void setArmExtensionSpeed(double percent) {}
+    public default void setArmVolts(double volts) {}
 
     public default void seedArmPosition() {}
 

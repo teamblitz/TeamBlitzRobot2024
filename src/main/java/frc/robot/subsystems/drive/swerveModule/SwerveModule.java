@@ -8,7 +8,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.lib.util.ModuleStateOptimizer;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.SwerveModuleInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIO;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIO;
