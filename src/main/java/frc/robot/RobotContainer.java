@@ -178,6 +178,10 @@ public class RobotContainer {
 
         OIConstants.intake.whileTrue(intake.intakeCommand());
         OIConstants.shooter.whileTrue(shooter.shootCommand());
+
+        OIConstants.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
+
+    
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here

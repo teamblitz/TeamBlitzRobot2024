@@ -20,6 +20,9 @@ public class EncoderIOHelium implements EncoderIO{
         inputs.position = encoder.getAbsPosition() * 360;
     }
 
-    public void rreset
+    public void zeroEncoder() {
+        encoder.setPosition(0);
+        System.out.println("zeroed");
+    }
 }
 

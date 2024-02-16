@@ -16,12 +16,12 @@ import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIO;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
+import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
     public final int moduleNumber;
-    private final SwerveModuleInputsAutoLogged inputs = new SwerveModuleInputsAutoLogged();
     private Rotation2d lastAngle;
 
     private final AngleMotorIO angleMotor;
@@ -70,7 +70,7 @@ public class SwerveModule {
 
         Logger.processInputs(logKey + "/angle", angleMotorInputs);
         Logger.processInputs(logKey + "/drive", driveMotorInputs);
-        Logger.processInputs(logKey + "/absEncoder", inputs);
+        Logger.processInputs(logKey + "/absEncoder", encoderInputs);
     }
 
     public void setDesiredState(
@@ -108,22 +108,26 @@ public class SwerveModule {
     }
 
     private Rotation2d getAngle() {
-        return Rotation2d.fromDegrees(inputs.anglePositionDegrees);
+        return Rotation2d.fromDegrees(angleMotorInputs.rotation);
     }
 
     public Rotation2d getAbsoluteAngle() {
-        return Rotation2d.fromDegrees(inputs.absoluteEncoderPositionDegrees);
+        return Rotation2d.fromDegrees(encoderInputs.position);
     }
 
     public SwerveModuleState getState() {
-        return new SwerveModuleState(inputs.speedMetersPerSecond, getAngle());
+        return new SwerveModuleState(driveMotorInputs.velocity, getAngle());
     }
 
     public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(inputs.drivePositionMeters, getAngle());
+        return new SwerveModulePosition(driveMotorInputs.position, getAngle());
     }
 
     public void setBrakeMode(boolean enabled) {
         driveMotor.setBrakeMode(enabled);
+    }
+
+    public void zeroAbsEncoders() {
+        ((EncoderIOHelium) absoluteEncoder).zeroEncoder();
     }
 }

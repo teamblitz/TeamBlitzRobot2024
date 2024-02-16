@@ -389,4 +389,13 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                                 false,
                                                 false)));
     }
+
+    public Command zeroAbsEncoders() {
+        return runOnce(() -> {
+            swerveModules[0].zeroAbsEncoders();
+            swerveModules[1].zeroAbsEncoders();
+            swerveModules[2].zeroAbsEncoders();
+            swerveModules[3].zeroAbsEncoders();
+        }).ignoringDisable(true);
+    }
 }
