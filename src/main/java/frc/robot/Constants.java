@@ -236,7 +236,15 @@ public final class Constants {
             public static final double D = 0;
         }
 
-        public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0); // TODO CONFIG
+        public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
+
+        public static final class Positions {
+            public static final double INTAKE = 0;
+            public static final double TRANSIT_STAGE = 30;
+            public static final double TRANSIT_NORMAL = 60;
+            public static final double SCORE_AMP = 100;
+            public static final double SCORE_SPEAKER = 60;
+        }
     }
 
     public static class Intake {
@@ -318,12 +326,27 @@ public final class Constants {
         public static final CommandXboxController TEST_CONTROLLER =
                 TEST_CONTROLS ? new CommandXboxController(2) : null;
 
+        public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop);
+
         public static final class SuperStructure {
-            public static final Trigger intakeFwd = OPERATOR_CONTROLLER.leftBumper();
-            public static final Trigger intakeRev = OPERATOR_CONTROLLER.leftTrigger();
-            public static final Trigger shooterSpeaker = OPERATOR_CONTROLLER.rightBumper();
-            public static final Trigger shooterAmp = OPERATOR_CONTROLLER.start();
-            public static final Trigger shooterRev = OPERATOR_CONTROLLER.rightTrigger();
+            public static final class Intake {
+                public static final Trigger intakeFwd = OPERATOR_CONTROLLER.leftBumper();
+                public static final Trigger intakeRev = OPERATOR_CONTROLLER.leftTrigger();
+            }
+            public static final class Shooter {
+
+                public static final Trigger shooterSpeaker = OPERATOR_CONTROLLER.rightBumper();
+                public static final Trigger shooterAmp = OPERATOR_CONTROLLER.start();
+                public static final Trigger shooterRev = OPERATOR_CONTROLLER.rightTrigger();
+            }
+
+            public static final class Arm {
+                public static final Trigger PRIME_INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a());
+                public static final Trigger PRIME_TRANSIT_STAGE = TELEOP.and(OPERATOR_CONTROLLER.b());
+                public static final Trigger PRIME_SCORE_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.y());
+                public static final Trigger PRIME_SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
+
+            }
         }
 
         public static final class TestMode {
