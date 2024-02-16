@@ -15,6 +15,8 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 /**
  * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
  * this, 2 subsystems is ideal (and is kinda what we are pseudo doing)
@@ -155,4 +157,9 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction);
     }
+
+    public Command brakeCommand() {
+        return Commands.startEnd(() -> io.setBrake(true), () -> io.setBrake(false)).ignoringDisable(true);
+    }
+
 }

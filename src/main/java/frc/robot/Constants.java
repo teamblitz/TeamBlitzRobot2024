@@ -213,7 +213,7 @@ public final class Constants {
         public static final double MIN_ROT = Units.degreesToRadians(0);
         public static final double MAX_ROT = Units.degreesToRadians(90);
 
-        public static final double STARTING_POS = 0;
+        public static final double STARTING_POS = 90;
         public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
 
         // TODO CONFIG

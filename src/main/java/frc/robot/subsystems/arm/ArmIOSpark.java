@@ -1,6 +1,8 @@
 package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
@@ -28,8 +30,8 @@ public class ArmIOSpark implements ArmIO {
         armRotLeader.restoreFactoryDefaults();
         armRotFollower.restoreFactoryDefaults();
 
-        armRotLeader.setIdleMode(CANSparkBase.IdleMode.kBrake);
-        armRotFollower.setIdleMode(CANSparkBase.IdleMode.kBrake);
+        armRotLeader.setIdleMode(CANSparkBase.IdleMode.kCoast);
+        armRotFollower.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
         armRotLeader.setOpenLoopRampRate(Arm.RAMP_RATE);
         armRotFollower.setOpenLoopRampRate(Arm.RAMP_RATE);
@@ -132,5 +134,11 @@ public class ArmIOSpark implements ArmIO {
     private double getAbsolutePosition() {
         return Angles.wrapAnglePi(
                 -absRotationEncoder.getAbsolutePosition() * 2 * Math.PI - Arm.ABS_ENCODER_OFFSET);
+    }
+
+    @Override
+    public void setBrake(boolean brake) {
+        armRotLeader.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        armRotFollower.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 }

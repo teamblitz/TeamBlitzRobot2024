@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -196,6 +197,8 @@ public class RobotContainer {
                 arm.sysIdDynamic(SysIdRoutine.Direction.kForward));
         OIConstants.TestMode.SysId.Arm.dynamicRev.whileTrue(
                 arm.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+        new Trigger(RobotController::getUserButton).toggleOnTrue(arm.brakeCommand());
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here

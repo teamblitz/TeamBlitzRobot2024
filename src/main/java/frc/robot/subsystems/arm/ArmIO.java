@@ -32,4 +32,6 @@ public interface ArmIO {
     public default void seedArmPosition() {}
 
     public default void checkLimitSwitches() {}
+
+    public default void setBrake(boolean brake) {}
 }
