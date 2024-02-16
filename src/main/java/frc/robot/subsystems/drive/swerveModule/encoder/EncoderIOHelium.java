@@ -19,5 +19,7 @@ public class EncoderIOHelium implements EncoderIO{
     public void updateInputs(EncoderIO.EncoderIOInputs inputs) {
         inputs.position = encoder.getAbsPosition() * 360;
     }
+
+    public void rreset
 }
 

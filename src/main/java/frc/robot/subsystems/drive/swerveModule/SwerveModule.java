@@ -1,6 +1,6 @@
 /* Big thanks to Team 364 for the base code. */
 
-package frc.robot.subsystems.drive.SwerveModule;
+package frc.robot.subsystems.drive.swerveModule;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -11,43 +11,66 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleInputsAutoLogged;
 
+import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIO;
+import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorInputsAutoLogged;
+import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIO;
+import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorInputsAutoLogged;
+import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
+import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOInputsAutoLogged;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
     public final int moduleNumber;
-    private final SwerveModuleIO io;
     private final SwerveModuleInputsAutoLogged inputs = new SwerveModuleInputsAutoLogged();
     private Rotation2d lastAngle;
 
-    private final SimpleMotorFeedforward feedforward =
+    private final AngleMotorIO angleMotor;
+    private final DriveMotorIO driveMotor;
+    private final EncoderIO absoluteEncoder;
+
+    private final AngleMotorInputsAutoLogged angleMotorInputs = new AngleMotorInputsAutoLogged();
+    private final DriveMotorInputsAutoLogged driveMotorInputs = new DriveMotorInputsAutoLogged();
+    private final EncoderIOInputsAutoLogged encoderInputs = new EncoderIOInputsAutoLogged();
+
+    private final SimpleMotorFeedforward driveFeedforward =
             new SimpleMotorFeedforward(
                     Constants.Swerve.DRIVE_KS,
                     Constants.Swerve.DRIVE_KV,
                     Constants.Swerve.DRIVE_KA);
     private final String logKey;
 
-    private final Logger logger = Logger.getInstance();
 
-    public SwerveModule(int moduleNumber, SwerveModuleIO io) {
-        this.io = io;
+    public SwerveModule(int moduleNumber, AngleMotorIO angleMotor, DriveMotorIO driveMotor, EncoderIO absoluteEncoder) {
         this.moduleNumber = moduleNumber;
+        this.angleMotor = angleMotor;
+        this.driveMotor = driveMotor;
+        this.absoluteEncoder = absoluteEncoder;
+
+        // hehe
+        absoluteEncoder.updateInputs(encoderInputs);
+        angleMotor.seedPosition(encoderInputs.position);
 
         lastAngle = getAngle();
 
-        logKey = "Swerve/Mod" + moduleNumber;
+        logKey = "swerve/mod" + moduleNumber;
     }
 
     public void configAnglePid(double p, double i, double d) {
-        io.configureAnglePID(p, i, d);
+        angleMotor.configurePID(p, i, d);
     }
 
     public void configDrivePid(double p, double i, double d) {
-        io.configureDrivePID(p, i, d);
+        driveMotor.configurePID(p, i, d);
     }
 
     public void periodic() {
-        io.updateInputs(inputs);
-        logger.processInputs(logKey, inputs);
+        angleMotor.updateInputs(angleMotorInputs);
+        driveMotor.updateInputs(driveMotorInputs);
+        absoluteEncoder.updateInputs(encoderInputs);
+
+        Logger.processInputs(logKey + "/angle", angleMotorInputs);
+        Logger.processInputs(logKey + "/drive", driveMotorInputs);
+        Logger.processInputs(logKey + "/absEncoder", inputs);
     }
 
     public void setDesiredState(
@@ -62,13 +85,13 @@ public class SwerveModule {
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if (isOpenLoop) {
             double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.MAX_SPEED;
-            io.setDrivePercent(percentOutput);
-            logger.recordOutput(logKey + "/drivePercent", percentOutput);
+            driveMotor.setDrivePercent(percentOutput);
+            Logger.recordOutput(logKey + "/drivePercent", percentOutput);
         } else {
-            logger.recordOutput(logKey + "/speedSetpoint", desiredState.speedMetersPerSecond);
-            io.setDriveSetpoint(
+            Logger.recordOutput(logKey + "/speedSetpoint", desiredState.speedMetersPerSecond);
+            driveMotor.setSetpoint(
                     desiredState.speedMetersPerSecond,
-                    feedforward.calculate(desiredState.speedMetersPerSecond));
+                    driveFeedforward.calculate(desiredState.speedMetersPerSecond));
         }
     }
 
@@ -79,8 +102,8 @@ public class SwerveModule {
                                         <= (Constants.Swerve.MAX_SPEED * 0.01))
                         ? lastAngle
                         : desiredState.angle; // Prevent rotating module if speed is less than 1%.
-        io.setAngleSetpoint(angle.getDegrees());
-        logger.recordOutput(logKey + "/AngleSetpoint", angle.getDegrees());
+        angleMotor.setSetpoint(angle.getDegrees());
+        Logger.recordOutput(logKey + "/AngleSetpoint", angle.getDegrees());
         lastAngle = angle;
     }
 
@@ -101,6 +124,6 @@ public class SwerveModule {
     }
 
     public void setBrakeMode(boolean enabled) {
-        io.setBrakeMode(enabled);
+        driveMotor.setBrakeMode(enabled);
     }
 }

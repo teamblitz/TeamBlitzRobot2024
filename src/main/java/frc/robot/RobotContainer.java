@@ -26,6 +26,9 @@ import frc.robot.subsystems.arm.ArmIOSpark;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.gyro.GyroIO;
+import frc.robot.subsystems.drive.gyro.GyroIONavx;
+import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
+import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.shooter.Shooter;
@@ -131,21 +134,22 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-        // drive =
-        //         new Drive(
-        //                 new SwerveModuleIOSparkMax(Constants.Swerve.Mod0.CONSTANTS),
-        //                 new SwerveModuleIOSparkMax(Constants.Swerve.Mod1.CONSTANTS),
-        //                 new SwerveModuleIOSparkMax(Constants.Swerve.Mod2.CONSTANTS),
-        //                 new SwerveModuleIOSparkMax(Constants.Swerve.Mod3.CONSTANTS),
-        //                 Constants.Swerve.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
+         drive =
+                 new Drive(
+                         new SwerveModuleConfiguration(SwerveModuleConfiguration.MotorType.NEO, SwerveModuleConfiguration.MotorType.NEO, SwerveModuleConfiguration.EncoderType.HELIUM),
+                         Constants.Swerve.Mod0.CONSTANTS,
+                         Constants.Swerve.Mod1.CONSTANTS,
+                         Constants.Swerve.Mod2.CONSTANTS,
+                         Constants.Swerve.Mod3.CONSTANTS,
+                         Constants.Swerve.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
 
-        drive =
-                new Drive(
-                        new SwerveModuleIO() {},
-                        new SwerveModuleIO() {},
-                        new SwerveModuleIO() {},
-                        new SwerveModuleIO() {},
-                        new GyroIO() {});
+//        drive =
+//                new Drive(
+//                        new SwerveModuleIO() {},
+//                        new SwerveModuleIO() {},
+//                        new SwerveModuleIO() {},
+//                        new SwerveModuleIO() {},
+//                        new GyroIO() {});
 
         intake = new Intake(new IntakeIOSpark());
         shooter = new Shooter(new ShooterIOVictor());

@@ -10,11 +10,6 @@ public class SwerveModuleConstants {
 
     /**
      * Drive Module Constants to be used when creating swerve modules.
-     *
-     * @param driveMotorID
-     * @param angleMotorID
-     * @param canCoderID
-     * @param angleOffset
      */
     public SwerveModuleConstants(
             int driveMotorID, int angleMotorID, int canCoderID, Rotation2d angleOffset) {

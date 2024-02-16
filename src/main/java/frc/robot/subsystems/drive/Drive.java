@@ -2,8 +2,6 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.Swerve.*;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -11,11 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,10 +24,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
-import frc.robot.subsystems.drive.SwerveModule.SwerveModule;
+import frc.lib.util.SwerveModuleConstants;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
+import frc.robot.subsystems.drive.swerveModule.SwerveModule;
+import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
+import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
+import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
+import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import org.littletonrobotics.junction.Logger;
+
+import static frc.robot.Constants.Swerve.*;
 
 /**
  * Here we can probably do some cleanup, main thing we can probably do here is separate
@@ -82,16 +83,17 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     private final ProfiledPIDController rotateToHeadingPid;
 
     public Drive(
-            SwerveModuleIO frontLeft,
-            SwerveModuleIO frontRight,
-            SwerveModuleIO backLeft,
-            SwerveModuleIO backRight,
+            SwerveModuleConfiguration configuration,
+            SwerveModuleConstants flConstants,
+            SwerveModuleConstants frConstants,
+            SwerveModuleConstants blConstants,
+            SwerveModuleConstants brConstants,
             GyroIO gyroIO) {
         this(
-                new SwerveModule(FL, frontLeft),
-                new SwerveModule(FR, frontRight),
-                new SwerveModule(BL, backLeft),
-                new SwerveModule(BR, backRight),
+                new SwerveModule(FL, new AngleMotorIOSpark(flConstants), new DriveMotorIOSpark(flConstants), new EncoderIOHelium(flConstants.cancoderID, CAN_CODER_INVERT)),
+                new SwerveModule(FR, new AngleMotorIOSpark(frConstants), new DriveMotorIOSpark(frConstants), new EncoderIOHelium(frConstants.cancoderID, CAN_CODER_INVERT)),
+                new SwerveModule(BL, new AngleMotorIOSpark(blConstants), new DriveMotorIOSpark(blConstants), new EncoderIOHelium(blConstants.cancoderID, CAN_CODER_INVERT)),
+                new SwerveModule(BR, new AngleMotorIOSpark(brConstants), new DriveMotorIOSpark(brConstants), new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
                 gyroIO);
     }
 
