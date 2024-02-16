@@ -21,7 +21,9 @@ public class AngleMotorIOSpark implements AngleMotorIO {
         this.angleOffset = moduleConstants.angleOffset;
 
         /* Angle Motor */
-        motor = new CANSparkMax(moduleConstants.angleMotorID, CANSparkLowLevel.MotorType.kBrushless);
+        motor =
+                new CANSparkMax(
+                        moduleConstants.angleMotorID, CANSparkLowLevel.MotorType.kBrushless);
         encoder = motor.getEncoder();
         pidController = motor.getPIDController();
         configAngleMotor();
@@ -32,7 +34,6 @@ public class AngleMotorIOSpark implements AngleMotorIO {
         inputs.angularVelocity = encoder.getVelocity();
         inputs.rotation = encoder.getPosition();
     }
-
 
     @Override
     public void setSetpoint(double setpoint) {
@@ -48,8 +49,7 @@ public class AngleMotorIOSpark implements AngleMotorIO {
 
     @Override
     public void seedPosition(double position) {
-        encoder.setPosition(
-                position);
+        encoder.setPosition(position);
     }
 
     private void configAngleMotor() {
@@ -65,12 +65,8 @@ public class AngleMotorIOSpark implements AngleMotorIO {
                         // the module
                         * 360); // 1/360 rotations is 1 degree, 1 rotation is 360 degrees.
 
-
         configurePID(
-                Constants.Swerve.ANGLE_KP,
-                Constants.Swerve.ANGLE_KI,
-                Constants.Swerve.ANGLE_KD
-        );
+                Constants.Swerve.ANGLE_KP, Constants.Swerve.ANGLE_KI, Constants.Swerve.ANGLE_KD);
         // TODO: Adjust this latter after we know the pid loop is not crazy
         // angleMotor.getPIDController().setOutputRange(-.25, .25);
     }

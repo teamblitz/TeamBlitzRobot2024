@@ -26,7 +26,4 @@ public interface DriveMotorIO {
     public default void configurePID(double p, double i, double d) {}
 
     public default void setBrakeMode(boolean enabled) {}
-
 }
-
-

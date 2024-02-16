@@ -16,7 +16,9 @@ public class DriveMotorIOSpark implements DriveMotorIO {
     public DriveMotorIOSpark(SwerveModuleConstants moduleConstants) {
 
         /* Drive motor */
-        motor = new CANSparkMax(moduleConstants.driveMotorID, CANSparkLowLevel.MotorType.kBrushless);
+        motor =
+                new CANSparkMax(
+                        moduleConstants.driveMotorID, CANSparkLowLevel.MotorType.kBrushless);
         encoder = motor.getEncoder();
         pidController = motor.getPIDController();
         configDriveMotor();
@@ -36,7 +38,11 @@ public class DriveMotorIOSpark implements DriveMotorIO {
     @Override
     public void setSetpoint(double setpoint, double ffVolts) {
         pidController.setReference(
-                setpoint, CANSparkBase.ControlType.kVelocity, 0, ffVolts, SparkPIDController.ArbFFUnits.kVoltage);
+                setpoint,
+                CANSparkBase.ControlType.kVelocity,
+                0,
+                ffVolts,
+                SparkPIDController.ArbFFUnits.kVoltage);
     }
 
     @Override
@@ -45,7 +51,6 @@ public class DriveMotorIOSpark implements DriveMotorIO {
         pidController.setI(i);
         pidController.setD(d);
     }
-
 
     private void configDriveMotor() {
         motor.restoreFactoryDefaults();
@@ -59,31 +64,27 @@ public class DriveMotorIOSpark implements DriveMotorIO {
         encoder.setVelocityConversionFactor(
                 1
                         / Constants.Swerve
-                        .DRIVE_GEAR_RATIO // 1/gear ratio because the wheel spins slower
+                                .DRIVE_GEAR_RATIO // 1/gear ratio because the wheel spins slower
                         // than
                         // the motor.
                         * Constants.Swerve
-                        .WHEEL_CIRCUMFERENCE // Multiply by the circumference to get meters
+                                .WHEEL_CIRCUMFERENCE // Multiply by the circumference to get meters
                         // per minute
                         / 60); // Divide by 60 to get meters per second.
         encoder.setPositionConversionFactor(
                 1 / Constants.Swerve.DRIVE_GEAR_RATIO * Constants.Swerve.WHEEL_CIRCUMFERENCE);
         encoder.setPosition(0);
 
-
         configurePID(
-                Constants.Swerve.DRIVE_KP,
-                Constants.Swerve.DRIVE_KI,
-                Constants.Swerve.DRIVE_KD
-        );
+                Constants.Swerve.DRIVE_KP, Constants.Swerve.DRIVE_KI, Constants.Swerve.DRIVE_KD);
     }
 
     @Override
     public void setBrakeMode(boolean enabled) {
         if (lastBrake != enabled) {
-            motor.setIdleMode(enabled ? CANSparkBase.IdleMode.kBrake : CANSparkBase.IdleMode.kCoast);
+            motor.setIdleMode(
+                    enabled ? CANSparkBase.IdleMode.kBrake : CANSparkBase.IdleMode.kCoast);
             lastBrake = enabled;
         }
     }
 }
-

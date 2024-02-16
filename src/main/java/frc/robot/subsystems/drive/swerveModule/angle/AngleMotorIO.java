@@ -4,7 +4,6 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface AngleMotorIO {
     @AutoLog
-    
     public static class AngleMotorInputs {
         public double rotation;
         public double angularVelocity;
@@ -19,7 +18,6 @@ public interface AngleMotorIO {
      * @param setpoint position in radians
      */
     public default void setSetpoint(double setpoint) {}
-
 
     /** Configure the PID constants */
     public default void configurePID(double p, double i, double d) {}

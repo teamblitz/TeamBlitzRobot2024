@@ -8,9 +8,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.lib.util.ModuleStateOptimizer;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.SwerveModuleIO;
 import frc.robot.subsystems.drive.SwerveModuleInputsAutoLogged;
-
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIO;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIO;
@@ -39,8 +37,11 @@ public class SwerveModule {
                     Constants.Swerve.DRIVE_KA);
     private final String logKey;
 
-
-    public SwerveModule(int moduleNumber, AngleMotorIO angleMotor, DriveMotorIO driveMotor, EncoderIO absoluteEncoder) {
+    public SwerveModule(
+            int moduleNumber,
+            AngleMotorIO angleMotor,
+            DriveMotorIO driveMotor,
+            EncoderIO absoluteEncoder) {
         this.moduleNumber = moduleNumber;
         this.angleMotor = angleMotor;
         this.driveMotor = driveMotor;

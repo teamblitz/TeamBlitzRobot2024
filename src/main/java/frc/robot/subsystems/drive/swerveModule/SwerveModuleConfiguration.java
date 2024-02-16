@@ -5,6 +5,7 @@ public class SwerveModuleConfiguration {
         KRAKEN,
         NEO
     }
+
     public enum EncoderType {
         HELIUM,
         CANCODER
@@ -14,7 +15,8 @@ public class SwerveModuleConfiguration {
     public final MotorType angle;
     public final EncoderType encoder;
 
-    public SwerveModuleConfiguration(MotorType driveMotor, MotorType angleMotor, EncoderType encoder) {
+    public SwerveModuleConfiguration(
+            MotorType driveMotor, MotorType angleMotor, EncoderType encoder) {
         this.drive = driveMotor;
         this.angle = angleMotor;
         this.encoder = encoder;

@@ -2,6 +2,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static frc.robot.Constants.Swerve.*;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -33,8 +35,6 @@ import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import org.littletonrobotics.junction.Logger;
-
-import static frc.robot.Constants.Swerve.*;
 
 /**
  * Here we can probably do some cleanup, main thing we can probably do here is separate
@@ -90,10 +90,26 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             SwerveModuleConstants brConstants,
             GyroIO gyroIO) {
         this(
-                new SwerveModule(FL, new AngleMotorIOSpark(flConstants), new DriveMotorIOSpark(flConstants), new EncoderIOHelium(flConstants.cancoderID, CAN_CODER_INVERT)),
-                new SwerveModule(FR, new AngleMotorIOSpark(frConstants), new DriveMotorIOSpark(frConstants), new EncoderIOHelium(frConstants.cancoderID, CAN_CODER_INVERT)),
-                new SwerveModule(BL, new AngleMotorIOSpark(blConstants), new DriveMotorIOSpark(blConstants), new EncoderIOHelium(blConstants.cancoderID, CAN_CODER_INVERT)),
-                new SwerveModule(BR, new AngleMotorIOSpark(brConstants), new DriveMotorIOSpark(brConstants), new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
+                new SwerveModule(
+                        FL,
+                        new AngleMotorIOSpark(flConstants),
+                        new DriveMotorIOSpark(flConstants),
+                        new EncoderIOHelium(flConstants.cancoderID, CAN_CODER_INVERT)),
+                new SwerveModule(
+                        FR,
+                        new AngleMotorIOSpark(frConstants),
+                        new DriveMotorIOSpark(frConstants),
+                        new EncoderIOHelium(frConstants.cancoderID, CAN_CODER_INVERT)),
+                new SwerveModule(
+                        BL,
+                        new AngleMotorIOSpark(blConstants),
+                        new DriveMotorIOSpark(blConstants),
+                        new EncoderIOHelium(blConstants.cancoderID, CAN_CODER_INVERT)),
+                new SwerveModule(
+                        BR,
+                        new AngleMotorIOSpark(brConstants),
+                        new DriveMotorIOSpark(brConstants),
+                        new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
                 gyroIO);
     }
 
