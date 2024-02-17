@@ -10,7 +10,7 @@ public class EncoderIOHelium implements EncoderIO {
         encoder = new Canandcoder(id);
 
         Canandcoder.Settings settings = new Canandcoder.Settings();
-        settings.setInvertDirection(invert);
+        settings.setInvertDirection(!invert);
         encoder.setSettings(settings);
     }
 

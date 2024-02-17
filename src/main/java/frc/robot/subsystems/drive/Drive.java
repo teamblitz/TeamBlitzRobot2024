@@ -2,7 +2,22 @@
 
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.Swerve.*;
+import static frc.robot.Constants.Swerve.ANGLE_KD;
+import static frc.robot.Constants.Swerve.ANGLE_KI;
+import static frc.robot.Constants.Swerve.ANGLE_KP;
+import static frc.robot.Constants.Swerve.BL;
+import static frc.robot.Constants.Swerve.BR;
+import static frc.robot.Constants.Swerve.CAN_CODER_INVERT;
+import static frc.robot.Constants.Swerve.CENTER_TO_MODULE;
+import static frc.robot.Constants.Swerve.DRIVE_KD;
+import static frc.robot.Constants.Swerve.DRIVE_KI;
+import static frc.robot.Constants.Swerve.DRIVE_KP;
+import static frc.robot.Constants.Swerve.FL;
+import static frc.robot.Constants.Swerve.FR;
+import static frc.robot.Constants.Swerve.KINEMATICS;
+import static frc.robot.Constants.Swerve.MAX_SPEED;
+
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -11,7 +26,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -34,7 +53,6 @@ import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Here we can probably do some cleanup, main thing we can probably do here is separate
@@ -142,6 +160,14 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
+
+        // Most critical 6 lines of the robot, don't delete, without these it doesn't completly work for some reason
+        Commands.waitSeconds(3)
+                .andThen(Commands.runOnce(() -> {
+                    for (SwerveModule module : swerveModules) {
+                        module.resetToAbs();
+                    }
+                }).ignoringDisable(true)).schedule();
     }
 
     public void drive(
