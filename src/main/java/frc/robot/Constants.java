@@ -7,7 +7,13 @@
 
 package frc.robot;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.DoubleSupplier;
+import java.util.function.Function;
+
 import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -19,10 +25,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -217,8 +219,8 @@ public final class Constants {
         public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
 
         // TODO CONFIG
-        public static final double ROTATION_VELOCITY = Units.degreesToRadians(30);
-        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(60);
+        public static final double ROTATION_VELOCITY = Units.degreesToRadians(15);
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(30);
 
         public static final int ARM_ROT_LEADER = 16;
         public static final int ARM_ROT_FOLLOWER = 15;
@@ -230,8 +232,15 @@ public final class Constants {
 
         public static final double RAMP_RATE = 2;
 
+        public static final class FeedForwardConstants {
+            public static final double KS = 0.49212;
+            public static final double KV = 18.806;
+            public static final double KA = 5.9568;
+            public static final double KG = 3.4512;
+        }
+
         public static final class PidConstants { // TODO CONFIG
-            public static final double P = 0;
+            public static final double P = 0.016732/12; // 0.016732 from sysid
             public static final double I = 0;
             public static final double D = 0;
         }
@@ -239,11 +248,11 @@ public final class Constants {
         public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
 
         public static final class Positions {
-            public static final double INTAKE = 0;
-            public static final double TRANSIT_STAGE = 30;
-            public static final double TRANSIT_NORMAL = 60;
-            public static final double SCORE_AMP = 100;
-            public static final double SCORE_SPEAKER = 60;
+            public static final double INTAKE = Units.degreesToRadians(0);
+            public static final double TRANSIT_STAGE = Units.degreesToRadians(30);
+            public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
+            public static final double SCORE_AMP = Units.degreesToRadians(100);
+            public static final double SCORE_SPEAKER = Units.degreesToRadians(60);
         }
     }
 
@@ -326,7 +335,7 @@ public final class Constants {
         public static final CommandXboxController TEST_CONTROLLER =
                 TEST_CONTROLS ? new CommandXboxController(2) : null;
 
-        public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop).and(() -> false);
+        public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop).and(() -> true);
 
         public static final class SuperStructure {
             public static final class Intake {
@@ -356,7 +365,7 @@ public final class Constants {
             public static final class SysId {
                 public static final class Arm {
                     public static final Trigger enabled =
-                            TEST_CONTROLLER.povLeft().and(DriverStation::isTeleop);
+                            new Trigger(DriverStation::isTest);
                     public static final Trigger quasistaticFwd = enabled.and(TEST_CONTROLLER.y());
                     public static final Trigger quasistaticRev = enabled.and(TEST_CONTROLLER.x());
                     public static final Trigger dynamicFwd = enabled.and(TEST_CONTROLLER.b());

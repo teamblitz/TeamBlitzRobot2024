@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
@@ -13,6 +14,8 @@ import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.Arm.FeedForwardConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -26,10 +29,15 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
+    private final ArmFeedforward feedforward;
+
     private final SysIdRoutine routine;
 
     public Arm(ArmIO io) {
         this.io = io;
+
+        feedforward = new ArmFeedforward(
+                FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
 
         // Do this, but smarter
         Commands.waitSeconds(8)
@@ -71,7 +79,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         Logger.recordOutput("arm/wanted_rotation", degrees);
         io.setRotationSetpoint(
                 degrees,
-                0); // Don't do feed forward as we have no way to model this with the spring-loaded
+                feedforward.calculate(degrees, velocity));
         // arm
     }
 
@@ -130,10 +138,16 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         TrapezoidProfile.State goalState = new TrapezoidProfile.State(goal, 0);
 
         return runOnce(
-                        () ->
+                        () -> {
                                 lastState.set(
                                         new TrapezoidProfile.State(
-                                                inputs.rotation, inputs.armRotationSpeed)))
+                                                inputs.rotation, inputs.armRotationSpeed));
+                                
+                                profile.calculate(
+                                                    Robot.defaultPeriodSecs,
+                                                    lastState.get(),
+                                                    goalState);
+                        })
                 .andThen(
                         run(
                                 () -> {
@@ -142,9 +156,9 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                                     Robot.defaultPeriodSecs,
                                                     lastState.get(),
                                                     goalState);
+                                    lastState.set(setpoint);
                                     updateRotation(setpoint.position, setpoint.velocity);
-                                }))
-                .until(() -> profile.timeLeftUntil(goal) == 0)
+                                }).until(() -> profile.timeLeftUntil(goal) == 0))
                 .finallyDo(() -> updateRotation(goal, 0));
     }
 

@@ -80,7 +80,7 @@ public class ArmIOSpark implements ArmIO {
         inputs.bottomRotationLimit = armBottomLimitSwitch.get();
 
         inputs.encoderConnected = absRotationEncoder.isConnected();
-        inputs.volts = armRotLeader.get() * RobotController.getBatteryVoltage();
+        inputs.volts = armRotLeader.getBusVoltage() * armRotLeader.getAppliedOutput();
 
         inputs.rotationDeg = Units.radiansToDegrees(inputs.rotation);
     }
