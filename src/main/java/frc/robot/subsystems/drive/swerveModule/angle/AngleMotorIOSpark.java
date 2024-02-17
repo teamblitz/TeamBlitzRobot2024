@@ -49,7 +49,7 @@ public class AngleMotorIOSpark implements AngleMotorIO {
 
     @Override
     public void seedPosition(double position) {
-        encoder.setPosition(position);
+        encoder.setPosition(position - angleOffset.getDegrees());
     }
 
     private void configAngleMotor() {
