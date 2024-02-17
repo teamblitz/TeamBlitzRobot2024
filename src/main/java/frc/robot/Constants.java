@@ -213,7 +213,7 @@ public final class Constants {
         public static final double MIN_ROT = Units.degreesToRadians(0);
         public static final double MAX_ROT = Units.degreesToRadians(90);
 
-        public static final double STARTING_POS = 90;
+        public static final double STARTING_POS = 0.058; // 3.349 degrees,
         public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
 
         // TODO CONFIG
@@ -326,7 +326,7 @@ public final class Constants {
         public static final CommandXboxController TEST_CONTROLLER =
                 TEST_CONTROLS ? new CommandXboxController(2) : null;
 
-        public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop);
+        public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop).and(() -> false);
 
         public static final class SuperStructure {
             public static final class Intake {
@@ -356,7 +356,7 @@ public final class Constants {
             public static final class SysId {
                 public static final class Arm {
                     public static final Trigger enabled =
-                            TEST_CONTROLLER.povLeft().and(DriverStation::isTest);
+                            TEST_CONTROLLER.povLeft().and(DriverStation::isTeleop);
                     public static final Trigger quasistaticFwd = enabled.and(TEST_CONTROLLER.y());
                     public static final Trigger quasistaticRev = enabled.and(TEST_CONTROLLER.x());
                     public static final Trigger dynamicFwd = enabled.and(TEST_CONTROLLER.b());

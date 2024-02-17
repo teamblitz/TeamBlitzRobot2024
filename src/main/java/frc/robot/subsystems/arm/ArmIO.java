@@ -7,6 +7,7 @@ public interface ArmIO {
     @AutoLog
     public class ArmIOInputs {
         public double rotation;
+        public double rotationDeg;
         public double armRotationSpeed;
         public double absArmRot;
 

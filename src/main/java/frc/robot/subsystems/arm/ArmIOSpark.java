@@ -3,6 +3,7 @@ package frc.robot.subsystems.arm;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
@@ -30,8 +31,8 @@ public class ArmIOSpark implements ArmIO {
         armRotLeader.restoreFactoryDefaults();
         armRotFollower.restoreFactoryDefaults();
 
-        armRotLeader.setIdleMode(CANSparkBase.IdleMode.kCoast);
-        armRotFollower.setIdleMode(CANSparkBase.IdleMode.kCoast);
+        armRotLeader.setIdleMode(IdleMode.kBrake);
+        armRotFollower.setIdleMode(IdleMode.kBrake);
 
         armRotLeader.setOpenLoopRampRate(Arm.RAMP_RATE);
         armRotFollower.setOpenLoopRampRate(Arm.RAMP_RATE);
@@ -80,6 +81,8 @@ public class ArmIOSpark implements ArmIO {
 
         inputs.encoderConnected = absRotationEncoder.isConnected();
         inputs.volts = armRotLeader.get() * RobotController.getBatteryVoltage();
+
+        inputs.rotationDeg = Units.radiansToDegrees(inputs.rotation);
     }
 
     /** Updates the arm position setpoint. */
@@ -100,6 +103,7 @@ public class ArmIOSpark implements ArmIO {
 
     @Override
     public void setArmVolts(double volts) {
+        System.out.println(volts);
         armRotLeader.setVoltage(volts);
     }
 
