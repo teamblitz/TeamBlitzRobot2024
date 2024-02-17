@@ -47,6 +47,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                         new SysIdRoutine.Config(null, Volts.of(5), null, null),
                         new SysIdRoutine.Mechanism(
                                 (Measure<Voltage> volts) -> {
+                                    System.out.println(volts.baseUnitMagnitude());
                                     io.setArmVolts(volts.in(Volts));
                                 },
                                 log -> {
@@ -158,8 +159,8 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         return routine.dynamic(direction);
     }
 
-    public Command brakeCommand() {
-        return Commands.startEnd(() -> io.setBrake(true), () -> io.setBrake(false)).ignoringDisable(true);
+    public Command coastCommand() {
+        return Commands.startEnd(() -> io.setBrake(false), () -> io.setBrake(true)).ignoringDisable(true);
     }
 
 }

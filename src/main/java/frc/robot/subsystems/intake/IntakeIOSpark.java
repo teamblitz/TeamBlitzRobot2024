@@ -1,6 +1,9 @@
 package frc.robot.subsystems.intake;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+
 import com.revrobotics.CANSparkMax;
 import frc.robot.Constants;
 
@@ -8,8 +11,11 @@ public class IntakeIOSpark implements IntakeIO {
 
     private final CANSparkMax motor;
 
+    private final DigitalInput breakBeamSensor;
+
     public IntakeIOSpark() {
         motor = new CANSparkMax(Constants.Intake.Spark.MOTOR_ID, MotorType.kBrushless);
+        breakBeamSensor = new DigitalInput(0);
 
         motor.restoreFactoryDefaults();
         motor.setSmartCurrentLimit(Constants.Intake.CURRENT_LIMIT);

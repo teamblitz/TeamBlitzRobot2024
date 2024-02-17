@@ -195,15 +195,15 @@ public class RobotContainer {
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
         OIConstants.TestMode.SysId.Arm.quasistaticFwd.whileTrue(
-                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("ArmQuasFwd")));
         OIConstants.TestMode.SysId.Arm.quasistaticRev.whileTrue(
-                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("ArmQuasRev")));
         OIConstants.TestMode.SysId.Arm.dynamicFwd.whileTrue(
-                arm.sysIdDynamic(SysIdRoutine.Direction.kForward));
+                arm.sysIdDynamic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("ArmDynamicFwd")));
         OIConstants.TestMode.SysId.Arm.dynamicRev.whileTrue(
-                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("ArmDynamicRev")));
 
-        new Trigger(RobotController::getUserButton).toggleOnTrue(arm.brakeCommand());
+        new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
