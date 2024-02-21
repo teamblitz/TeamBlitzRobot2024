@@ -233,14 +233,14 @@ public final class Constants {
         public static final double RAMP_RATE = 2;
 
         public static final class FeedForwardConstants {
-            public static final double KS = 0.49212;
-            public static final double KV = 18.806;
-            public static final double KA = 5.9568;
-            public static final double KG = 3.4512;
+            public static final double KS = 0.41881;
+            public static final double KV = 2.4974;
+            public static final double KA = 1.4009;
+            public static final double KG = 0.92004;
         }
 
         public static final class PidConstants { // TODO CONFIG
-            public static final double P = 0.016732/12; // 0.016732 from sysid
+            public static final double P = 0.19905; // 0.19905 from sysid
             public static final double I = 0;
             public static final double D = 0;
         }

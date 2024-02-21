@@ -52,20 +52,21 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
         routine =
                 new SysIdRoutine(
-                        new SysIdRoutine.Config(null, Volts.of(5), null, null),
+                        new SysIdRoutine.Config(null, Volts.of(5), null, (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (Measure<Voltage> volts) -> {
                                     System.out.println(volts.baseUnitMagnitude());
                                     io.setArmVolts(volts.in(Volts));
                                 },
-                                log -> {
-                                    // Record a frame for the shooter motor.
-                                    log.motor("arm")
-                                            .voltage(Volts.of(inputs.volts))
-                                            .angularPosition(Radians.of(inputs.rotation))
-                                            .angularVelocity(
-                                                    RadiansPerSecond.of(inputs.armRotationSpeed));
-                                },
+//                                log -> {
+//                                    // Record a frame for the shooter motor.
+//                                    log.motor("arm")
+//                                            .voltage(Volts.of(inputs.volts))
+//                                            .angularPosition(Radians.of(inputs.rotation))
+//                                            .angularVelocity(
+//                                                    RadiansPerSecond.of(inputs.armRotationSpeed));
+//                                },
+                                null, // No log consumer, since data is recorded by URCL
                                 this));
     }
 
