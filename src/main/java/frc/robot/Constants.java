@@ -115,7 +115,7 @@ public final class Constants {
         public static final double CLOSED_LOOP_RAMP = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_KP = 0.003;
+        public static final double ANGLE_KP = 0.002;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
         public static final double ANGLE_KF = 0.0; // For now, should remain zero
@@ -215,12 +215,12 @@ public final class Constants {
         public static final double MIN_ROT = Units.degreesToRadians(0);
         public static final double MAX_ROT = Units.degreesToRadians(90);
 
-        public static final double STARTING_POS = 0.058; // 3.349 degrees,
+        public static final double STARTING_POS = 0.00; // 3.349 degrees,
         public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
 
         // TODO CONFIG
-        public static final double ROTATION_VELOCITY = Units.degreesToRadians(15);
-        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(30);
+        public static final double ROTATION_VELOCITY = Units.degreesToRadians(120);
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(240);
 
         public static final int ARM_ROT_LEADER = 16;
         public static final int ARM_ROT_FOLLOWER = 15;
@@ -240,8 +240,8 @@ public final class Constants {
         }
 
         public static final class PidConstants { // TODO CONFIG
-            public static final double P = 0.19905; // 0.19905 from sysid
-            public static final double I = 0;
+            public static final double P = 0.3; // 0.19905 from sysid
+            public static final double I = .0002;
             public static final double D = 0;
         }
 
