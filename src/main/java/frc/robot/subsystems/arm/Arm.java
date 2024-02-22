@@ -40,7 +40,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                 FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
 
         // Do this, but smarter
-        Commands.waitSeconds(8)
+        Commands.waitSeconds(5)
                 .andThen(io::seedArmPosition)
                 .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
                 // loop
@@ -81,7 +81,6 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         io.setRotationSetpoint(
                 degrees,
                 feedforward.calculate(degrees, velocity));
-        // arm
     }
 
     public double getRotation() {
@@ -96,38 +95,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         io.setArmSpeed(percent);
     }
 
-    public Command rotateToCommandOld(double degrees) {
-        double goal = MathUtil.clamp(degrees, Constants.Arm.MIN_ROT, Constants.Arm.MAX_ROT);
-
-        MutableReference<TrapezoidProfile> profile = new MutableReference<>();
-        Timer timer = new Timer();
-
-        return runOnce(
-                        () -> {
-                            profile.set(
-                                    new TrapezoidProfile(
-                                            new TrapezoidProfile.Constraints(
-                                                    Constants.Arm.ROTATION_VELOCITY,
-                                                    Constants.Arm.ROTATION_ACCELERATION),
-                                            new TrapezoidProfile.State(goal, 0),
-                                            new TrapezoidProfile.State(
-                                                    getRotation(), getRotationSpeed())));
-                            timer.restart();
-                        })
-                .andThen(
-                        run(
-                                () -> {
-                                    TrapezoidProfile.State setpoint =
-                                            profile.get().calculate(timer.get());
-                                    updateRotation(setpoint.position, setpoint.velocity);
-                                }))
-                .until(() -> profile.get().isFinished(timer.get()))
-                .finallyDo(
-                        (interrupted) ->
-                                updateRotation(profile.get().calculate(timer.get()).position, 0));
-    }
-
-    public Command rotateToCommand(double goal) {
+    public Command rotateToCommand(double goal, boolean endAutomaticaly) {
         TrapezoidProfile profile =
                 new TrapezoidProfile(
                         new TrapezoidProfile.Constraints(
@@ -157,10 +125,15 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                                     Robot.defaultPeriodSecs,
                                                     lastState.get(),
                                                     goalState);
+//                                    lastState.set(new TrapezoidProfile.State(
+//                                            inputs.rotation, inputs.armRotationSpeed));
                                     lastState.set(setpoint);
                                     updateRotation(setpoint.position, setpoint.velocity);
-                                }).until(() -> profile.timeLeftUntil(goal) == 0))
-                .finallyDo(() -> updateRotation(goal, 0));
+                                }).until(() -> profile.timeLeftUntil(goal) == 0 && endAutomaticaly))
+                .finallyDo((interrupted) -> {
+                    if (!interrupted) updateRotation(goal, 0);
+                    else if (interrupted) updateRotation(lastState.get().position, 0);
+                });
     }
 
     /* SYSID STUFF */

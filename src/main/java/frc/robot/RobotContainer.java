@@ -112,6 +112,8 @@ public class RobotContainer {
                         () -> false,
                         () -> driveController.getPOV()));
 
+        arm.setDefaultCommand(arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_NORMAL, false));
+
         new Trigger(() -> Math.abs(OIConstants.armSpeed.getAsDouble()) > .08)
                 .whileTrue(
                         Commands.run(
@@ -187,10 +189,10 @@ public class RobotContainer {
         OIConstants.SuperStructure.Shooter.shooterAmp.whileTrue(shooter.shootCommand());
         OIConstants.SuperStructure.Shooter.shooterRev.whileTrue(shooter.reverseCommand());
 
-        OIConstants.SuperStructure.Arm.PRIME_INTAKE.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.INTAKE));
-        OIConstants.SuperStructure.Arm.PRIME_TRANSIT_STAGE.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE));
-        OIConstants.SuperStructure.Arm.PRIME_SCORE_SPEAKER.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER));
-        OIConstants.SuperStructure.Arm.PRIME_SCORE_AMP.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP));
+        OIConstants.SuperStructure.Arm.PRIME_INTAKE.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false).alongWith(intake.intakeCommand()));
+        OIConstants.SuperStructure.Arm.PRIME_TRANSIT_STAGE.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
+        OIConstants.SuperStructure.Arm.PRIME_SCORE_SPEAKER.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, false).alongWith(shooter.shootCommand()));
+        OIConstants.SuperStructure.Arm.PRIME_SCORE_AMP.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());

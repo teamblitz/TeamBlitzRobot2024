@@ -240,15 +240,15 @@ public final class Constants {
         }
 
         public static final class PidConstants { // TODO CONFIG
-            public static final double P = 0.3; // 0.19905 from sysid
-            public static final double I = .0002;
+            public static final double P = 1.1; // 0.19905 from sysid
+            public static final double I = 0;
             public static final double D = 0;
         }
 
         public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
 
         public static final class Positions {
-            public static final double INTAKE = Units.degreesToRadians(0);
+            public static final double INTAKE = Units.degreesToRadians(-2);
             public static final double TRANSIT_STAGE = Units.degreesToRadians(30);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
             public static final double SCORE_AMP = Units.degreesToRadians(100);
