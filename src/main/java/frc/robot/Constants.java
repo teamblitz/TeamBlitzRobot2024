@@ -122,22 +122,20 @@ public final class Constants {
 
         /* Drive Motor PID Values */
         /*
-         * Some posible gains for kp
-         * 0.0012347 60s denominator, don't convert (possible)
-         * 0.074084 1s denominator, don't convert] (high)
-         *
-         * I for some reason don't trust this one
-         * 0.00063245 60s denominator, do convert 6.12 : 1
+         * Some possible gains for kp
+         * kp : 0.0016 or more likely 0.028215
+         * try both or else just guess and check ig
+         * .06 something might, but that is quite high
          */
-        public static final double DRIVE_KP = 0.0012347;
+        public static final double DRIVE_KP = 0.028215;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;
         public static final double DRIVE_KF = 0.0; // Same here.
 
         /* Drive Motor Characterization Values in volts*/
-        public static final double DRIVE_KS = (0.19983);
-        public static final double DRIVE_KV = (2.3923);
-        public static final double DRIVE_KA = (0.47987);
+        public static final double DRIVE_KS = (0.19714);
+        public static final double DRIVE_KV = (2.6198);
+        public static final double DRIVE_KA = (0.59488);
 
         /* Drive Profiling Values */
         /** Meters per Second */
