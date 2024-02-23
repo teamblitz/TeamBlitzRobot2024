@@ -2,6 +2,8 @@
 
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Swerve.ANGLE_KD;
 import static frc.robot.Constants.Swerve.ANGLE_KI;
 import static frc.robot.Constants.Swerve.ANGLE_KP;
@@ -17,6 +19,10 @@ import static frc.robot.Constants.Swerve.FR;
 import static frc.robot.Constants.Swerve.KINEMATICS;
 import static frc.robot.Constants.Swerve.MAX_SPEED;
 
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -100,6 +106,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     private final PIDController keepHeadingPid;
     private final ProfiledPIDController rotateToHeadingPid;
 
+    private SysIdRoutine routine;
+
     public Drive(
             SwerveModuleConfiguration configuration,
             SwerveModuleConstants flConstants,
@@ -156,7 +164,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         new Trigger(DriverStation::isAutonomousEnabled)
                 .onTrue(Commands.runOnce(() -> gyroIO.preMatchZero(180)).ignoringDisable(true));
 
-        gyroIO.preMatchZero(180);
+        gyroIO.preMatchZero(0);
 
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
@@ -168,6 +176,21 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                         module.resetToAbs();
                     }
                 }).ignoringDisable(true)).schedule();
+
+
+        // Creates a SysIdRoutine
+        routine = new SysIdRoutine(
+                new SysIdRoutine.Config(null, null, Seconds.of(5), (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                new SysIdRoutine.Mechanism((volts) -> {
+                    drive(
+                            new Translation2d(volts.in(Units.Volts)/12.0, 0).times(Constants.Swerve.MAX_SPEED),
+                            0,
+                            false,
+                            true,
+                            true
+                    );
+                }, null, this)
+        );
     }
 
     public void drive(
@@ -441,5 +464,14 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                             swerveModules[3].zeroAbsEncoders();
                         })
                 .ignoringDisable(true);
+    }
+
+    // Something something super class???
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction);
     }
 }

@@ -364,12 +364,21 @@ public final class Constants {
 
             public static final class SysId {
                 public static final class Arm {
-                    public static final Trigger enabled =
-                            new Trigger(DriverStation::isTest);
-                    public static final Trigger quasistaticFwd = enabled.and(TEST_CONTROLLER.y());
-                    public static final Trigger quasistaticRev = enabled.and(TEST_CONTROLLER.x());
-                    public static final Trigger dynamicFwd = enabled.and(TEST_CONTROLLER.b());
-                    public static final Trigger dynamicRev = enabled.and(TEST_CONTROLLER.a());
+                    public static final Trigger armTest =
+                            new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povLeft());
+                    public static final Trigger quasistaticFwd = armTest.and(TEST_CONTROLLER.y());
+                    public static final Trigger quasistaticRev = armTest.and(TEST_CONTROLLER.x());
+                    public static final Trigger dynamicFwd = armTest.and(TEST_CONTROLLER.b());
+                    public static final Trigger dynamicRev = armTest.and(TEST_CONTROLLER.a());
+                }
+
+                public static final class Drive {
+                    public static final Trigger driveTest =
+                            new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povDown());
+                    public static final Trigger quasistaticFwd = driveTest.and(TEST_CONTROLLER.y());
+                    public static final Trigger quasistaticRev = driveTest.and(TEST_CONTROLLER.x());
+                    public static final Trigger dynamicFwd = driveTest.and(TEST_CONTROLLER.b());
+                    public static final Trigger dynamicRev = driveTest.and(TEST_CONTROLLER.a());
                 }
             }
         }

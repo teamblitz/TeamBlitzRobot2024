@@ -205,6 +205,16 @@ public class RobotContainer {
         OIConstants.TestMode.SysId.Arm.dynamicRev.whileTrue(
                 arm.sysIdDynamic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("ArmDynamicRev")));
 
+        OIConstants.TestMode.SysId.Drive.quasistaticFwd.whileTrue(
+                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("DriveQuasFwd")));
+        OIConstants.TestMode.SysId.Drive.quasistaticRev.whileTrue(
+                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("DriveQuasRev")));
+        OIConstants.TestMode.SysId.Drive.dynamicFwd.whileTrue(
+                drive.sysIdDynamic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("DriveDynamicFwd")));
+        OIConstants.TestMode.SysId.Drive.dynamicRev.whileTrue(
+                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("DriveDynamicRev")));
+
+
         new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
     }
 
