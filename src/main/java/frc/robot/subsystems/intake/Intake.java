@@ -33,4 +33,8 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     public Command ejectCommand() {
         return startEnd(this::eject, this::stop);
     }
+
+    public Command setSpeedCommand(double speed) {
+         return startEnd(() -> io.set(speed), this::stop);
+    }
 }

@@ -17,7 +17,12 @@ public class ShooterIOVictor implements ShooterIO {
 
     @Override
     public void setPercent(double speed) {
+        System.out.println("Shooter: " + speed);
         top.set(speed);
         bottom.set(speed);
+    }
+
+    @Override
+    public void updateInputs(ShooterIOInputs inputs) {
     }
 }

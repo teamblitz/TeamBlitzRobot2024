@@ -10,6 +10,9 @@ public interface ShooterIO {
         public double rpmBottom;
         public double currentTop;
         public double currentBottom;
+
+        public double appliedTop;
+        public double appliedBottom;
     }
 
     public default void updateInputs(ShooterIOInputs inputs) {}

@@ -205,12 +205,12 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .alongWith(intake.intakeCommand())
+                        .alongWith(intake.setSpeedCommand(.5))
         );
 
         NamedCommands.registerCommand(
                 "readyShoot",
-                intake.ejectCommand().withTimeout(.15);
+                intake.setSpeedCommand(-.4).alongWith(shooter.reverseCommand()).withTimeout(.5).alongWith(Commands.print("[Auto] readyShoot"))
         );
 
 
