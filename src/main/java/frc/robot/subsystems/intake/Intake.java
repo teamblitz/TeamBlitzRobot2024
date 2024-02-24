@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void eject() {
-        io.set(-0.4);
+        io.set(-0.3);
     }
 
     public void stop() {

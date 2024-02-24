@@ -24,7 +24,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void reverse() {
-        io.setPercent(-0.4);
+        io.setPercent(-0.3);
     }
 
     public void stop() {
