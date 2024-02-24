@@ -3,7 +3,6 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.Swerve.ANGLE_KD;
 import static frc.robot.Constants.Swerve.ANGLE_KI;
 import static frc.robot.Constants.Swerve.ANGLE_KP;
@@ -19,8 +18,8 @@ import static frc.robot.Constants.Swerve.FR;
 import static frc.robot.Constants.Swerve.KINEMATICS;
 import static frc.robot.Constants.Swerve.MAX_SPEED;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
@@ -190,6 +189,17 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                             true
                     );
                 }, null, this)
+        );
+
+        AutoBuilder.configureHolonomic(
+                this::getPose,
+                this::resetOdometry,
+                () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
+                (states) ->
+                        setModuleStates(KINEMATICS.toSwerveModuleStates(states), false, false, false),
+                Constants.AutoConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
+                () -> true,
+                this
         );
     }
 

@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -309,6 +312,16 @@ public final class Constants {
                 new TrapezoidProfile.Constraints(
                         MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
                         MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND_SQUARED);
+
+        public static final double MAX_MODULE_SPEED = 3; // M/S
+
+        public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
+                new PIDConstants(PX_CONTROLLER, 0, 0), // Translation constants
+                new PIDConstants(P_THETA_CONTROLLER, 0, 0), // Rotation constants
+                MAX_MODULE_SPEED,
+                Swerve.CENTER_TO_MODULE.get(Swerve.FL).getNorm(), // Drive base radius (distance from center to furthest module)
+                new ReplanningConfig()
+        );
     }
 
     // TODO: Calculate needed deadband for controller (should be like 6% or less)
