@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.AutoConstants.StartingPos;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSpark;
@@ -78,6 +79,10 @@ public class RobotContainer {
         SmartDashboard.putData("Autonomous Choices", autoChooser);
 
         startingPositionChooser = new SendableChooser<>();
+        startingPositionChooser.setDefaultOption("Center", StartingPos.Center);
+        startingPositionChooser.addOption("Left", StartingPos.Left);
+        startingPositionChooser.addOption("Right", StartingPos.Right);
+
         SmartDashboard.putData("StaringPos", startingPositionChooser);
     }
 

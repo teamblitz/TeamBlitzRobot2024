@@ -325,8 +325,8 @@ public final class Constants {
                         new ReplanningConfig());
 
         public enum StartingPos {
-            Left(45),
-            Right(-45),
+            Left(60),
+            Right(-60),
             Center(0);
 
             public final double angle;
