@@ -2,11 +2,9 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.RobotController;
 import frc.lib.math.Angles;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;

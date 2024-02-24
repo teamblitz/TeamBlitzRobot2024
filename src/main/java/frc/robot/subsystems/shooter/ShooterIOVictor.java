@@ -23,6 +23,5 @@ public class ShooterIOVictor implements ShooterIO {
     }
 
     @Override
-    public void updateInputs(ShooterIOInputs inputs) {
-    }
+    public void updateInputs(ShooterIOInputs inputs) {}
 }

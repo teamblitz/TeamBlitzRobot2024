@@ -19,11 +19,6 @@ import static frc.robot.Constants.Swerve.KINEMATICS;
 import static frc.robot.Constants.Swerve.MAX_SPEED;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -38,6 +33,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -49,8 +45,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.SwerveModuleConstants;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
@@ -58,6 +56,7 @@ import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Here we can probably do some cleanup, main thing we can probably do here is separate
@@ -159,47 +158,60 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         rotateToHeadingPid.enableContinuousInput(-180, 180);
         initTelemetry();
 
-
         gyroIO.preMatchZero(0);
 
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
 
-        // Most critical 6 lines of the robot, don't delete, without these it doesn't completly work for some reason
+        // Most critical 6 lines of the robot, don't delete, without these it doesn't completly work
+        // for some reason
         Commands.waitSeconds(3)
-                .andThen(Commands.runOnce(() -> {
-                    for (SwerveModule module : swerveModules) {
-                        module.resetToAbs();
-                    }
-                }).ignoringDisable(true)).schedule();
-
+                .andThen(
+                        Commands.runOnce(
+                                        () -> {
+                                            for (SwerveModule module : swerveModules) {
+                                                module.resetToAbs();
+                                            }
+                                        })
+                                .ignoringDisable(true))
+                .schedule();
 
         // Creates a SysIdRoutine
-        routine = new SysIdRoutine(
-                new SysIdRoutine.Config(null, null, Seconds.of(5), (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
-                new SysIdRoutine.Mechanism((volts) -> {
-                    drive(
-                            new Translation2d(volts.in(Units.Volts)/12.0, 0).times(Constants.Swerve.MAX_SPEED),
-                            0,
-                            false,
-                            true,
-                            true
-                    );
-                }, null, this)
-        );
+        routine =
+                new SysIdRoutine(
+                        new SysIdRoutine.Config(
+                                null,
+                                null,
+                                Seconds.of(5),
+                                (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                        new SysIdRoutine.Mechanism(
+                                (volts) -> {
+                                    drive(
+                                            new Translation2d(volts.in(Units.Volts) / 12.0, 0)
+                                                    .times(Constants.Swerve.MAX_SPEED),
+                                            0,
+                                            false,
+                                            true,
+                                            true);
+                                },
+                                null,
+                                this));
 
         AutoBuilder.configureHolonomic(
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
                 (states) ->
-                        setModuleStates(KINEMATICS.toSwerveModuleStates(states), false, false, false),
+                        setModuleStates(
+                                KINEMATICS.toSwerveModuleStates(states), false, false, false),
                 Constants.AutoConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
-                () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red),
-                this
-        );
+                () ->
+                        DriverStation.getAlliance().isPresent()
+                                && DriverStation.getAlliance()
+                                        .get()
+                                        .equals(DriverStation.Alliance.Red),
+                this);
     }
-
 
     public void drive(
             Translation2d translation,

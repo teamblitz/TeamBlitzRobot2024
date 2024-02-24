@@ -12,10 +12,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,7 +59,6 @@ public class RobotContainer {
     // *** Must match with path names in pathplanner folder ***
     private final SendableChooser<Command> autoChooser;
 
-
     private final SendableChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
 
     public RobotContainer() {
@@ -80,12 +77,9 @@ public class RobotContainer {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Autonomous Choices", autoChooser);
 
-
         startingPositionChooser = new SendableChooser<>();
-        SmartDashboard.putData("StaringPos" startingPositionChooser);
-
+        SmartDashboard.putData("StaringPos", startingPositionChooser);
     }
-
 
     private final SlewRateLimiter driveMultiplierLimiter = new SlewRateLimiter(.25);
 
@@ -98,6 +92,7 @@ public class RobotContainer {
             return driveMultiplierLimiter.calculate(.60);
         }
     }
+
     private void setDefaultCommands() {
         drive.setDefaultCommand(
                 new TeleopSwerve(
@@ -171,31 +166,44 @@ public class RobotContainer {
         OIConstants.SuperStructure.Shooter.shooterAmp.whileTrue(shooter.shootCommand());
         OIConstants.SuperStructure.Shooter.shooterRev.whileTrue(shooter.reverseCommand());
 
-        OIConstants.SuperStructure.Arm.PRIME_INTAKE.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false).alongWith(intake.intakeCommand()));
-        OIConstants.SuperStructure.Arm.PRIME_TRANSIT_STAGE.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
-        OIConstants.SuperStructure.Arm.PRIME_SCORE_SPEAKER.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, false).alongWith(shooter.shootCommand()));
-        OIConstants.SuperStructure.Arm.PRIME_SCORE_AMP.whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
+        OIConstants.SuperStructure.Arm.PRIME_INTAKE.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
+                        .alongWith(intake.intakeCommand()));
+        OIConstants.SuperStructure.Arm.PRIME_TRANSIT_STAGE.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
+        OIConstants.SuperStructure.Arm.PRIME_SCORE_SPEAKER.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, false)
+                        .alongWith(shooter.shootCommand()));
+        OIConstants.SuperStructure.Arm.PRIME_SCORE_AMP.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
         OIConstants.TestMode.SysId.Arm.quasistaticFwd.whileTrue(
-                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("ArmQuasFwd")));
+                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .beforeStarting(Commands.print("ArmQuasFwd")));
         OIConstants.TestMode.SysId.Arm.quasistaticRev.whileTrue(
-                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("ArmQuasRev")));
+                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .beforeStarting(Commands.print("ArmQuasRev")));
         OIConstants.TestMode.SysId.Arm.dynamicFwd.whileTrue(
-                arm.sysIdDynamic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("ArmDynamicFwd")));
+                arm.sysIdDynamic(SysIdRoutine.Direction.kForward)
+                        .beforeStarting(Commands.print("ArmDynamicFwd")));
         OIConstants.TestMode.SysId.Arm.dynamicRev.whileTrue(
-                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("ArmDynamicRev")));
+                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+                        .beforeStarting(Commands.print("ArmDynamicRev")));
 
         OIConstants.TestMode.SysId.Drive.quasistaticFwd.whileTrue(
-                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("DriveQuasFwd")));
+                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+                        .beforeStarting(Commands.print("DriveQuasFwd")));
         OIConstants.TestMode.SysId.Drive.quasistaticRev.whileTrue(
-                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("DriveQuasRev")));
+                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+                        .beforeStarting(Commands.print("DriveQuasRev")));
         OIConstants.TestMode.SysId.Drive.dynamicFwd.whileTrue(
-                drive.sysIdDynamic(SysIdRoutine.Direction.kForward).beforeStarting(Commands.print("DriveDynamicFwd")));
+                drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
+                        .beforeStarting(Commands.print("DriveDynamicFwd")));
         OIConstants.TestMode.SysId.Drive.dynamicRev.whileTrue(
-                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse).beforeStarting(Commands.print("DriveDynamicRev")));
-
+                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+                        .beforeStarting(Commands.print("DriveDynamicRev")));
 
         new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
     }
@@ -204,33 +212,27 @@ public class RobotContainer {
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
-                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, true).alongWith(Commands.waitSeconds(1))
+                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, true)
+                        .alongWith(Commands.waitSeconds(1))
                         .andThen(intake.intakeCommand().withTimeout(.5))
-                        .raceWith(shooter.shootCommand())
-        );
+                        .raceWith(shooter.shootCommand()));
 
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .alongWith(intake.setSpeedCommand(.5))
-        );
+                        .alongWith(intake.setSpeedCommand(.5)));
 
         NamedCommands.registerCommand(
                 "readyShoot",
-                intake.setSpeedCommand(-.4).alongWith(shooter.reverseCommand()).withTimeout(.5).alongWith(Commands.print("[Auto] readyShoot"))
-        );
-
-
-
+                intake.setSpeedCommand(-.4)
+                        .alongWith(shooter.reverseCommand())
+                        .withTimeout(.5)
+                        .alongWith(Commands.print("[Auto] readyShoot")));
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
-        return
-                Commands.runOnce(
-                        () -> drive.setGyro(startingPositionChooser.getSelected().angle)
-                ).andThen(
-                        autoChooser.getSelected()
-                );
+        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.getSelected().angle))
+                .andThen(autoChooser.getSelected());
     }
 }

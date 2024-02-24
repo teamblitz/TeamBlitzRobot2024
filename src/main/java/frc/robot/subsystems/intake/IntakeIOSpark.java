@@ -1,10 +1,8 @@
 package frc.robot.subsystems.intake;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
 public class IntakeIOSpark implements IntakeIO {

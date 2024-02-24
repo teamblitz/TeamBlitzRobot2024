@@ -7,16 +7,10 @@
 
 package frc.robot;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
-
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -28,6 +22,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -315,13 +313,16 @@ public final class Constants {
 
         public static final double MAX_MODULE_SPEED = 3; // M/S
 
-        public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
-                new PIDConstants(PX_CONTROLLER, 0, 0), // Translation constants
-                new PIDConstants(P_THETA_CONTROLLER, 0, 0), // Rotation constants
-                MAX_MODULE_SPEED,
-                Swerve.CENTER_TO_MODULE.get(Swerve.FL).getNorm(), // Drive base radius (distance from center to furthest module)
-                new ReplanningConfig()
-        );
+        public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG =
+                new HolonomicPathFollowerConfig(
+                        new PIDConstants(PX_CONTROLLER, 0, 0), // Translation constants
+                        new PIDConstants(P_THETA_CONTROLLER, 0, 0), // Rotation constants
+                        MAX_MODULE_SPEED,
+                        Swerve.CENTER_TO_MODULE
+                                .get(Swerve.FL)
+                                .getNorm(), // Drive base radius (distance from center to furthest
+                        // module)
+                        new ReplanningConfig());
 
         public enum StartingPos {
             Left(45),
@@ -333,7 +334,7 @@ public final class Constants {
             private StartingPos(double angle) {
                 this.angle = angle;
             }
-            }
+        }
     }
 
     // TODO: Calculate needed deadband for controller (should be like 6% or less)
@@ -365,6 +366,7 @@ public final class Constants {
                 public static final Trigger intakeFwd = OPERATOR_CONTROLLER.leftBumper();
                 public static final Trigger intakeRev = OPERATOR_CONTROLLER.leftTrigger();
             }
+
             public static final class Shooter {
 
                 public static final Trigger shooterSpeaker = OPERATOR_CONTROLLER.rightBumper();
@@ -374,10 +376,11 @@ public final class Constants {
 
             public static final class Arm {
                 public static final Trigger PRIME_INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a());
-                public static final Trigger PRIME_TRANSIT_STAGE = TELEOP.and(OPERATOR_CONTROLLER.b());
-                public static final Trigger PRIME_SCORE_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.y());
+                public static final Trigger PRIME_TRANSIT_STAGE =
+                        TELEOP.and(OPERATOR_CONTROLLER.b());
+                public static final Trigger PRIME_SCORE_SPEAKER =
+                        TELEOP.and(OPERATOR_CONTROLLER.y());
                 public static final Trigger PRIME_SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
-
             }
         }
 

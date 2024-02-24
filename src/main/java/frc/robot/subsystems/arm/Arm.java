@@ -2,23 +2,18 @@ package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.Arm.FeedForwardConstants;
-
+import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
-
-import com.revrobotics.CANSparkBase.IdleMode;
 
 /**
  * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
@@ -36,8 +31,9 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     public Arm(ArmIO io) {
         this.io = io;
 
-        feedforward = new ArmFeedforward(
-                FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
+        feedforward =
+                new ArmFeedforward(
+                        FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
 
         // Do this, but smarter
         Commands.waitSeconds(5)
@@ -52,20 +48,28 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
         routine =
                 new SysIdRoutine(
-                        new SysIdRoutine.Config(null, Volts.of(5), null, (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
+                        new SysIdRoutine.Config(
+                                null,
+                                Volts.of(5),
+                                null,
+                                (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
                         new SysIdRoutine.Mechanism(
                                 (Measure<Voltage> volts) -> {
                                     System.out.println(volts.baseUnitMagnitude());
                                     io.setArmVolts(volts.in(Volts));
                                 },
-//                                log -> {
-//                                    // Record a frame for the shooter motor.
-//                                    log.motor("arm")
-//                                            .voltage(Volts.of(inputs.volts))
-//                                            .angularPosition(Radians.of(inputs.rotation))
-//                                            .angularVelocity(
-//                                                    RadiansPerSecond.of(inputs.armRotationSpeed));
-//                                },
+                                //                                log -> {
+                                //                                    // Record a frame for the
+                                // shooter motor.
+                                //                                    log.motor("arm")
+                                //
+                                // .voltage(Volts.of(inputs.volts))
+                                //
+                                // .angularPosition(Radians.of(inputs.rotation))
+                                //                                            .angularVelocity(
+                                //
+                                // RadiansPerSecond.of(inputs.armRotationSpeed));
+                                //                                },
                                 null, // No log consumer, since data is recorded by URCL
                                 this));
     }
@@ -78,9 +82,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
     public void updateRotation(double degrees, double velocity) {
         Logger.recordOutput("arm/wanted_rotation", degrees);
-        io.setRotationSetpoint(
-                degrees,
-                feedforward.calculate(degrees, velocity));
+        io.setRotationSetpoint(degrees, feedforward.calculate(degrees, velocity));
     }
 
     public double getRotation() {
@@ -108,32 +110,32 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
         return runOnce(
                         () -> {
-                                lastState.set(
-                                        new TrapezoidProfile.State(
-                                                inputs.rotation, inputs.armRotationSpeed));
-                                
-                                profile.calculate(
-                                                    Robot.defaultPeriodSecs,
-                                                    lastState.get(),
-                                                    goalState);
+                            lastState.set(
+                                    new TrapezoidProfile.State(
+                                            inputs.rotation, inputs.armRotationSpeed));
+
+                            profile.calculate(Robot.defaultPeriodSecs, lastState.get(), goalState);
                         })
                 .andThen(
-                        run(
-                                () -> {
+                        run(() -> {
                                     TrapezoidProfile.State setpoint =
                                             profile.calculate(
                                                     Robot.defaultPeriodSecs,
                                                     lastState.get(),
                                                     goalState);
-//                                    lastState.set(new TrapezoidProfile.State(
-//                                            inputs.rotation, inputs.armRotationSpeed));
+                                    //                                    lastState.set(new
+                                    // TrapezoidProfile.State(
+                                    //                                            inputs.rotation,
+                                    // inputs.armRotationSpeed));
                                     lastState.set(setpoint);
                                     updateRotation(setpoint.position, setpoint.velocity);
-                                }).until(() -> profile.timeLeftUntil(goal) == 0 && endAutomaticaly))
-                .finallyDo((interrupted) -> {
-                    if (!interrupted) updateRotation(goal, 0);
-                    else if (interrupted) updateRotation(lastState.get().position, 0);
-                });
+                                })
+                                .until(() -> profile.timeLeftUntil(goal) == 0 && endAutomaticaly))
+                .finallyDo(
+                        (interrupted) -> {
+                            if (!interrupted) updateRotation(goal, 0);
+                            else if (interrupted) updateRotation(lastState.get().position, 0);
+                        });
     }
 
     /* SYSID STUFF */
@@ -148,7 +150,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Command coastCommand() {
-        return Commands.startEnd(() -> io.setBrake(false), () -> io.setBrake(true)).ignoringDisable(true);
+        return Commands.startEnd(() -> io.setBrake(false), () -> io.setBrake(true))
+                .ignoringDisable(true);
     }
-
 }
