@@ -159,9 +159,6 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         rotateToHeadingPid.enableContinuousInput(-180, 180);
         initTelemetry();
 
-        // In theory ignoring disabled is unnecessary, but this is a critical command that must run.
-        new Trigger(DriverStation::isAutonomousEnabled)
-                .onTrue(Commands.runOnce(() -> gyroIO.preMatchZero(180)).ignoringDisable(true));
 
         gyroIO.preMatchZero(0);
 
@@ -198,10 +195,11 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                 (states) ->
                         setModuleStates(KINEMATICS.toSwerveModuleStates(states), false, false, false),
                 Constants.AutoConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
-                () -> true,
+                () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red),
                 this
         );
     }
+
 
     public void drive(
             Translation2d translation,

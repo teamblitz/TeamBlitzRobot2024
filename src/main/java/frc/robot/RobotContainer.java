@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -192,6 +193,27 @@ public class RobotContainer {
     }
 
     private void configureAutoCommands() {
+        // Does end
+        NamedCommands.registerCommand(
+                "shoot",
+                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, true).alongWith(Commands.waitSeconds(1))
+                        .andThen(intake.intakeCommand().withTimeout(.5))
+                        .raceWith(shooter.shootCommand())
+        );
+
+        // Does not end
+        NamedCommands.registerCommand(
+                "intake",
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
+                        .alongWith(intake.intakeCommand())
+        );
+
+        NamedCommands.registerCommand(
+                "readyShoot",
+                intake.ejectCommand().withTimeout(.15);
+        );
+
+
 
     }
 

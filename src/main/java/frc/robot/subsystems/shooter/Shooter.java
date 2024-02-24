@@ -16,7 +16,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void shootOpenLoop() {
-        io.setPercent(1); // TODO CONST
+        io.setPercent(.8); // TODO CONST
     }
 
     public void shootClosedLoop() {
