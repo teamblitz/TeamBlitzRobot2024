@@ -251,7 +251,7 @@ public final class Constants {
             public static final double TRANSIT_STAGE = Units.degreesToRadians(15);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
             public static final double SCORE_AMP = Units.degreesToRadians(100);
-            public static final double SCORE_SPEAKER = Units.degreesToRadians(20);
+            public static final double SCORE_SPEAKER = Units.degreesToRadians(30);
         }
     }
 
