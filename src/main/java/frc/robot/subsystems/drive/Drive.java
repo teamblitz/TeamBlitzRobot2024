@@ -324,6 +324,10 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         lastTurnCommandSeconds = Timer.getFPGATimestamp();
     }
 
+    public void setGyro(double degrees) {
+        gyroIO.preMatchZero(degrees);
+    }
+
     public Rotation2d getYaw() {
         return Rotation2d.fromDegrees(gyroInputs.yaw);
     }

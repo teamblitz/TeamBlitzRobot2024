@@ -61,6 +61,9 @@ public class RobotContainer {
     // *** Must match with path names in pathplanner folder ***
     private final SendableChooser<Command> autoChooser;
 
+
+    private final SendableChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
+
     public RobotContainer() {
         configureSubsystems();
 
@@ -76,6 +79,11 @@ public class RobotContainer {
 
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Autonomous Choices", autoChooser);
+
+
+        startingPositionChooser = new SendableChooser<>();
+        SmartDashboard.putData("StaringPos" startingPositionChooser);
+
     }
 
 
@@ -218,6 +226,11 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
-        return autoChooser.getSelected();
+        return
+                Commands.runOnce(
+                        () -> drive.setGyro(startingPositionChooser.getSelected().angle)
+                ).andThen(
+                        autoChooser.getSelected()
+                );
     }
 }

@@ -322,6 +322,18 @@ public final class Constants {
                 Swerve.CENTER_TO_MODULE.get(Swerve.FL).getNorm(), // Drive base radius (distance from center to furthest module)
                 new ReplanningConfig()
         );
+
+        public enum StartingPos {
+            Left(45),
+            Right(-45),
+            Center(0);
+
+            public final double angle;
+
+            private StartingPos(double angle) {
+                this.angle = angle;
+            }
+            }
     }
 
     // TODO: Calculate needed deadband for controller (should be like 6% or less)
