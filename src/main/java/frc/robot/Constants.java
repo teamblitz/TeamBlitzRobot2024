@@ -219,7 +219,7 @@ public final class Constants {
 
         // TODO CONFIG
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(120);
-        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(160); // prev 240
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(200); // prev 240
 
         public static final int ARM_ROT_LEADER = 16;
         public static final int ARM_ROT_FOLLOWER = 15;
@@ -248,7 +248,7 @@ public final class Constants {
 
         public static final class Positions {
             public static final double INTAKE = Units.degreesToRadians(-2);
-            public static final double TRANSIT_STAGE = Units.degreesToRadians(30);
+            public static final double TRANSIT_STAGE = Units.degreesToRadians(20);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
             public static final double SCORE_AMP = Units.degreesToRadians(100);
             public static final double SCORE_SPEAKER = Units.degreesToRadians(25);
