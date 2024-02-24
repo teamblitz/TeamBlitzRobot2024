@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -57,31 +58,14 @@ public class RobotContainer {
 
     /* ***** --- Autonomous --- ***** */
     // *** Must match with path names in pathplanner folder ***
-    private static final String[] autonomousCommands = {
-        "Left1sM",
-        "Left2sB",
-        "Left2sHM",
-        "Left2sMB",
-        "MiddleL1sB",
-        "MiddleL1sMB",
-        "MiddleR1sB",
-        "MiddleR1sMB",
-        "MiddleC1sMB",
-        "Right1sM",
-        "Right2sHM",
-        "Right2sMB",
-        "Score",
-        "SquareTest",
-        "BalanceTest",
-        "Nothing"
-    };
-    private final SendableChooser<String> chooser = new SendableChooser<>();
+    private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
         configureSubsystems();
 
         configureButtonBindings();
         setDefaultCommands();
+        configureAutoCommands();
 
         //        CameraServer.startAutomaticCapture();
 
@@ -89,15 +73,22 @@ public class RobotContainer {
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
-        for (String auto : autonomousCommands) {
-            chooser.addOption(auto, auto);
-        }
-        chooser.setDefaultOption("Nothing", "Nothing");
-        SmartDashboard.putData("Autonomous Choices", chooser);
-
-        DriverStation.silenceJoystickConnectionWarning(true);
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Autonomous Choices", autoChooser);
     }
 
+
+    private final SlewRateLimiter driveMultiplierLimiter = new SlewRateLimiter(.25);
+
+    private double calculateDriveMultiplier() {
+        if (driveController.getRawButton(2)) {
+            return driveMultiplierLimiter.calculate(.3);
+        } else if (driveController.getRawButton(1)) {
+            return driveMultiplierLimiter.calculate(1);
+        } else {
+            return driveMultiplierLimiter.calculate(.60);
+        }
+    }
     private void setDefaultCommands() {
         drive.setDefaultCommand(
                 new TeleopSwerve(
@@ -123,18 +114,6 @@ public class RobotContainer {
                                         },
                                         arm)
                                 .finallyDo(() -> arm.setArmRotationSpeed(0)));
-    }
-
-    private final SlewRateLimiter driveMultiplierLimiter = new SlewRateLimiter(.25);
-
-    private double calculateDriveMultiplier() {
-        if (driveController.getRawButton(2)) {
-            return driveMultiplierLimiter.calculate(.3);
-        } else if (driveController.getRawButton(1)) {
-            return driveMultiplierLimiter.calculate(1);
-        } else {
-            return driveMultiplierLimiter.calculate(.60);
-        }
     }
 
     private void configureSubsystems() {
@@ -166,12 +145,6 @@ public class RobotContainer {
         controller = new Controller(0, 1);
     }
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
     private void configureButtonBindings() {
 
         controller.restGyroTrigger().onTrue(Commands.runOnce(drive::zeroGyro));
@@ -218,13 +191,11 @@ public class RobotContainer {
         new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
     }
 
+    private void configureAutoCommands() {
+
+    }
+
     public Command getAutonomousCommand() { // Autonomous code goes here
-        String autoCommand = chooser.getSelected();
-        //     AutonomousPathCommand autonomousPathCommand =
-        //             new AutonomousPathCommand(
-        //                     drive, armSubsystem, intakeSubsystem,
-        // manipulatorCommandFactory);
-        //     return autonomousPathCommand.generateAutonomous(autoCommand);
-        return null;
+        return autoChooser.getSelected();
     }
 }
