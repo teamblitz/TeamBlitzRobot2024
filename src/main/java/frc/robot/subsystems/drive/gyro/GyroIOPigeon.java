@@ -24,7 +24,7 @@ public class GyroIOPigeon implements GyroIO {
     private final double[] rateArray = new double[3];
 
     public GyroIOPigeon() {
-        gyro = new Pigeon2(Constants.Swerve.PIGEON_ID);
+        gyro = new Pigeon2(Constants.Drive.PIGEON_ID);
     }
 
     @Override

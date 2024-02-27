@@ -54,19 +54,19 @@ public class AngleMotorIOSpark implements AngleMotorIO {
 
     private void configAngleMotor() {
         motor.restoreFactoryDefaults();
-        motor.setSmartCurrentLimit(Constants.Swerve.ANGLE_SMART_CURRENT_LIMIT);
-        motor.setSecondaryCurrentLimit(Constants.Swerve.ANGLE_SECONDARY_CURRENT_LIMIT);
-        motor.setInverted(Constants.Swerve.ANGLE_MOTOR_INVERT);
-        motor.setIdleMode(Constants.Swerve.ANGLE_NEUTRAL_MODE);
+        motor.setSmartCurrentLimit(Constants.Drive.ANGLE_SMART_CURRENT_LIMIT);
+        motor.setSecondaryCurrentLimit(Constants.Drive.ANGLE_SECONDARY_CURRENT_LIMIT);
+        motor.setInverted(Constants.Drive.ANGLE_MOTOR_INVERT);
+        motor.setIdleMode(Constants.Drive.ANGLE_NEUTRAL_MODE);
 
         encoder.setPositionConversionFactor(
-                (1 / Constants.Swerve.ANGLE_GEAR_RATIO) // We do 1 over the gear ratio because 1
+                (1 / Constants.Drive.ANGLE_GEAR_RATIO) // We do 1 over the gear ratio because 1
                         // rotation of the motor is < 1 rotation of
                         // the module
                         * 360); // 1/360 rotations is 1 degree, 1 rotation is 360 degrees.
 
         configurePID(
-                Constants.Swerve.ANGLE_KP, Constants.Swerve.ANGLE_KI, Constants.Swerve.ANGLE_KD);
+                Constants.Drive.ANGLE_KP, Constants.Drive.ANGLE_KI, Constants.Drive.ANGLE_KD);
         // TODO: Adjust this latter after we know the pid loop is not crazy
         // angleMotor.getPIDController().setOutputRange(-.25, .25);
     }

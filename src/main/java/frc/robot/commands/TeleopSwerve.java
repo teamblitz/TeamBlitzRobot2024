@@ -5,10 +5,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.Drive;
+
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+
+import frc.robot.subsystems.drive.Drive;
 import org.littletonrobotics.junction.Logger;
 
 public class TeleopSwerve extends Command {
@@ -56,8 +58,8 @@ public class TeleopSwerve extends Command {
         if (!DriverStation.isAutonomous()) {
             /* Drive */
             drive.angleDrive(
-                    new Translation2d(translationVal, strafeVal).times(Constants.Swerve.MAX_SPEED),
-                    rotationVal * Constants.Swerve.MAX_ANGULAR_VELOCITY,
+                    new Translation2d(translationVal, strafeVal).times(Constants.Drive.MAX_SPEED),
+                    rotationVal * Constants.Drive.MAX_ANGULAR_VELOCITY,
                     -rotationPov.getAsDouble(),
                     !robotCentricSup.getAsBoolean(),
                     true,

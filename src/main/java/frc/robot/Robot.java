@@ -81,7 +81,7 @@ public class Robot extends LoggedRobot {
             Logger.addDataReceiver(new NT4Publisher());
 
         } else
-            switch (Constants.simMode) {
+            switch (Constants.SIM_MODE) {
                     // Running a physics simulator, log to local folder
                 case SIM:
                     Logger.addDataReceiver(new WPILOGWriter(""));

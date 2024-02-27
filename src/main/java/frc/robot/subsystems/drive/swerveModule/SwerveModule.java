@@ -31,9 +31,9 @@ public class SwerveModule {
 
     private final SimpleMotorFeedforward driveFeedforward =
             new SimpleMotorFeedforward(
-                    Constants.Swerve.DRIVE_KS,
-                    Constants.Swerve.DRIVE_KV,
-                    Constants.Swerve.DRIVE_KA);
+                    Constants.Drive.DRIVE_KS,
+                    Constants.Drive.DRIVE_KV,
+                    Constants.Drive.DRIVE_KA);
     private final String logKey;
 
     public SwerveModule(
@@ -84,7 +84,7 @@ public class SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if (isOpenLoop) {
-            double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.MAX_SPEED;
+            double percentOutput = desiredState.speedMetersPerSecond / Constants.Drive.MAX_SPEED;
             driveMotor.setDrivePercent(percentOutput);
             Logger.recordOutput(logKey + "/drivePercent", percentOutput);
         } else {
@@ -99,7 +99,7 @@ public class SwerveModule {
         Rotation2d angle =
                 (!(tuning || parking)
                                 && Math.abs(desiredState.speedMetersPerSecond)
-                                        <= (Constants.Swerve.MAX_SPEED * 0.01))
+                                        <= (Constants.Drive.MAX_SPEED * 0.01))
                         ? lastAngle
                         : desiredState.angle; // Prevent rotating module if speed is less than 1%.
         angleMotor.setSetpoint(angle.getDegrees());

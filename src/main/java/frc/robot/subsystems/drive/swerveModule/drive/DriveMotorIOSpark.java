@@ -54,29 +54,29 @@ public class DriveMotorIOSpark implements DriveMotorIO {
 
     private void configDriveMotor() {
         motor.restoreFactoryDefaults();
-        motor.setSmartCurrentLimit(Constants.Swerve.DRIVE_SMART_CURRENT_LIMIT);
-        motor.setSecondaryCurrentLimit(Constants.Swerve.DRIVE_SECONDARY_CURRENT_LIMIT);
-        motor.setInverted(Constants.Swerve.DRIVE_MOTOR_INVERT);
-        motor.setIdleMode(Constants.Swerve.DRIVE_NEUTRAL_MODE);
-        motor.setOpenLoopRampRate(Constants.Swerve.OPEN_LOOP_RAMP);
-        motor.setClosedLoopRampRate(Constants.Swerve.CLOSED_LOOP_RAMP);
+        motor.setSmartCurrentLimit(Constants.Drive.DRIVE_SMART_CURRENT_LIMIT);
+        motor.setSecondaryCurrentLimit(Constants.Drive.DRIVE_SECONDARY_CURRENT_LIMIT);
+        motor.setInverted(Constants.Drive.DRIVE_MOTOR_INVERT);
+        motor.setIdleMode(Constants.Drive.DRIVE_NEUTRAL_MODE);
+        motor.setOpenLoopRampRate(Constants.Drive.OPEN_LOOP_RAMP);
+        motor.setClosedLoopRampRate(Constants.Drive.CLOSED_LOOP_RAMP);
 
         encoder.setVelocityConversionFactor(
                 1
-                        / Constants.Swerve
+                        / Constants.Drive
                                 .DRIVE_GEAR_RATIO // 1/gear ratio because the wheel spins slower
                         // than
                         // the motor.
-                        * Constants.Swerve
+                        * Constants.Drive
                                 .WHEEL_CIRCUMFERENCE // Multiply by the circumference to get meters
                         // per minute
                         / 60); // Divide by 60 to get meters per second.
         encoder.setPositionConversionFactor(
-                1 / Constants.Swerve.DRIVE_GEAR_RATIO * Constants.Swerve.WHEEL_CIRCUMFERENCE);
+                1 / Constants.Drive.DRIVE_GEAR_RATIO * Constants.Drive.WHEEL_CIRCUMFERENCE);
         encoder.setPosition(0);
 
         configurePID(
-                Constants.Swerve.DRIVE_KP, Constants.Swerve.DRIVE_KI, Constants.Swerve.DRIVE_KD);
+                Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);
     }
 
     @Override

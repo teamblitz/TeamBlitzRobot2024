@@ -3,20 +3,20 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.Constants.Swerve.ANGLE_KD;
-import static frc.robot.Constants.Swerve.ANGLE_KI;
-import static frc.robot.Constants.Swerve.ANGLE_KP;
-import static frc.robot.Constants.Swerve.BL;
-import static frc.robot.Constants.Swerve.BR;
-import static frc.robot.Constants.Swerve.CAN_CODER_INVERT;
-import static frc.robot.Constants.Swerve.CENTER_TO_MODULE;
-import static frc.robot.Constants.Swerve.DRIVE_KD;
-import static frc.robot.Constants.Swerve.DRIVE_KI;
-import static frc.robot.Constants.Swerve.DRIVE_KP;
-import static frc.robot.Constants.Swerve.FL;
-import static frc.robot.Constants.Swerve.FR;
-import static frc.robot.Constants.Swerve.KINEMATICS;
-import static frc.robot.Constants.Swerve.MAX_SPEED;
+import static frc.robot.Constants.Drive.ANGLE_KD;
+import static frc.robot.Constants.Drive.ANGLE_KI;
+import static frc.robot.Constants.Drive.ANGLE_KP;
+import static frc.robot.Constants.Drive.BL;
+import static frc.robot.Constants.Drive.BR;
+import static frc.robot.Constants.Drive.CAN_CODER_INVERT;
+import static frc.robot.Constants.Drive.CENTER_TO_MODULE;
+import static frc.robot.Constants.Drive.DRIVE_KD;
+import static frc.robot.Constants.Drive.DRIVE_KI;
+import static frc.robot.Constants.Drive.DRIVE_KP;
+import static frc.robot.Constants.Drive.FL;
+import static frc.robot.Constants.Drive.FR;
+import static frc.robot.Constants.Drive.KINEMATICS;
+import static frc.robot.Constants.Drive.MAX_SPEED;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -188,7 +188,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                 (volts) -> {
                                     drive(
                                             new Translation2d(volts.in(Units.Volts) / 12.0, 0)
-                                                    .times(Constants.Swerve.MAX_SPEED),
+                                                    .times(Constants.Drive.MAX_SPEED),
                                             0,
                                             false,
                                             true,
@@ -239,13 +239,13 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             if (rotation != 0) {
                 lastTurnCommandSeconds = Timer.getFPGATimestamp();
                 keepHeadingSetpointSet = false;
-                logger.recordOutput("Swerve/Turning", true);
+                logger.recordOutput("Drive/Turning", true);
             }
             if (lastTurnCommandSeconds + .5 <= Timer.getFPGATimestamp()
                     && !keepHeadingSetpointSet) { // If it has been at least .5 seconds.
                 keepHeadingPid.setSetpoint(getYaw().getDegrees());
                 keepHeadingSetpointSet = true;
-                logger.recordOutput("Swerve/Turning", false);
+                logger.recordOutput("Drive/Turning", false);
             }
 
             if (keepHeadingSetpointSet && maintainHeading) {
@@ -253,8 +253,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             }
         }
 
-        logger.recordOutput("Swerve/keepHeadingSetpointSet", keepHeadingSetpointSet);
-        logger.recordOutput("Swerve/keepSetpoint", keepHeadingPid.getSetpoint());
+        logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
+        logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
         SwerveModuleState[] swerveModuleStates =
                 KINEMATICS.toSwerveModuleStates(
@@ -362,8 +362,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         swerveOdometry.update(getYaw(), getModulePositions());
 
-        logger.recordOutput("Swerve/Odometry", swerveOdometry.getPoseMeters());
-        logger.recordOutput("Swerve/modules", getModuleStates());
+        logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
+        logger.recordOutput("Drive/modules", getModuleStates());
 
         boolean anglePIDChanged = false;
         boolean drivePIDChanged = false;
