@@ -27,7 +27,7 @@ public class SwerveTuning extends Command {
 
     @Override
     public void initialize() {
-        System.out.println("Swerve tuning init");
+        System.out.println("Drive tuning init");
     }
 
     @Override

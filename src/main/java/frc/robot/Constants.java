@@ -39,9 +39,9 @@ import java.util.function.Function;
  */
 public final class Constants {
 
-    public static final Mode simMode = Mode.SIM;
+    public static final Mode SIM_MODE = Mode.SIM;
 
-    public static final boolean tuningMode = true;
+    public static final boolean TUNING_MODE = true;
 
     public enum Mode {
         /** Running a physics simulator. */
@@ -51,28 +51,28 @@ public final class Constants {
         REPLAY
     }
 
-    public static final class Swerve {
+    public static final class Drive {
         public static final int PIGEON_ID = 14;
         public static final boolean USE_PIGEON = true;
 
-        public static final COTSSwerveConstants chosenModule =
+        public static final COTSSwerveConstants CHOSEN_MODULE =
                 COTSSwerveConstants.SDSMK4i(COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
         public static final double TRACK_WIDTH = Units.inchesToMeters(24.75);
         public static final double WHEEL_BASE = Units.inchesToMeters(24.75);
-        public static final double WHEEL_CIRCUMFERENCE = chosenModule.wheelCircumference;
+        public static final double WHEEL_CIRCUMFERENCE = CHOSEN_MODULE.wheelCircumference;
 
         /* Motor Inverts */
-        public static final boolean ANGLE_MOTOR_INVERT = chosenModule.angleMotorInvert;
-        public static final boolean DRIVE_MOTOR_INVERT = chosenModule.driveMotorInvert;
+        public static final boolean ANGLE_MOTOR_INVERT = CHOSEN_MODULE.angleMotorInvert;
+        public static final boolean DRIVE_MOTOR_INVERT = CHOSEN_MODULE.driveMotorInvert;
 
         /* Module Gear Ratios */
-        public static final double DRIVE_GEAR_RATIO = chosenModule.driveGearRatio;
-        public static final double ANGLE_GEAR_RATIO = chosenModule.angleGearRatio;
+        public static final double DRIVE_GEAR_RATIO = CHOSEN_MODULE.driveGearRatio;
+        public static final double ANGLE_GEAR_RATIO = CHOSEN_MODULE.angleGearRatio;
 
         /* Angle Encoder Invert */
-        public static final boolean CAN_CODER_INVERT = chosenModule.canCoderInvert;
+        public static final boolean CAN_CODER_INVERT = CHOSEN_MODULE.canCoderInvert;
 
         public static final int FL = 0; // Front Left Module Index
         public static final int FR = 1; // Front Right Module Index
@@ -102,7 +102,7 @@ public final class Constants {
          * The smart current limit scales the current limit based on the speed of the motor (to make it better for closed loop control iirc),
          * Secondary limit turns off the motor until the current falls below the limit
          *
-         * Not even sure if it does anything because the fuses are 40a
+         * Because of how fuses work, they can sustain current draw above their rated value for short periods of time before tripping, meaning these values do have meaning above 40
          */
         public static final int DRIVE_SMART_CURRENT_LIMIT = 65;
         public static final int DRIVE_SECONDARY_CURRENT_LIMIT = 80;
@@ -154,8 +154,7 @@ public final class Constants {
          *
          * <p>Assuming our robot can still go at 4.6 meters per second (which it can't, this value
          * was taken when we had like nothing on our robot, we can go
-         * 10.348178456877813130498318828226534894488969421353632604171 radians per second while
-         * spinning
+         * 10.35 radians per second while spinning
          */
         public static final double MAX_ANGULAR_VELOCITY =
                 10.0; // TODO: This must be tuned to specific robot
@@ -318,16 +317,16 @@ public final class Constants {
                         new PIDConstants(PX_CONTROLLER, 0, 0), // Translation constants
                         new PIDConstants(P_THETA_CONTROLLER, 0, 0), // Rotation constants
                         MAX_MODULE_SPEED,
-                        Swerve.CENTER_TO_MODULE
-                                .get(Swerve.FL)
+                        Drive.CENTER_TO_MODULE
+                                .get(Drive.FL)
                                 .getNorm(), // Drive base radius (distance from center to furthest
                         // module)
                         new ReplanningConfig());
 
         public enum StartingPos {
-            Left(60),
-            Right(-60),
-            Center(0);
+            LEFT(60),
+            RIGHT(-60),
+            CENTER(0);
 
             public final double angle;
 

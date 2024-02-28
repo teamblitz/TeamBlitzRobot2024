@@ -79,9 +79,9 @@ public class RobotContainer {
         SmartDashboard.putData("Autonomous Choices", autoChooser);
 
         startingPositionChooser = new SendableChooser<>();
-        startingPositionChooser.setDefaultOption("Center", StartingPos.Center);
-        startingPositionChooser.addOption("Left", StartingPos.Left);
-        startingPositionChooser.addOption("Right", StartingPos.Right);
+        startingPositionChooser.setDefaultOption("Center", StartingPos.CENTER);
+        startingPositionChooser.addOption("Left", StartingPos.LEFT);
+        startingPositionChooser.addOption("Right", StartingPos.RIGHT);
 
         SmartDashboard.putData("StaringPos", startingPositionChooser);
     }
@@ -132,11 +132,11 @@ public class RobotContainer {
                                 SwerveModuleConfiguration.MotorType.NEO,
                                 SwerveModuleConfiguration.MotorType.NEO,
                                 SwerveModuleConfiguration.EncoderType.HELIUM),
-                        Constants.Swerve.Mod0.CONSTANTS,
-                        Constants.Swerve.Mod1.CONSTANTS,
-                        Constants.Swerve.Mod2.CONSTANTS,
-                        Constants.Swerve.Mod3.CONSTANTS,
-                        Constants.Swerve.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
+                        Constants.Drive.Mod0.CONSTANTS,
+                        Constants.Drive.Mod1.CONSTANTS,
+                        Constants.Drive.Mod2.CONSTANTS,
+                        Constants.Drive.Mod3.CONSTANTS,
+                        Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
 
         //        drive =
         //                new Drive(
