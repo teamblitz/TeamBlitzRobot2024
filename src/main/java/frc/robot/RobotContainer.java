@@ -109,7 +109,7 @@ public class RobotContainer {
                         () ->
                                 OIConstants.inputCurve.apply(
                                         -driveController.getX() * calculateDriveMultiplier()),
-                        () -> OIConstants.inputCurve.apply(-driveController.getTwist()) * .3,
+                        () -> OIConstants.inputCurve.apply(-driveController.getTwist()) * .40,
                         () -> false,
                         () -> driveController.getPOV()));
 
