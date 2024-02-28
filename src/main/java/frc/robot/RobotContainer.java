@@ -33,6 +33,7 @@ import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterIOSpark;
 import frc.robot.subsystems.shooter.ShooterIOVictor;
 
 /**
@@ -147,7 +148,7 @@ public class RobotContainer {
         //                        new GyroIO() {});
 
         intake = new Intake(new IntakeIOSpark());
-        shooter = new Shooter(new ShooterIOVictor());
+        shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark());
 
         driveController = new Joystick(0); // Move this to Controller (and I never did)
