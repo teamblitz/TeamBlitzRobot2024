@@ -31,5 +31,7 @@ public class IntakeIOSpark implements IntakeIO {
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.rpm = motor.getEncoder().getVelocity();
         inputs.current = motor.getOutputCurrent();
+
+        inputs.breakBeam = breakBeamSensor.get();
     }
 }
