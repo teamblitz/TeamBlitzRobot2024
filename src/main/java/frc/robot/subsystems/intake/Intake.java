@@ -4,14 +4,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     private final IntakeIO io;
-    private final IntakeIOInputs inputs = new IntakeIOInputs();
+    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
     public Intake(IntakeIO io) {
         this.io = io;
+    }
+
+    @Override
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("intake", inputs);
     }
 
     public void intake() {

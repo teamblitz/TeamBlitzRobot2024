@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
 public class ShooterIOSpark implements ShooterIO {
@@ -43,12 +44,22 @@ public class ShooterIOSpark implements ShooterIO {
 
         feedforwardTop = new SimpleMotorFeedforward(0, 0, 0);
         feedforwardBottom = new SimpleMotorFeedforward(0, 0, 0);
+
+        top.getEncoder().setVelocityConversionFactor(
+                (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2))
+        )
     }
 
     @Override
     public void setPercent(double speed) {
         top.set(speed);
         bottom.set(speed);
+    }
+
+    @Override
+    public void setVolts(double volts) {
+        top.setVoltage(volts);
+        bottom.setVoltage(volts);
     }
 
     @Override

@@ -13,7 +13,7 @@ public class IntakeIOSpark implements IntakeIO {
 
     public IntakeIOSpark() {
         motor = new CANSparkMax(Constants.Intake.Spark.MOTOR_ID, MotorType.kBrushless);
-        breakBeamSensor = new DigitalInput(0);
+        breakBeamSensor = new DigitalInput(9);
 
         motor.restoreFactoryDefaults();
         motor.setSmartCurrentLimit(Constants.Intake.CURRENT_LIMIT);
@@ -31,5 +31,7 @@ public class IntakeIOSpark implements IntakeIO {
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.rpm = motor.getEncoder().getVelocity();
         inputs.current = motor.getOutputCurrent();
+
+        inputs.breakBeam = breakBeamSensor.get();
     }
 }
