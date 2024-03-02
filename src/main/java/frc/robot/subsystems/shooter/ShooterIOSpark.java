@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class ShooterIOSpark implements ShooterIO {
@@ -34,16 +35,25 @@ public class ShooterIOSpark implements ShooterIO {
         pidTop = top.getPIDController();
         pidBottom = top.getPIDController();
 
-        pidTop.setP(0);
-        pidTop.setI(0);
-        pidTop.setD(0);
+        pidTop.setP(Constants.Shooter.Spark.PID_TOP_P);
+        pidTop.setI(Constants.Shooter.Spark.PID_TOP_I);
+        pidTop.setD(Constants.Shooter.Spark.PID_TOP_D);
 
-        pidBottom.setP(0);
-        pidBottom.setI(0);
-        pidBottom.setD(0);
+        pidBottom.setP(Constants.Shooter.Spark.PID_BOTTOM_P);
+        pidBottom.setI(Constants.Shooter.Spark.PID_BOTTOM_I);
+        pidBottom.setD(Constants.Shooter.Spark.PID_BOTTOM_D);
 
-        feedforwardTop = new SimpleMotorFeedforward(0, 0, 0);
-        feedforwardBottom = new SimpleMotorFeedforward(0, 0, 0);
+        feedforwardTop = new SimpleMotorFeedforward(
+                Constants.Shooter.Spark.FF_TOP_KS,
+                Constants.Shooter.Spark.FF_TOP_KV,
+                Constants.Shooter.Spark.FF_TOP_KA);
+
+        SmartDashboard.putNumber("MAX SHOOT", feedforwardTop.maxAchievableVelocity(12, 30));
+
+        feedforwardBottom = new SimpleMotorFeedforward(
+                Constants.Shooter.Spark.FF_BOTTOM_KS,
+                Constants.Shooter.Spark.FF_BOTTOM_KV,
+                Constants.Shooter.Spark.FF_BOTTOM_KA);
 
         top.getEncoder().setVelocityConversionFactor(
                 (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2))
