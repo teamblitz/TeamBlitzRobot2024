@@ -11,8 +11,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkBase.IdleMode;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -298,6 +297,23 @@ public final class Constants {
         public static final int BOTTOM = 18; // TODO SET
 
         public static final int CURRENT_LIMIT = 0; // TODO SET
+
+
+        public static class AutoShootConstants {
+            public final Transform2d botToCenterOfRotation = new Transform2d(Units.inchesToMeters(-(15-4)), Units.inchesToMeters(4), Rotation2d.fromRadians(0));
+            public final Transform2d centerOfRotationToShooter = new Transform2d(Units.inchesToMeters(-27), Units.inchesToMeters(4), Rotation2d.fromRadians(0));
+
+            public final double shootAngleOffset = Units.degreesToRadians(20);
+
+            public final Pose3d goalPoseBlue = new Pose3d(0.2269, 5.5526, 2.0451, new Rotation3d());
+            public final Pose3d goalPoseRed = new Pose3d(16.3062, 5.5556, 2.0446, new Rotation3d());
+
+            public final double limeLightHeight = Units.inchesToMeters(6);
+
+
+
+            public final double shootVelocity = 0;
+        }
     }
 
     public static final class AutoConstants {

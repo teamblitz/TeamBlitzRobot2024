@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
         ShuffleboardTab tab = Shuffleboard.getTab("Sysid");
         tab.add("ShooterQuasistaticFwd", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
         tab.add("ShooterQuasistaticRev", sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        
+
         tab.add("ShooterDynamicFwd", sysIdDynamic(SysIdRoutine.Direction.kForward));
         tab.add("ShooterDynamicRev", sysIdDynamic(SysIdRoutine.Direction.kReverse));
 

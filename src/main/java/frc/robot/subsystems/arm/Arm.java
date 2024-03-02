@@ -15,6 +15,8 @@ import frc.robot.Constants.Arm.FeedForwardConstants;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.function.DoubleSupplier;
+
 /**
  * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
  * this, 2 subsystems is ideal (and is kinda what we are pseudo doing)
@@ -58,18 +60,6 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                     System.out.println(volts.baseUnitMagnitude());
                                     io.setArmVolts(volts.in(Volts));
                                 },
-                                //                                log -> {
-                                //                                    // Record a frame for the
-                                // shooter motor.
-                                //                                    log.motor("arm")
-                                //
-                                // .voltage(Volts.of(inputs.volts))
-                                //
-                                // .angularPosition(Radians.of(inputs.rotation))
-                                //                                            .angularVelocity(
-                                //
-                                // RadiansPerSecond.of(inputs.armRotationSpeed));
-                                //                                },
                                 null, // No log consumer, since data is recorded by URCL
                                 this));
     }
@@ -97,7 +87,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         io.setArmSpeed(percent);
     }
 
-    public Command rotateToCommand(double goal, boolean endAutomaticaly) {
+    public Command rotateToCommand(DoubleSupplier goal, boolean endAutomatically) {
         TrapezoidProfile profile =
                 new TrapezoidProfile(
                         new TrapezoidProfile.Constraints(
@@ -106,7 +96,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
         MutableReference<TrapezoidProfile.State> lastState = new MutableReference<>();
 
-        TrapezoidProfile.State goalState = new TrapezoidProfile.State(goal, 0);
+        TrapezoidProfile.State goalState = new TrapezoidProfile.State(goal.getAsDouble(), 0);
 
         return runOnce(
                         () -> {
@@ -122,7 +112,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                             profile.calculate(
                                                     Robot.defaultPeriodSecs,
                                                     lastState.get(),
-                                                    goalState);
+                                                    new TrapezoidProfile.State(goal.getAsDouble(), 0));
                                     //                                    lastState.set(new
                                     // TrapezoidProfile.State(
                                     //                                            inputs.rotation,
@@ -130,12 +120,16 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                     lastState.set(setpoint);
                                     updateRotation(setpoint.position, setpoint.velocity);
                                 })
-                                .until(() -> profile.timeLeftUntil(goal) == 0 && endAutomaticaly))
+                                .until(() -> profile.timeLeftUntil(goal.getAsDouble()) == 0 && endAutomatically))
                 .finallyDo(
                         (interrupted) -> {
-                            if (!interrupted) updateRotation(goal, 0);
+                            if (!interrupted) updateRotation(goal.getAsDouble(), 0);
                             else if (interrupted) updateRotation(lastState.get().position, 0);
                         });
+    }
+
+    public Command rotateToCommand(double goal, boolean endAutomatically) {
+        return rotateToCommand(() -> goal, endAutomatically);
     }
 
     /* SYSID STUFF */
