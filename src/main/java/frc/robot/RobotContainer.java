@@ -9,8 +9,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
@@ -85,6 +87,19 @@ public class RobotContainer {
         startingPositionChooser.addOption("Right", StartingPos.RIGHT);
 
         SmartDashboard.putData("StaringPos", startingPositionChooser);
+
+
+        Shuffleboard.getTab("AutoShoot").addDouble("Calculated angle",
+                () -> AutoAimCalculator.calculateArmAngle(
+                        new Pose3d(drive.getLimelightPose()),
+                        DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ?
+                                Constants.Shooter.AutoShootConstants.goalPoseBlue :
+                                Constants.Shooter.AutoShootConstants.goalPoseRed,
+                        Constants.Shooter.AutoShootConstants.botToCenterOfRotation,
+                        Constants.Shooter.AutoShootConstants.centerOfRotationToShooter,
+                        Constants.Shooter.AutoShootConstants.shootAngleOffset,
+                        Constants.Shooter.AutoShootConstants.shootVelocity)
+        );
     }
 
     private final SlewRateLimiter driveMultiplierLimiter = new SlewRateLimiter(.25);
@@ -182,6 +197,26 @@ public class RobotContainer {
                         .alongWith(shooter.shootCommand()));
         OIConstants.SuperStructure.Arm.PRIME_SCORE_AMP.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
+
+
+        OIConstants.SuperStructure.Arm.AIM_ARM_SPEAKER.whileTrue(
+                arm.rotateToCommand(
+                        () -> MathUtil.clamp(
+                                AutoAimCalculator.calculateArmAngle(
+                                        new Pose3d(drive.getLimelightPose()),
+                                        DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ?
+                                                Constants.Shooter.AutoShootConstants.goalPoseBlue :
+                                                Constants.Shooter.AutoShootConstants.goalPoseRed,
+                                        Constants.Shooter.AutoShootConstants.botToCenterOfRotation,
+                                        Constants.Shooter.AutoShootConstants.centerOfRotationToShooter,
+                                        Constants.Shooter.AutoShootConstants.shootAngleOffset,
+                                        Constants.Shooter.AutoShootConstants.shootVelocity),
+                                0,
+                                Math.PI
+                            ),
+                        false
+                )
+        );
 
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());

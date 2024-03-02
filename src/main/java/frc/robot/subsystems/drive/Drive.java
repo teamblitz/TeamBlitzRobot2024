@@ -21,6 +21,7 @@ import static frc.robot.Constants.Drive.MAX_SPEED;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,6 +34,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -47,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
+import frc.lib.util.LimelightHelpers;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.gyro.GyroIO;
@@ -64,6 +67,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class Drive extends SubsystemBase implements BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
+    private final SwerveDrivePoseEstimator poseEstimator;
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -106,6 +110,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
     private SysIdRoutine routine;
 
+    private double lastVisionTimeStamp;
+
     public Drive(
             SwerveModuleConfiguration configuration,
             SwerveModuleConstants flConstants,
@@ -147,7 +153,14 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                 new SwerveModule[] { // front left, front right, back left, back right.
                     frontLeft, frontRight, backLeft, backRight
                 };
+
         swerveOdometry = new SwerveDriveOdometry(KINEMATICS, getYaw(), getModulePositions());
+        poseEstimator = new SwerveDrivePoseEstimator(KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
+
+//        LimelightHelpers.getLatency_Capture();
+
+//        poseEstimator.addVisionMeasurement();
+
         this.gyroIO = gyroIO;
         logger = Logger.getInstance();
 
@@ -322,8 +335,17 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         return swerveOdometry.getPoseMeters();
     }
 
+    public Pose2d getEstimatedPose() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
+    public Pose2d getLimelightPose() {
+        return LimelightHelpers.getBotPose2d_wpiBlue("");
+    }
+
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
+        poseEstimator.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
     public void resetPose(Pose2d pose) {
@@ -358,12 +380,14 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             mod.periodic();
         }
         gyroIO.updateInputs(gyroInputs);
-        logger.processInputs("gyro", gyroInputs);
+        Logger.processInputs("gyro", gyroInputs);
 
         swerveOdometry.update(getYaw(), getModulePositions());
+        poseEstimator.update(getYaw(), getModulePositions());
 
-        logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
-        logger.recordOutput("Drive/modules", getModuleStates());
+        Logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
+        Logger.recordOutput("Drive/Vision+Odometry", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput("Drive/modules", getModuleStates());
 
         boolean anglePIDChanged = false;
         boolean drivePIDChanged = false;

@@ -12,18 +12,18 @@ public class AutoAimCalculator {
     /**
      * Puts the bot and the goal into bot goal space with the bot as the origin and the goal as a point along a vertical plane
      */
-    public Pose2d calculateBotToGoal2d(Pose3d botPose, Pose3d goalPose) {
+    public static Pose2d calculateBotToGoal2d(Pose3d botPose, Pose3d goalPose) {
         double horizontalDist = Math.hypot(botPose.getX() - goalPose.getX(), botPose.getY()) - goalPose.getY();
         double vertDist = goalPose.getY() - botPose.getY();
 
         return new Pose2d(horizontalDist, vertDist, Rotation2d.fromRadians(0));
     }
 
-    public Transform2d calculateCenterRotationToShooter(Transform2d centerRotationToShooterAtZero, Rotation2d rotation) {
+    public static Transform2d calculateCenterRotationToShooter(Transform2d centerRotationToShooterAtZero, Rotation2d rotation) {
         return new Transform2d(centerRotationToShooterAtZero.getTranslation().rotateBy(rotation), Rotation2d.fromRadians(0));
     }
 
-    public double calculateArmAngle(Pose3d botPose, Pose3d goalPose, Transform2d botToCenterRot, Transform2d centerRotationToShooterAtZero, double shooterAngleOffset, double initialVelocity) {
+    public static double calculateArmAngle(Pose3d botPose, Pose3d goalPose, Transform2d botToCenterRot, Transform2d centerRotationToShooterAtZero, double shooterAngleOffset, double initialVelocity) {
         Pose2d goalPose2d = calculateBotToGoal2d(botPose, goalPose);
 
 
