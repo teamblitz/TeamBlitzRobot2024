@@ -215,7 +215,7 @@ public class RobotContainer {
                                 Math.PI
                             ),
                         false
-                )
+                ).alongWith(shooter.shootClosedLoopCommand(Constants.Shooter.AutoShootConstants.shootVelocity))
         );
 
         // TEST STUFF

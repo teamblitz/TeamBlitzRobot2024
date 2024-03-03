@@ -312,7 +312,7 @@ public final class Constants {
 
 
 
-            public static final double shootVelocity = 0;
+            public static final double shootVelocity = 23.6 * .8;
         }
     }
 

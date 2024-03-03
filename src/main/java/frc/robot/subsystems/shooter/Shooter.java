@@ -61,8 +61,9 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
         Logger.processInputs("shooter", inputs);
     }
 
-    public void shootClosedLoop() {
-        io.setSetpoint(0); // TODO, CONST
+    public void shootClosedLoop(double metersPerSecond) {
+        io.setSetpoint(metersPerSecond); // TODO, CONST
+        Logger.recordOutput("shooter/velocitySetpoint");
     }
 
     public void reverse() {
@@ -79,6 +80,10 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
 
     public Command reverseCommand() {
         return startEnd(this::reverse, this::stop);
+    }
+
+    public Command shootClosedLoopCommand(double metersPerSecond) {
+        return startEnd(() -> shootClosedLoop(metersPerSecond), this::stop);
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

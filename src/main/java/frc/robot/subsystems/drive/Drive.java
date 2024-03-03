@@ -340,7 +340,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Pose2d getLimelightPose() {
-        return LimelightHelpers.getBotPose2d_wpiBlue("");
+        return LimelightHelpers.getBotPose2d_wpiBlue("limelight");
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -387,6 +387,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         Logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
         Logger.recordOutput("Drive/Vision+Odometry", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput("Drive/Vision", getLimelightPose());
+        System.out.println(getLimelightPose().toString());
         Logger.recordOutput("Drive/modules", getModuleStates());
 
         boolean anglePIDChanged = false;
