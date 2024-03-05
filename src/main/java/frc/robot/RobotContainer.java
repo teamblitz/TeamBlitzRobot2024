@@ -13,6 +13,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
@@ -90,7 +91,7 @@ public class RobotContainer {
 
 
         Shuffleboard.getTab("AutoShoot").addDouble("Calculated angle",
-                () -> AutoAimCalculator.calculateArmAngle(
+                () -> Units.radiansToDegrees(AutoAimCalculator.calculateArmAngle(
                         new Pose3d(drive.getLimelightPose()),
                         DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ?
                                 Constants.Shooter.AutoShootConstants.goalPoseBlue :
@@ -98,7 +99,7 @@ public class RobotContainer {
                         Constants.Shooter.AutoShootConstants.botToCenterOfRotation,
                         Constants.Shooter.AutoShootConstants.centerOfRotationToShooter,
                         Constants.Shooter.AutoShootConstants.shootAngleOffset,
-                        Constants.Shooter.AutoShootConstants.shootVelocity)
+                        Constants.Shooter.AutoShootConstants.shootVelocity))
         );
     }
 
@@ -178,8 +179,8 @@ public class RobotContainer {
         controller.brakeModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         controller.coastModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
-        controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
+//        controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
+//        controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
 
         OIConstants.SuperStructure.Intake.intakeFwd.whileTrue(intake.intakeCommand());
         OIConstants.SuperStructure.Intake.intakeRev.whileTrue(intake.ejectCommand());
@@ -212,7 +213,7 @@ public class RobotContainer {
                                         Constants.Shooter.AutoShootConstants.shootAngleOffset,
                                         Constants.Shooter.AutoShootConstants.shootVelocity),
                                 0,
-                                Math.PI
+                                Math.PI/2
                             ),
                         false
                 ).alongWith(shooter.shootClosedLoopCommand(Constants.Shooter.AutoShootConstants.shootVelocity))

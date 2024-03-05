@@ -268,11 +268,12 @@ public final class Constants {
             public static final int SPARK_TOP = 22; // TODO SET
             public static final int SPARK_BOTTOM = 23; // TODO SET
 
-            public static final double PID_TOP_P = 0.013715; // TODO SET
+
+            public static final double PID_TOP_P = 0.013715; // TODO SET Was 0.013715
             public static final int PID_TOP_I = 0; // TODO SET
             public static final int PID_TOP_D = 0; // TODO SET
 
-            public static final double PID_BOTTOM_P = 1.6807E-05; // TODO SET
+            public static final double PID_BOTTOM_P = 0.013715; // TODO SET
             public static final int PID_BOTTOM_I = 0; // TODO SET
             public static final int PID_BOTTOM_D = 0; // TODO SET
 

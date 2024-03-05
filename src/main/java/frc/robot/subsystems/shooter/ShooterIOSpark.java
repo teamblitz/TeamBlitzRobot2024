@@ -27,13 +27,16 @@ public class ShooterIOSpark implements ShooterIO {
         top.restoreFactoryDefaults();
         top.setSmartCurrentLimit(Constants.Shooter.CURRENT_LIMIT);
         top.setOpenLoopRampRate(0.5);
+        top.setClosedLoopRampRate(.2);
 
         bottom.restoreFactoryDefaults();
         bottom.setSmartCurrentLimit(Constants.Shooter.CURRENT_LIMIT);
         bottom.setOpenLoopRampRate(0.5);
+        bottom.setClosedLoopRampRate(.2);
+
 
         pidTop = top.getPIDController();
-        pidBottom = top.getPIDController();
+        pidBottom = bottom.getPIDController();
 
         pidTop.setP(Constants.Shooter.Spark.PID_TOP_P);
         pidTop.setI(Constants.Shooter.Spark.PID_TOP_I);
@@ -56,6 +59,9 @@ public class ShooterIOSpark implements ShooterIO {
                 Constants.Shooter.Spark.FF_BOTTOM_KA);
 
         top.getEncoder().setVelocityConversionFactor(
+                (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2))
+        );
+        bottom.getEncoder().setVelocityConversionFactor(
                 (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2))
         );
     }

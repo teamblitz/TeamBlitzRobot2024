@@ -15,7 +15,7 @@ public final class Trajectories {
      */
     public static double angleRequiredToHitCoordinate(double x, double y, double v, double g) {
         return Math.atan(
-                (v*v + Math.sqrt(Math.pow(v, 4) - g * (g * (x*x) + 2 * y * (v*v)))) / (g * x)
+                (v*v - Math.sqrt(Math.pow(v, 4) - g * (g * (x*x) + 2 * y * (v*v)))) / (g * x)
         );
     }
 }

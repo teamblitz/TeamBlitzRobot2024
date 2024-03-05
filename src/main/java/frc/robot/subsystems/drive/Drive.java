@@ -388,7 +388,6 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         Logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
         Logger.recordOutput("Drive/Vision+Odometry", poseEstimator.getEstimatedPosition());
         Logger.recordOutput("Drive/Vision", getLimelightPose());
-        System.out.println(getLimelightPose().toString());
         Logger.recordOutput("Drive/modules", getModuleStates());
 
         boolean anglePIDChanged = false;
