@@ -2,15 +2,18 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.lib.math.Trajectories;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.Vector;
-
 public class AutoAimCalculator {
-    public static final ShuffleboardTab tab = Shuffleboard.getTab("AutoShoot");
+    private static final ShuffleboardTab tab = Shuffleboard.getTab("AutoShoot");
+
+    private static final GenericEntry angleOffset = tab.addPersistent("angleOffset", 0).getEntry();
+    private static final GenericEntry vertOffset = tab.addPersistent("vertOffset", 0).getEntry();
 
     private AutoAimCalculator() {}
 
@@ -26,7 +29,7 @@ public class AutoAimCalculator {
 
         Logger.recordOutput("AutoShoot/horizontalDist", horizontalDist);
 
-        double vertDist = goalPose.getZ() - botPose.getZ();
+        double vertDist = goalPose.getZ() - botPose.getZ() + Units.inchesToMeters(vertOffset.getDouble(0));
         Logger.recordOutput("AutoShoot/vertDist", vertDist);
 
 
@@ -71,6 +74,6 @@ public class AutoAimCalculator {
 
 
 
-        return armRot + Units.degreesToRadians(7);
+        return armRot + Units.degreesToRadians(angleOffset.getDouble(0));
     }
 }

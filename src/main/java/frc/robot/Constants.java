@@ -212,7 +212,7 @@ public final class Constants {
         public static final double MIN_ROT = Units.degreesToRadians(0);
         public static final double MAX_ROT = Units.degreesToRadians(90);
 
-        public static final double STARTING_POS = 0.00; // 3.349 degrees,
+        public static final double STARTING_POS = Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
         public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
 
         // TODO CONFIG
@@ -245,7 +245,7 @@ public final class Constants {
         public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
 
         public static final class Positions {
-            public static final double INTAKE = Units.degreesToRadians(-2);
+            public static final double INTAKE = STARTING_POS + Units.degreesToRadians(- 2);
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
             public static final double SCORE_AMP = Units.degreesToRadians(100);
