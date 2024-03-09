@@ -1,21 +1,15 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.Units;
+import static edu.wpi.first.units.Units.Volts;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 // import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
-import frc.robot.Constants;
-import frc.robot.subsystems.shooter.ShooterIO.ShooterIOInputs;
 import org.littletonrobotics.junction.Logger;
-
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
 public class Shooter extends SubsystemBase implements BlitzSubsystem {
 
@@ -26,7 +20,6 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
 
     public Shooter(ShooterIO io) {
         this.io = io;
-
 
         routine =
                 new SysIdRoutine(
@@ -48,7 +41,6 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
 
         tab.add("ShooterDynamicFwd", sysIdDynamic(SysIdRoutine.Direction.kForward));
         tab.add("ShooterDynamicRev", sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
     }
 
     public void shootOpenLoop() {
@@ -93,5 +85,4 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction);
     }
-
 }

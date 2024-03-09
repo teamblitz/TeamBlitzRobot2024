@@ -37,7 +37,6 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSpark;
-import frc.robot.subsystems.shooter.ShooterIOVictor;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -89,18 +88,29 @@ public class RobotContainer {
 
         SmartDashboard.putData("StaringPos", startingPositionChooser);
 
-
-        Shuffleboard.getTab("AutoShoot").addDouble("Calculated angle",
-                () -> Units.radiansToDegrees(AutoAimCalculator.calculateArmAngle(
-                        new Pose3d(drive.getLimelightPose()),
-                        DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ?
-                                Constants.Shooter.AutoShootConstants.goalPoseBlue :
-                                Constants.Shooter.AutoShootConstants.goalPoseRed,
-                        Constants.Shooter.AutoShootConstants.botToCenterOfRotation,
-                        Constants.Shooter.AutoShootConstants.centerOfRotationToShooter,
-                        Constants.Shooter.AutoShootConstants.shootAngleOffset,
-                        Constants.Shooter.AutoShootConstants.shootVelocity))
-        );
+        Shuffleboard.getTab("AutoShoot")
+                .addDouble(
+                        "Calculated angle",
+                        () ->
+                                Units.radiansToDegrees(
+                                        AutoAimCalculator.calculateArmAngle(
+                                                new Pose3d(drive.getLimelightPose()),
+                                                DriverStation.getAlliance().isPresent()
+                                                                && DriverStation.getAlliance().get()
+                                                                        == DriverStation.Alliance
+                                                                                .Blue
+                                                        ? Constants.Shooter.AutoShootConstants
+                                                                .goalPoseBlue
+                                                        : Constants.Shooter.AutoShootConstants
+                                                                .goalPoseRed,
+                                                Constants.Shooter.AutoShootConstants
+                                                        .botToCenterOfRotation,
+                                                Constants.Shooter.AutoShootConstants
+                                                        .centerOfRotationToShooter,
+                                                Constants.Shooter.AutoShootConstants
+                                                        .shootAngleOffset,
+                                                Constants.Shooter.AutoShootConstants
+                                                        .shootVelocity)));
     }
 
     private final SlewRateLimiter driveMultiplierLimiter = new SlewRateLimiter(.25);
@@ -179,8 +189,8 @@ public class RobotContainer {
         controller.brakeModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         controller.coastModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-//        controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
-//        controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
+        //        controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
+        //        controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
 
         OIConstants.SuperStructure.Intake.intakeFwd.whileTrue(intake.intakeCommand());
         OIConstants.SuperStructure.Intake.intakeRev.whileTrue(intake.ejectCommand());
@@ -199,25 +209,39 @@ public class RobotContainer {
         OIConstants.SuperStructure.Arm.PRIME_SCORE_AMP.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
-
         OIConstants.SuperStructure.Arm.AIM_ARM_SPEAKER.whileTrue(
                 arm.rotateToCommand(
-                        () -> MathUtil.clamp(
-                                AutoAimCalculator.calculateArmAngle(
-                                        new Pose3d(drive.getLimelightPose()),
-                                        DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ?
-                                                Constants.Shooter.AutoShootConstants.goalPoseBlue :
-                                                Constants.Shooter.AutoShootConstants.goalPoseRed,
-                                        Constants.Shooter.AutoShootConstants.botToCenterOfRotation,
-                                        Constants.Shooter.AutoShootConstants.centerOfRotationToShooter,
-                                        Constants.Shooter.AutoShootConstants.shootAngleOffset,
-                                        Constants.Shooter.AutoShootConstants.shootVelocity),
-                                0,
-                                Math.PI/2
-                            ),
-                        false
-                ).alongWith(shooter.shootClosedLoopCommand(Constants.Shooter.AutoShootConstants.shootVelocity))
-        );
+                                () ->
+                                        MathUtil.clamp(
+                                                AutoAimCalculator.calculateArmAngle(
+                                                        new Pose3d(drive.getLimelightPose()),
+                                                        DriverStation.getAlliance().isPresent()
+                                                                        && DriverStation
+                                                                                        .getAlliance()
+                                                                                        .get()
+                                                                                == DriverStation
+                                                                                        .Alliance
+                                                                                        .Blue
+                                                                ? Constants.Shooter
+                                                                        .AutoShootConstants
+                                                                        .goalPoseBlue
+                                                                : Constants.Shooter
+                                                                        .AutoShootConstants
+                                                                        .goalPoseRed,
+                                                        Constants.Shooter.AutoShootConstants
+                                                                .botToCenterOfRotation,
+                                                        Constants.Shooter.AutoShootConstants
+                                                                .centerOfRotationToShooter,
+                                                        Constants.Shooter.AutoShootConstants
+                                                                .shootAngleOffset,
+                                                        Constants.Shooter.AutoShootConstants
+                                                                .shootVelocity),
+                                                0,
+                                                Math.PI / 2),
+                                false)
+                        .alongWith(
+                                shooter.shootClosedLoopCommand(
+                                        Constants.Shooter.AutoShootConstants.shootVelocity)));
 
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());

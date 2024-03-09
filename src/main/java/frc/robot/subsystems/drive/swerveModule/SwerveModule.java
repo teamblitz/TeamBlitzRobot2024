@@ -31,9 +31,7 @@ public class SwerveModule {
 
     private final SimpleMotorFeedforward driveFeedforward =
             new SimpleMotorFeedforward(
-                    Constants.Drive.DRIVE_KS,
-                    Constants.Drive.DRIVE_KV,
-                    Constants.Drive.DRIVE_KA);
+                    Constants.Drive.DRIVE_KS, Constants.Drive.DRIVE_KV, Constants.Drive.DRIVE_KA);
     private final String logKey;
 
     public SwerveModule(

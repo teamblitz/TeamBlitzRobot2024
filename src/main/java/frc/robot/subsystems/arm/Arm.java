@@ -13,9 +13,8 @@ import frc.lib.MutableReference;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.FeedForwardConstants;
 import frc.robot.Robot;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
@@ -112,7 +111,8 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                             profile.calculate(
                                                     Robot.defaultPeriodSecs,
                                                     lastState.get(),
-                                                    new TrapezoidProfile.State(goal.getAsDouble(), 0));
+                                                    new TrapezoidProfile.State(
+                                                            goal.getAsDouble(), 0));
                                     //                                    lastState.set(new
                                     // TrapezoidProfile.State(
                                     //                                            inputs.rotation,
@@ -120,7 +120,10 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                     lastState.set(setpoint);
                                     updateRotation(setpoint.position, setpoint.velocity);
                                 })
-                                .until(() -> profile.timeLeftUntil(goal.getAsDouble()) == 0 && endAutomatically))
+                                .until(
+                                        () ->
+                                                profile.timeLeftUntil(goal.getAsDouble()) == 0
+                                                        && endAutomatically))
                 .finallyDo(
                         (interrupted) -> {
                             if (!interrupted) updateRotation(goal.getAsDouble(), 0);

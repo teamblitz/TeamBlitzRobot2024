@@ -34,7 +34,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -155,11 +154,13 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                 };
 
         swerveOdometry = new SwerveDriveOdometry(KINEMATICS, getYaw(), getModulePositions());
-        poseEstimator = new SwerveDrivePoseEstimator(KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
+        poseEstimator =
+                new SwerveDrivePoseEstimator(
+                        KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
 
-//        LimelightHelpers.getLatency_Capture();
+        //        LimelightHelpers.getLatency_Capture();
 
-//        poseEstimator.addVisionMeasurement();
+        //        poseEstimator.addVisionMeasurement();
 
         this.gyroIO = gyroIO;
         logger = Logger.getInstance();

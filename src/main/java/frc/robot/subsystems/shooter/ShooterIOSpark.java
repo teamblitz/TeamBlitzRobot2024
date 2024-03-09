@@ -34,7 +34,6 @@ public class ShooterIOSpark implements ShooterIO {
         bottom.setOpenLoopRampRate(0.5);
         bottom.setClosedLoopRampRate(.2);
 
-
         pidTop = top.getPIDController();
         pidBottom = bottom.getPIDController();
 
@@ -46,24 +45,26 @@ public class ShooterIOSpark implements ShooterIO {
         pidBottom.setI(Constants.Shooter.Spark.PID_BOTTOM_I);
         pidBottom.setD(Constants.Shooter.Spark.PID_BOTTOM_D);
 
-        feedforwardTop = new SimpleMotorFeedforward(
-                Constants.Shooter.Spark.FF_TOP_KS,
-                Constants.Shooter.Spark.FF_TOP_KV,
-                Constants.Shooter.Spark.FF_TOP_KA);
+        feedforwardTop =
+                new SimpleMotorFeedforward(
+                        Constants.Shooter.Spark.FF_TOP_KS,
+                        Constants.Shooter.Spark.FF_TOP_KV,
+                        Constants.Shooter.Spark.FF_TOP_KA);
 
         SmartDashboard.putNumber("MAX SHOOT", feedforwardTop.maxAchievableVelocity(12, 30));
 
-        feedforwardBottom = new SimpleMotorFeedforward(
-                Constants.Shooter.Spark.FF_BOTTOM_KS,
-                Constants.Shooter.Spark.FF_BOTTOM_KV,
-                Constants.Shooter.Spark.FF_BOTTOM_KA);
+        feedforwardBottom =
+                new SimpleMotorFeedforward(
+                        Constants.Shooter.Spark.FF_BOTTOM_KS,
+                        Constants.Shooter.Spark.FF_BOTTOM_KV,
+                        Constants.Shooter.Spark.FF_BOTTOM_KA);
 
-        top.getEncoder().setVelocityConversionFactor(
-                (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2))
-        );
-        bottom.getEncoder().setVelocityConversionFactor(
-                (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2))
-        );
+        top.getEncoder()
+                .setVelocityConversionFactor(
+                        (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+        bottom.getEncoder()
+                .setVelocityConversionFactor(
+                        (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
     }
 
     @Override

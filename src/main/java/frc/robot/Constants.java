@@ -152,8 +152,8 @@ public final class Constants {
          * DRIVETRAIN_WHEELBASE_METERS / 2.0);
          *
          * <p>Assuming our robot can still go at 4.6 meters per second (which it can't, this value
-         * was taken when we had like nothing on our robot, we can go
-         * 10.35 radians per second while spinning
+         * was taken when we had like nothing on our robot, we can go 10.35 radians per second while
+         * spinning
          */
         public static final double MAX_ANGULAR_VELOCITY =
                 10.0; // TODO: This must be tuned to specific robot
@@ -212,7 +212,8 @@ public final class Constants {
         public static final double MIN_ROT = Units.degreesToRadians(0);
         public static final double MAX_ROT = Units.degreesToRadians(90);
 
-        public static final double STARTING_POS = Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
+        public static final double STARTING_POS =
+                Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
         public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
 
         // TODO CONFIG
@@ -245,7 +246,7 @@ public final class Constants {
         public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
 
         public static final class Positions {
-            public static final double INTAKE = STARTING_POS + Units.degreesToRadians(- 2);
+            public static final double INTAKE = STARTING_POS + Units.degreesToRadians(-2);
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
             public static final double SCORE_AMP = Units.degreesToRadians(100);
@@ -268,7 +269,6 @@ public final class Constants {
             public static final int SPARK_TOP = 22; // TODO SET
             public static final int SPARK_BOTTOM = 23; // TODO SET
 
-
             public static final double PID_TOP_P = 0.013715; // TODO SET Was 0.013715
             public static final int PID_TOP_I = 0; // TODO SET
             public static final int PID_TOP_D = 0; // TODO SET
@@ -277,7 +277,6 @@ public final class Constants {
             public static final int PID_BOTTOM_I = 0; // TODO SET
             public static final int PID_BOTTOM_D = 0; // TODO SET
 
-
             public static final double FF_TOP_KS = 0.043031; // TODO SET
             public static final double FF_TOP_KV = 0.39694; // TODO SET
             public static final double FF_TOP_KA = 0.086385;
@@ -285,7 +284,6 @@ public final class Constants {
             public static final double FF_BOTTOM_KS = 0.043031; // TODO SET
             public static final double FF_BOTTOM_KV = 0.39694; // TODO SET
             public static final double FF_BOTTOM_KA = 0.086385;
-
         }
 
         public static class Talon {
@@ -299,19 +297,26 @@ public final class Constants {
 
         public static final int CURRENT_LIMIT = 0; // TODO SET
 
-
         public static class AutoShootConstants {
-            public static final Transform2d botToCenterOfRotation = new Transform2d(Units.inchesToMeters(-(15-4)), Units.inchesToMeters(4), Rotation2d.fromRadians(0));
-            public static final Transform2d centerOfRotationToShooter = new Transform2d(Units.inchesToMeters(-27), Units.inchesToMeters(4), Rotation2d.fromRadians(0));
+            public static final Transform2d botToCenterOfRotation =
+                    new Transform2d(
+                            Units.inchesToMeters(-(15 - 4)),
+                            Units.inchesToMeters(4),
+                            Rotation2d.fromRadians(0));
+            public static final Transform2d centerOfRotationToShooter =
+                    new Transform2d(
+                            Units.inchesToMeters(-27),
+                            Units.inchesToMeters(4),
+                            Rotation2d.fromRadians(0));
 
             public static final double shootAngleOffset = Units.degreesToRadians(20);
 
-            public static final Pose3d goalPoseBlue = new Pose3d(0.2269, 5.5526, 2.0451, new Rotation3d());
-            public static final Pose3d goalPoseRed = new Pose3d(16.3062, 5.5556, 2.0446, new Rotation3d());
+            public static final Pose3d goalPoseBlue =
+                    new Pose3d(0.2269, 5.5526, 2.0451, new Rotation3d());
+            public static final Pose3d goalPoseRed =
+                    new Pose3d(16.3062, 5.5556, 2.0446, new Rotation3d());
 
             public static final double limeLightHeight = Units.inchesToMeters(6);
-
-
 
             public static final double shootVelocity = 23.6 * .8;
         }
@@ -408,7 +413,8 @@ public final class Constants {
                         TELEOP.and(OPERATOR_CONTROLLER.y());
                 public static final Trigger PRIME_SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
 
-                public static final Trigger AIM_ARM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());
+                public static final Trigger AIM_ARM_SPEAKER =
+                        TELEOP.and(OPERATOR_CONTROLLER.start());
             }
         }
 

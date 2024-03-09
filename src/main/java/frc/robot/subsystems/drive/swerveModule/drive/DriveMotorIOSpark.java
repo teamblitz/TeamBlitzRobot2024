@@ -75,8 +75,7 @@ public class DriveMotorIOSpark implements DriveMotorIO {
                 1 / Constants.Drive.DRIVE_GEAR_RATIO * Constants.Drive.WHEEL_CIRCUMFERENCE);
         encoder.setPosition(0);
 
-        configurePID(
-                Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);
+        configurePID(Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);
     }
 
     @Override

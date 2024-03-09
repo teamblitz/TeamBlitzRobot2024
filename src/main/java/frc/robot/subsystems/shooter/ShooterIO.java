@@ -18,6 +18,7 @@ public interface ShooterIO {
     public default void updateInputs(ShooterIOInputs inputs) {}
 
     public default void setPercent(double percent) {}
+
     public default void setVolts(double volts) {}
 
     public default void setSetpoint(double velocity) {}

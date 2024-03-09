@@ -19,7 +19,7 @@ import java.util.Map;
  * <p>TODO, currently unused, I want to verify values in here, and maybe make documentation more
  * concise.
  *
- * Hehe, hehe, hehe
+ * <p>Hehe, hehe, hehe
  */
 public final class FieldConstants {
     public static final double fieldLength = Units.inchesToMeters(651.25);
