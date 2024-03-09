@@ -37,12 +37,12 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                         FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
 
         // Do this, but smarter
-        Commands.waitSeconds(5)
-                .andThen(io::seedArmPosition)
-                .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
-                // loop
-                .ignoringDisable(true)
-                .schedule();
+//        Commands.waitSeconds(5)
+//                .andThen(io::seedArmPosition)
+//                .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
+//                // loop
+//                .ignoringDisable(true)
+//                .schedule();
 
         // Constructor of armio?
         io.seedArmPosition();

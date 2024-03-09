@@ -285,6 +285,12 @@ public class RobotContainer {
                         .andThen(intake.intakeCommand().withTimeout(.5))
                         .raceWith(shooter.shootCommand()));
 
+        NamedCommands.registerCommand(
+                "autoShoot",
+                Commands.waitSeconds(1).andThen(intake.intakeCommand().withTimeout(.5))
+                                .raceWith(todoPutThisAutoShootSomewhereElse())
+        );
+
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
@@ -306,5 +312,42 @@ public class RobotContainer {
     public Command getAutonomousCommand() { // Autonomous code goes here
         return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.getSelected().angle))
                 .andThen(autoChooser.getSelected());
+    }
+
+
+    public Command todoPutThisAutoShootSomewhereElse() {
+        return arm.rotateToCommand(
+                () ->
+                        MathUtil.clamp(
+                                AutoAimCalculator.calculateArmAngle(
+                                        new Pose3d(drive.getLimelightPose()),
+                                        DriverStation.getAlliance().isPresent()
+                                                && DriverStation
+                                                .getAlliance()
+                                                .get()
+                                                == DriverStation
+                                                .Alliance
+                                                .Blue
+                                                ? Constants.Shooter
+                                                .AutoShootConstants
+                                                .goalPoseBlue
+                                                : Constants.Shooter
+                                                .AutoShootConstants
+                                                .goalPoseRed,
+                                        Constants.Shooter.AutoShootConstants
+                                                .botToCenterOfRotation,
+                                        Constants.Shooter.AutoShootConstants
+                                                .centerOfRotationToShooter,
+                                        Constants.Shooter.AutoShootConstants
+                                                .shootAngleOffset,
+                                        Constants.Shooter.AutoShootConstants
+                                                .shootVelocity),
+                                0,
+                                Math.PI / 2),
+                false)
+                .alongWith(
+                        shooter.shootClosedLoopCommand(
+                                Constants.Shooter.AutoShootConstants.shootVelocity));
+
     }
 }
