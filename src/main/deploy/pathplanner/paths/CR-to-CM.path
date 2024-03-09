@@ -1,0 +1,58 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4537171349224214,
+        "y": 4.211641409064808
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1230108810928523,
+        "y": 4.697974135284762
+      },
+      "isLocked": false,
+      "linkedName": "center-note-CL-pickup"
+    },
+    {
+      "anchor": {
+        "x": 2.2213012847078333,
+        "y": 5.524300973413978
+      },
+      "prevControl": {
+        "x": 1.6658581184460945,
+        "y": 5.456653188187892
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "note-CM-pickup"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7,
+      "rotationDegrees": 0.0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 1.363927531602814,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "NotePaths",
+  "previewStartingState": {
+    "rotation": -13.416871337918833,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
