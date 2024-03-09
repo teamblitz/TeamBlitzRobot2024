@@ -287,7 +287,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "autoShoot",
-                Commands.waitSeconds(1).andThen(intake.intakeCommand().withTimeout(.5))
+                Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
                                 .raceWith(todoPutThisAutoShootSomewhereElse())
         );
 
@@ -310,8 +310,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
-        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.getSelected().angle))
-                .andThen(autoChooser.getSelected());
+        return autoChooser.getSelected();
     }
 
 

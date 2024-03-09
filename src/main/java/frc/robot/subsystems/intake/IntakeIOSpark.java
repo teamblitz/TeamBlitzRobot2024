@@ -23,7 +23,6 @@ public class IntakeIOSpark implements IntakeIO {
 
     @Override
     public void set(double speed) {
-        System.out.println("Intake: " + speed);
         motor.set(speed);
     }
 
