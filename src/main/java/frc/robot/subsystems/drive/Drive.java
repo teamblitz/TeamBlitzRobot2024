@@ -56,7 +56,9 @@ import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
+import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
+import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import org.littletonrobotics.junction.Logger;
 
@@ -122,23 +124,39 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                 new SwerveModule(
                         FL,
                         new AngleMotorIOSpark(flConstants),
-                        new DriveMotorIOSpark(flConstants),
-                        new EncoderIOHelium(flConstants.cancoderID, CAN_CODER_INVERT)),
+                        configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new DriveMotorIOKraken(flConstants)
+                                : new DriveMotorIOSpark(flConstants),
+                        configuration.encoder == SwerveModuleConfiguration.EncoderType.CANCODER
+                                ? new EncoderIOCanCoder(flConstants.cancoderID, CAN_CODER_INVERT)
+                                : new EncoderIOHelium(flConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         FR,
                         new AngleMotorIOSpark(frConstants),
-                        new DriveMotorIOSpark(frConstants),
-                        new EncoderIOHelium(frConstants.cancoderID, CAN_CODER_INVERT)),
+                        configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new DriveMotorIOKraken(frConstants)
+                                : new DriveMotorIOSpark(frConstants),
+                        configuration.encoder == SwerveModuleConfiguration.EncoderType.CANCODER
+                                ? new EncoderIOCanCoder(frConstants.cancoderID, CAN_CODER_INVERT)
+                                : new EncoderIOHelium(frConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         BL,
                         new AngleMotorIOSpark(blConstants),
-                        new DriveMotorIOSpark(blConstants),
-                        new EncoderIOHelium(blConstants.cancoderID, CAN_CODER_INVERT)),
+                        configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new DriveMotorIOKraken(blConstants)
+                                : new DriveMotorIOSpark(blConstants),
+                        configuration.encoder == SwerveModuleConfiguration.EncoderType.CANCODER
+                                ? new EncoderIOCanCoder(blConstants.cancoderID, CAN_CODER_INVERT)
+                                : new EncoderIOHelium(blConstants.cancoderID, CAN_CODER_INVERT)),
                 new SwerveModule(
                         BR,
                         new AngleMotorIOSpark(brConstants),
-                        new DriveMotorIOSpark(brConstants),
-                        new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
+                        configuration.drive == SwerveModuleConfiguration.MotorType.KRAKEN
+                                ? new DriveMotorIOKraken(brConstants)
+                                : new DriveMotorIOSpark(brConstants),
+                        configuration.encoder == SwerveModuleConfiguration.EncoderType.CANCODER
+                                ? new EncoderIOCanCoder(brConstants.cancoderID, CAN_CODER_INVERT)
+                                : new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
                 gyroIO);
     }
 

@@ -54,10 +54,14 @@ public class DriveMotorIOSpark implements DriveMotorIO {
 
     private void configDriveMotor() {
         motor.restoreFactoryDefaults();
-        motor.setSmartCurrentLimit(Constants.Drive.DRIVE_SMART_CURRENT_LIMIT);
-        motor.setSecondaryCurrentLimit(Constants.Drive.DRIVE_SECONDARY_CURRENT_LIMIT);
+        motor.setSmartCurrentLimit(Constants.Drive.CurrentLimits.Spark.DRIVE_SMART_CURRENT_LIMIT);
+        motor.setSecondaryCurrentLimit(
+                Constants.Drive.CurrentLimits.Spark.DRIVE_SECONDARY_CURRENT_LIMIT);
         motor.setInverted(Constants.Drive.DRIVE_MOTOR_INVERT);
-        motor.setIdleMode(Constants.Drive.DRIVE_NEUTRAL_MODE);
+        motor.setIdleMode(
+                Constants.Drive.DRIVE_BRAKE_MODE
+                        ? CANSparkBase.IdleMode.kBrake
+                        : CANSparkBase.IdleMode.kCoast);
         motor.setOpenLoopRampRate(Constants.Drive.OPEN_LOOP_RAMP);
         motor.setClosedLoopRampRate(Constants.Drive.CLOSED_LOOP_RAMP);
 

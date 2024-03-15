@@ -1,9 +1,6 @@
 package frc.robot.subsystems.drive.swerveModule.angle;
 
-import com.revrobotics.CANSparkLowLevel;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
@@ -57,7 +54,10 @@ public class AngleMotorIOSpark implements AngleMotorIO {
         motor.setSmartCurrentLimit(Constants.Drive.ANGLE_SMART_CURRENT_LIMIT);
         motor.setSecondaryCurrentLimit(Constants.Drive.ANGLE_SECONDARY_CURRENT_LIMIT);
         motor.setInverted(Constants.Drive.ANGLE_MOTOR_INVERT);
-        motor.setIdleMode(Constants.Drive.ANGLE_NEUTRAL_MODE);
+        motor.setIdleMode(
+                Constants.Drive.ANGLE_BRAKE_MODE
+                        ? CANSparkBase.IdleMode.kBrake
+                        : CANSparkBase.IdleMode.kCoast);
 
         encoder.setPositionConversionFactor(
                 (1 / Constants.Drive.ANGLE_GEAR_RATIO) // We do 1 over the gear ratio because 1

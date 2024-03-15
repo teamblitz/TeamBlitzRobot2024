@@ -10,6 +10,8 @@ public class EncoderIOHelium implements EncoderIO {
         encoder = new Canandcoder(id);
 
         Canandcoder.Settings settings = new Canandcoder.Settings();
+        // For the ctre cancoder, the default input is ccw+ looking at the LED side. However, the
+        // helium CANAndCoder is by default CCW+ looking from the face. So we invert the value here
         settings.setInvertDirection(!invert);
         encoder.setSettings(settings);
     }

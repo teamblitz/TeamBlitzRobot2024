@@ -10,7 +10,6 @@ package frc.robot;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -103,8 +102,17 @@ public final class Constants {
          *
          * Because of how fuses work, they can sustain current draw above their rated value for short periods of time before tripping, meaning these values do have meaning above 40
          */
-        public static final int DRIVE_SMART_CURRENT_LIMIT = 65;
-        public static final int DRIVE_SECONDARY_CURRENT_LIMIT = 80;
+        public static final class CurrentLimits {
+            public static class Spark {
+
+                public static final int DRIVE_SMART_CURRENT_LIMIT = 65;
+                public static final int DRIVE_SECONDARY_CURRENT_LIMIT = 80;
+            }
+
+            public static class Kraken {
+                public static final int DRIVE_STATOR = 120;
+            }
+        }
 
         public static final int ANGLE_SMART_CURRENT_LIMIT = 25;
         public static final int ANGLE_SECONDARY_CURRENT_LIMIT = 40;
@@ -159,8 +167,8 @@ public final class Constants {
                 10.0; // TODO: This must be tuned to specific robot
 
         /* Neutral Modes */
-        public static final IdleMode ANGLE_NEUTRAL_MODE = IdleMode.kCoast;
-        public static final IdleMode DRIVE_NEUTRAL_MODE = IdleMode.kCoast;
+        public static final boolean ANGLE_BRAKE_MODE = false;
+        public static final boolean DRIVE_BRAKE_MODE = false;
 
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
