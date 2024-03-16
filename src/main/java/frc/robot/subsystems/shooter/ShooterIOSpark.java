@@ -65,6 +65,13 @@ public class ShooterIOSpark implements ShooterIO {
         bottom.getEncoder()
                 .setVelocityConversionFactor(
                         (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+
+        top.getEncoder()
+                .setPositionConversionFactor(
+                        (Math.PI * 2 * Units.inchesToMeters(2)));
+        bottom.getEncoder()
+                .setPositionConversionFactor(
+                        (Math.PI * 2 * Units.inchesToMeters(2)));
     }
 
     @Override
