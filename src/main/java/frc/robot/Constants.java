@@ -300,9 +300,6 @@ public final class Constants {
             public static final int TALON_BOTTOM = 23; // TODO SET
         }
 
-        public static final int TOP = 17; // TODO SET
-        public static final int BOTTOM = 18; // TODO SET
-
         public static final int CURRENT_LIMIT = 0; // TODO SET
 
         public static class AutoShootConstants {
@@ -324,16 +321,11 @@ public final class Constants {
             public static final Pose3d goalPoseRed =
                     new Pose3d(16.3062, 5.5556, 2.0446, new Rotation3d());
 
-            public static final double limeLightHeight = Units.inchesToMeters(6);
-
             public static final double shootVelocity = 23.6 * .8;
         }
     }
 
     public static final class AutoConstants {
-
-        public static final double CHARGE_STATION_MIN_ANGLE = 2;
-        public static final double CHARGE_STATION_MAX_ANGLE = 10;
 
         public static final double MAX_SPEED_METERS_PER_SECOND = 3;
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
