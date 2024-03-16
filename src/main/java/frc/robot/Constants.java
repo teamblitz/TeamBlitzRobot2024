@@ -321,6 +321,13 @@ public final class Constants {
         }
     }
 
+    public static class Climber {
+        public static final int LEFT_MOTOR_ID = 17;
+        public static final int RIGHT_MOTOR_ID = 18;
+
+        public static final double CURRENT_LIMIT = 100;
+
+    }
     public static final class AutoConstants {
 
         public static final double MAX_SPEED_METERS_PER_SECOND = 3;
