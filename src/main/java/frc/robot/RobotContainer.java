@@ -289,14 +289,18 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .alongWith(intake.setSpeedCommand(.5)));
+                        .raceWith(intake.intakeCommandSmart(.7))
+                        .andThen(intake.indexIntake().asProxy())
+        );
 
-        NamedCommands.registerCommand(
-                "readyShoot",
-                intake.setSpeedCommand(-.4)
-                        .alongWith(shooter.reverseCommand())
-                        .withTimeout(.5)
-                        .alongWith(Commands.print("[Auto] readyShoot")));
+
+
+//        NamedCommands.registerCommand(
+//                "readyShoot",
+//                intake.setSpeedCommand(-.4)
+//                        .alongWith(shooter.reverseCommand())
+//                        .withTimeout(.5)
+//                        .alongWith(Commands.print("[Auto] readyShoot")));
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here

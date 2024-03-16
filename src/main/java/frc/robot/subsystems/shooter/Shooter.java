@@ -2,6 +2,7 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,12 +10,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 // import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
+import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase implements BlitzSubsystem {
 
     private final ShooterIO io;
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
+
+    private double setpoint;
 
     private final SysIdRoutine routine;
 
@@ -54,6 +58,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void shootClosedLoop(double metersPerSecond) {
+        setpoint = metersPerSecond;
         io.setSetpoint(metersPerSecond); // TODO, CONST
         Logger.recordOutput("shooter/velocitySetpoint");
     }
@@ -77,6 +82,13 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     public Command shootClosedLoopCommand(double metersPerSecond) {
         return startEnd(() -> shootClosedLoop(metersPerSecond), this::stop);
     }
+
+    public boolean atSetpoint() {
+        return
+                MathUtil.isNear(setpoint, inputs.rpmTop, Constants.Shooter.MAX_VELOCITY * .01) &&
+                MathUtil.isNear(setpoint, inputs.rpmBottom, Constants.Shooter.MAX_VELOCITY * .01);
+    }
+
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction);

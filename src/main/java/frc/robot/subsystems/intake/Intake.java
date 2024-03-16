@@ -41,6 +41,10 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
         return intakeCommand().until(() -> inputs.breakBeam);
     }
 
+    public Command intakeCommandSmart(double speed) {
+        return setSpeedCommand(speed).until(() -> inputs.breakBeam);
+    }
+
     /**
      * Note, should only after intakeCommandSmart finishes
      */

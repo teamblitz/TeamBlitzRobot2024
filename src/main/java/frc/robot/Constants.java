@@ -272,6 +272,8 @@ public final class Constants {
 
     public static class Shooter {
 
+        public static final double MAX_VELOCITY = 23.6;
+
         public static class Spark {
 
             public static final int SPARK_TOP = 22; // TODO SET
