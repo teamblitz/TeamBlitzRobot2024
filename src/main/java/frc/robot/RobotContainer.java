@@ -200,7 +200,9 @@ public class RobotContainer {
 
         OIConstants.SuperStructure.Arm.PRIME_INTAKE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .alongWith(intake.intakeCommand()));
+                        .raceWith(intake.intakeCommandSmart())
+                        .andThen(intake.indexIntake().asProxy()) // Maybe make intake indexing a default command instead
+        );
         OIConstants.SuperStructure.Arm.PRIME_TRANSIT_STAGE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
         OIConstants.SuperStructure.Arm.PRIME_SCORE_SPEAKER.whileTrue(

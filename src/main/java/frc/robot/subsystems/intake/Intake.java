@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.BlitzSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -22,7 +23,7 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     public void intake() {
         io.set(0.7);
-    }
+    } // was .7
 
     public void eject() {
         io.set(-0.3);
@@ -34,6 +35,18 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     public Command intakeCommand() {
         return startEnd(this::intake, this::stop);
+    }
+
+    public Command intakeCommandSmart() {
+        return intakeCommand().until(() -> inputs.breakBeam);
+    }
+
+    /**
+     * Note, should only after intakeCommandSmart finishes
+     */
+    public Command indexIntake() {
+        return setSpeedCommand(-.07)
+                .raceWith(Commands.waitSeconds(.2).andThen(Commands.waitUntil(() -> inputs.breakBeam)));
     }
 
     public Command ejectCommand() {
