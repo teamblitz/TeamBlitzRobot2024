@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
@@ -287,16 +288,25 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "autoShoot",
-                Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
-                                .raceWith(todoPutThisAutoShootSomewhereElse())
+                todoPutThisAutoShootSomewhereElse()
+                        .raceWith(
+                                Commands.waitUntil(() -> shooter.atSetpoint() && arm.atGoal())
+                                        .andThen(intake.intakeCommand().withTimeout(.5))
+                        )
+//                Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
+//                                .raceWith(todoPutThisAutoShootSomewhereElse())
         );
 
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .raceWith(intake.intakeCommandSmart(.7))
-                        .andThen(intake.indexIntake().asProxy())
+                        .alongWith(intake.intakeCommandSmart(.7))
+        );
+
+        NamedCommands.registerCommand(
+                "index",
+                intake.indexIntake()
         );
 
 

@@ -25,6 +25,8 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
+    private boolean atGoal;
+
     private final ArmFeedforward feedforward;
 
     private final SysIdRoutine routine;
@@ -113,12 +115,9 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                                     lastState.get(),
                                                     new TrapezoidProfile.State(
                                                             goal.getAsDouble(), 0));
-                                    //                                    lastState.set(new
-                                    // TrapezoidProfile.State(
-                                    //                                            inputs.rotation,
-                                    // inputs.armRotationSpeed));
                                     lastState.set(setpoint);
                                     updateRotation(setpoint.position, setpoint.velocity);
+                                    atGoal = profile.timeLeftUntil(goal.getAsDouble()) == 0;
                                 })
                                 .until(
                                         () ->
@@ -133,6 +132,10 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
     public Command rotateToCommand(double goal, boolean endAutomatically) {
         return rotateToCommand(() -> goal, endAutomatically);
+    }
+
+    public boolean atGoal() {
+        return atGoal;
     }
 
     /* SYSID STUFF */

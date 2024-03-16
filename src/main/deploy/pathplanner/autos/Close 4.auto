@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "autoShoot"
           }
         },
         {
@@ -39,7 +39,7 @@
         {
           "type": "named",
           "data": {
-            "name": "readyShoot"
+            "name": "index"
           }
         },
         {
@@ -70,13 +70,13 @@
         {
           "type": "named",
           "data": {
-            "name": "readyShoot"
+            "name": "index"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "autoShoot"
           }
         },
         {
@@ -101,7 +101,7 @@
         {
           "type": "named",
           "data": {
-            "name": "readyShoot"
+            "name": "index"
           }
         },
         {
