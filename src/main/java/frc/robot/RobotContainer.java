@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
@@ -193,7 +192,7 @@ public class RobotContainer {
         //        controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
         //        controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
 
-        OIConstants.SuperStructure.Intake.intakeFwd.whileTrue(intake.intakeCommand());
+        OIConstants.SuperStructure.Intake.feed.whileTrue(intake.feedShooter());
         OIConstants.SuperStructure.Intake.intakeRev.whileTrue(intake.ejectCommand());
         OIConstants.SuperStructure.Shooter.shooterSpeaker.whileTrue(shooter.shootCommand());
         OIConstants.SuperStructure.Shooter.shooterAmp.whileTrue(shooter.shootCommand());
@@ -201,8 +200,8 @@ public class RobotContainer {
 
         OIConstants.SuperStructure.Arm.PRIME_INTAKE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .raceWith(intake.intakeCommandSmart())
-                        .andThen(intake.indexIntake().asProxy()) // Maybe make intake indexing a default command instead
+                        .raceWith(intake.intakeGroundAutomatic())
+//                        .andThen(intake.indexIntake().asProxy()) // Maybe make intake indexing a default command instead
         );
         OIConstants.SuperStructure.Arm.PRIME_TRANSIT_STAGE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
@@ -283,7 +282,7 @@ public class RobotContainer {
                 "shoot",
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, true)
                         .alongWith(Commands.waitSeconds(1))
-                        .andThen(intake.intakeCommand().withTimeout(.5))
+                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand()));
 
         NamedCommands.registerCommand(
@@ -291,7 +290,7 @@ public class RobotContainer {
                 todoPutThisAutoShootSomewhereElse()
                         .raceWith(
                                 Commands.waitUntil(() -> shooter.atSetpoint() && arm.atGoal())
-                                        .andThen(intake.intakeCommand().withTimeout(.5))
+                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         )
 //                Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
 //                                .raceWith(todoPutThisAutoShootSomewhereElse())
@@ -301,13 +300,13 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .alongWith(intake.intakeCommandSmart(.7))
+                        .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
         );
 
-        NamedCommands.registerCommand(
-                "index",
-                intake.indexIntake()
-        );
+//        NamedCommands.registerCommand(
+//                "index",
+//                intake.indexIntake()
+//        );
 
 
 

@@ -396,7 +396,7 @@ public final class Constants {
 
         public static final class SuperStructure {
             public static final class Intake {
-                public static final Trigger intakeFwd = OPERATOR_CONTROLLER.leftBumper();
+                public static final Trigger feed = OPERATOR_CONTROLLER.leftBumper();
                 public static final Trigger intakeRev = OPERATOR_CONTROLLER.leftTrigger();
             }
 

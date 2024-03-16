@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.BlitzSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -13,12 +14,15 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     public Intake(IntakeIO io) {
         this.io = io;
+        setDefaultCommand(automaticIndex());
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("intake", inputs);
+
+        Logger.recordOutput("Intake/State", state.name());
     }
 
     public void intake() {
@@ -33,24 +37,40 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
         io.set(0);
     }
 
-    public Command intakeCommand() {
-        return startEnd(this::intake, this::stop);
+
+    public Command intakeGroundAutomatic(double speed) {
+        return setSpeedCommand(speed)
+                .until(() -> inputs.breakBeam)
+                .andThen(() -> state = State.Unindexed);
     }
 
-    public Command intakeCommandSmart() {
-        return intakeCommand().until(() -> inputs.breakBeam);
+    public Command intakeGroundAutomatic() {
+        return intakeGroundAutomatic(.7);
     }
 
-    public Command intakeCommandSmart(double speed) {
-        return setSpeedCommand(speed).until(() -> inputs.breakBeam);
+    public Command feedShooter() {
+        return setSpeedCommand(.7);
     }
+
 
     /**
      * Note, should only after intakeCommandSmart finishes
      */
     public Command indexIntake() {
         return setSpeedCommand(-.07)
-                .raceWith(Commands.waitSeconds(.2).andThen(Commands.waitUntil(() -> inputs.breakBeam)));
+                .raceWith(
+                        Commands.waitSeconds(.2).andThen(
+                                Commands.waitUntil(() -> inputs.breakBeam)
+                                        .andThen(() -> state = State.Indexed)
+                        ));
+    }
+
+    public Command automaticIndex() {
+        return new ConditionalCommand(
+                indexIntake(),
+                Commands.none(),
+                () -> state == State.Unindexed
+        );
     }
 
     public Command ejectCommand() {
@@ -60,4 +80,10 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     public Command setSpeedCommand(double speed) {
         return startEnd(() -> io.set(speed), this::stop);
     }
+
+    public enum State {
+        Indexed, Unindexed, Empty
+    }
+
+    private State state = State.Indexed;
 }
