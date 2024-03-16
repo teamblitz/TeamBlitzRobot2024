@@ -33,121 +33,20 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
     public Climber(ClimberIO io) {
         this.io = io;
 
-//        feedforward =
-//                new ArmFeedforward(
-//                        FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
-
-        // Do this, but smarter
-//        Commands.waitSeconds(5)
-//                .andThen(io::seedArmPosition)
-//                .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
-//                // loop
-//                .ignoringDisable(true)
-//                .schedule();
-
-//        io.seedArmPosition();
-
-        routine =
-                new SysIdRoutine(
-                        new SysIdRoutine.Config(
-                                null,
-                                Volts.of(5),
-                                null,
-                                (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
-                        new SysIdRoutine.Mechanism(
-                                (Measure<Voltage> volts) -> {
-                                    System.out.println(volts.baseUnitMagnitude());
-                                    io.setArmVolts(volts.in(Volts));
-                                },
-                                null, // No log consumer, since data is recorded by URCL
-                                this));
-    }
-
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("arm", inputs);
+        Logger.processInputs("climber", inputs);
     }
 
-    public void updateRotation(double degrees, double velocity) {
-        Logger.recordOutput("arm/wanted_rotation", degrees);
-        io.setRotationSetpoint(degrees, feedforward.calculate(degrees, velocity));
-    }
+    public void setSpeed(double left, double right) {}
 
-    public double getRotation() {
-        return inputs.rotation;
-    }
-
-    public double getRotationSpeed() {
+    public double getSpeed() {
         return inputs.armRotationSpeed;
     }
 
-    public void setArmRotationSpeed(double percent) {
-        io.setArmSpeed(percent);
+    public Command extendToCommand(double goal, boolean endAutomatically) {
+        return extendToCommand(() -> goal, endAutomatically);
     }
 
-    public Command rotateToCommand(DoubleSupplier goal, boolean endAutomatically) {
-        TrapezoidProfile profile =
-                new TrapezoidProfile(
-                        new TrapezoidProfile.Constraints(
-                                Constants.Arm.ROTATION_VELOCITY,
-                                Constants.Arm.ROTATION_ACCELERATION));
-
-        MutableReference<TrapezoidProfile.State> lastState = new MutableReference<>();
-
-        TrapezoidProfile.State goalState = new TrapezoidProfile.State(goal.getAsDouble(), 0);
-
-        return runOnce(
-                () -> {
-                    lastState.set(
-                            new TrapezoidProfile.State(
-                                    inputs.rotation, inputs.armRotationSpeed));
-
-                    profile.calculate(Robot.defaultPeriodSecs, lastState.get(), goalState);
-                })
-                .andThen(
-                        run(() -> {
-                            TrapezoidProfile.State setpoint =
-                                    profile.calculate(
-                                            Robot.defaultPeriodSecs,
-                                            lastState.get(),
-                                            new TrapezoidProfile.State(
-                                                    goal.getAsDouble(), 0));
-                            //                                    lastState.set(new
-                            // TrapezoidProfile.State(
-                            //                                            inputs.rotation,
-                            // inputs.armRotationSpeed));
-                            lastState.set(setpoint);
-                            updateRotation(setpoint.position, setpoint.velocity);
-                        })
-                                .until(
-                                        () ->
-                                                profile.timeLeftUntil(goal.getAsDouble()) == 0
-                                                        && endAutomatically))
-                .finallyDo(
-                        (interrupted) -> {
-                            if (!interrupted) updateRotation(goal.getAsDouble(), 0);
-                            else if (interrupted) updateRotation(lastState.get().position, 0);
-                        });
-    }
-
-    public Command rotateToCommand(double goal, boolean endAutomatically) {
-        return rotateToCommand(() -> goal, endAutomatically);
-    }
-
-    /* SYSID STUFF */
-    // Creates a SysIdRoutine
-
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
-    }
-
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
-    }
-
-    public Command coastCommand() {
-        return Commands.startEnd(() -> io.setBrake(false), () -> io.setBrake(true))
-                .ignoringDisable(true);
-    }
 }

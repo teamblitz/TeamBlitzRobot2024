@@ -327,6 +327,10 @@ public final class Constants {
 
         public static final double CURRENT_LIMIT = 100;
 
+        public static final double MAX_EXTENSION = 0; //TODO set
+
+
+
     }
     public static final class AutoConstants {
 
