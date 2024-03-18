@@ -257,8 +257,7 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "autoShoot",
                 todoPutThisAutoShootSomewhereElse()
-                        .raceWith(
-                                Commands.waitUntil(() -> shooter.atSetpoint() && arm.atGoal())
+                        .raceWith(Commands.waitSeconds(1.5)
                                         .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
                 //
                 // Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
@@ -269,8 +268,9 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .alongWith(intake.intakeGroundAutomatic(.7).asProxy()));
-
+                        .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
+                        .alongWith(shooter.reverseCommand())
+        );
         //        NamedCommands.registerCommand(
         //                "index",
         //                intake.indexIntake()
