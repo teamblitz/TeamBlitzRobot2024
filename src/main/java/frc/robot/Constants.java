@@ -251,7 +251,7 @@ public final class Constants {
             public static final double INTAKE = STARTING_POS + Units.degreesToRadians(-2);
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
-            public static final double SCORE_AMP = Units.degreesToRadians(100);
+            public static final double SCORE_AMP = Units.degreesToRadians(120);
             public static final double SCORE_SPEAKER = Units.degreesToRadians(30);
         }
     }

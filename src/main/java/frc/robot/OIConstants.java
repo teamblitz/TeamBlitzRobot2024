@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
@@ -9,7 +10,7 @@ import java.util.function.Function;
 
 public class OIConstants {
 
-    public static final CommandXboxController DRIVE_CONTROLLER = new CommandXboxController(0);
+    public static final CommandJoystick DRIVE_CONTROLLER = new CommandJoystick(0);
     public static final CommandXboxController OPERATOR_CONTROLLER = new CommandXboxController(1);
     public static final boolean TEST_CONTROLS = true;
     public static final CommandXboxController TEST_CONTROLLER =
@@ -24,7 +25,7 @@ public class OIConstants {
         public static double STICK_DEADBAND = 0.05;
 
         // Values are in percents, we have full power
-        private static final double SPIN_SPEED = .4 * 0;
+        private static final double SPIN_SPEED = .4;
         private static final double SLOW_SPEED = .3;
         public static final double NORMAL_SPEED = .6;
         public static final double FAST_SPEED = 1;
@@ -32,38 +33,47 @@ public class OIConstants {
         private static final SlewRateLimiter DRIVE_MULTIPLIER_LIMITER =
                 new SlewRateLimiter(.25); // Todo, try without this?
 
+//        private static final DoubleSupplier DRIVE_MULTIPLIER =
+//                () ->
+//                        NORMAL_SPEED
+//                                + DRIVE_CONTROLLER.getLeftTriggerAxis()
+//                                        * (SLOW_SPEED - NORMAL_SPEED)
+//                                + DRIVE_CONTROLLER.getRightTriggerAxis()
+//                                        * (FAST_SPEED - NORMAL_SPEED);
+
         private static final DoubleSupplier DRIVE_MULTIPLIER =
                 () ->
-                        NORMAL_SPEED
-                                + DRIVE_CONTROLLER.getRightTriggerAxis()
-                                        * (SLOW_SPEED - NORMAL_SPEED)
-                                + DRIVE_CONTROLLER.getLeftTriggerAxis()
-                                        * (FAST_SPEED - NORMAL_SPEED);
+                        DRIVE_CONTROLLER.getHID().getRawButton(2)
+                                ? SLOW_SPEED
+                                : (DRIVE_CONTROLLER.getHID().getRawButton(1)
+                                ? FAST_SPEED : NORMAL_SPEED);
+
+
 
         public static final DoubleSupplier X_TRANSLATION =
                 () ->
-                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getLeftY())
+                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getY())
                                 * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier Y_TRANSLATION =
                 () ->
-                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getLeftX())
+                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getX())
                                 * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier ROTATION_SPEED =
-                () -> INPUT_CURVE.apply(SPIN_SPEED * DRIVE_CONTROLLER.getRightX());
+                () -> INPUT_CURVE.apply(SPIN_SPEED * -DRIVE_CONTROLLER.getTwist());
 
         public static final DoubleSupplier HEADING_CONTROL =
-                () ->
-                        Math.hypot(DRIVE_CONTROLLER.getRightY(), DRIVE_CONTROLLER.getRightX()) > .5
-                                ? Math.toDegrees(Math.atan2(
-                                                -DRIVE_CONTROLLER.getRightY(),
-                                                -DRIVE_CONTROLLER.getRightX()))
-                                        - 90
-                                : Double.NaN;
+                () -> Double.NaN;
+//                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(), DRIVE_CONTROLLER.getLeftX()) > .5
+//                                ? Math.toDegrees(Math.atan2(
+//                                                -DRIVE_CONTROLLER.getLeftY(),
+//                                                -DRIVE_CONTROLLER.getLeftX()))
+//                                        - 90
+//                                : Double.NaN;
 
         // Drive on the fly modes
-        public static final Trigger RESET_GYRO = DRIVE_CONTROLLER.start();
+        public static final Trigger RESET_GYRO = DRIVE_CONTROLLER.button(5);
         public static final Trigger X_BREAK = UNBOUND;
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
