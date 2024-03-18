@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.util.Units;
@@ -19,13 +20,16 @@ public class ClimberIOKraken implements ClimberIO {
 
 
     public ClimberIOKraken() {
-
         left = new TalonFX(Climber.LEFT_MOTOR_ID); //17
         right = new TalonFX(Climber.RIGHT_MOTOR_ID); //18
-    }
 
-    private void configMotor() {
         TalonFXConfiguration config = new TalonFXConfiguration();
+
+        config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+        config.CurrentLimits.withStatorCurrentLimit(Climber.CURRENT_LIMIT);
+
+        left.getConfigurator().apply(config.MotorOutput.withInverted(Climber.LEFT_INVERT));
+        right.getConfigurator().apply(config.MotorOutput.withInverted(Climber.RIGHT_INVERT));
     }
 
     @Override

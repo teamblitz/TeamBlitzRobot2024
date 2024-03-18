@@ -252,13 +252,19 @@ public final class Constants {
             public static final double D = 0;
         }
 
-        public static final double GEAR_RATIO = ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
+        public static final double GEAR_RATIO =
+                robot == Robot.CompBot
+                        ? ((3 * 3 * 4) / 1.0) * (58.0 / 12.0)
+                        : ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
 
         public static final class Positions {
-            public static final double INTAKE = STARTING_POS + Units.degreesToRadians(-2);
+            public static final double INTAKE = STARTING_POS + Units.degreesToRadians(
+                    robot == Robot.CompBot ?
+                            0 : -2
+            );
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
-            public static final double SCORE_AMP = Units.degreesToRadians(120);
+            public static final double SCORE_AMP = Units.degreesToRadians(110);
             public static final double SCORE_SPEAKER = Units.degreesToRadians(30);
         }
     }
@@ -332,7 +338,7 @@ public final class Constants {
         public static final int LEFT_MOTOR_ID = 17;
         public static final int RIGHT_MOTOR_ID = 18;
 
-        public static final double CURRENT_LIMIT = 100;
+        public static final double CURRENT_LIMIT = 80;
 
         public static final double MAX_EXTENSION = 0; //TODO set
 
