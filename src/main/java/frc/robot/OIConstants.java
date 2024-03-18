@@ -31,6 +31,7 @@ public class OIConstants {
 
         private static final SlewRateLimiter DRIVE_MULTIPLIER_LIMITER =
                 new SlewRateLimiter(.25); // Todo, try without this?
+
         private static final DoubleSupplier DRIVE_MULTIPLIER =
                 () ->
                         NORMAL_SPEED
@@ -43,13 +44,15 @@ public class OIConstants {
                 () ->
                         INPUT_CURVE.apply(-DRIVE_CONTROLLER.getLeftY())
                                 * DRIVE_MULTIPLIER.getAsDouble();
+
         public static final DoubleSupplier Y_TRANSLATION =
                 () ->
                         INPUT_CURVE.apply(-DRIVE_CONTROLLER.getLeftX())
                                 * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier ROTATION_SPEED =
-                () -> INPUT_CURVE.apply(.4 * DRIVE_CONTROLLER.getRightX());
+                () -> INPUT_CURVE.apply(SPIN_SPEED * DRIVE_CONTROLLER.getRightX());
+
         public static final DoubleSupplier HEADING_CONTROL =
                 () ->
                         Math.hypot(DRIVE_CONTROLLER.getRightY(), DRIVE_CONTROLLER.getRightX()) > .5
