@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3777394973336319,
-        "y": 5.5
+        "x": 1.354605173665323,
+        "y": 5.534466424383086
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.377739497333632,
-        "y": 5.5
+        "x": 2.3546051736653233,
+        "y": 5.534466424383086
       },
       "isLocked": false,
       "linkedName": "subwoofer-center"
     },
     {
       "anchor": {
-        "x": 2.735668228228687,
-        "y": 5.5
+        "x": 2.599616952788408,
+        "y": 5.534466424383086
       },
       "prevControl": {
-        "x": 1.735668228228687,
-        "y": 5.5
-      },
-      "nextControl": {
-        "x": 3.735668228228687,
-        "y": 5.5
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.38,
-        "y": 5.5
-      },
-      "prevControl": {
-        "x": 2.5692517043179444,
-        "y": 5.477562174422595
+        "x": 2.2199804556486598,
+        "y": 5.534466424383086
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "note-CM-pickup"
     }
   ],
   "rotationTargets": [],
@@ -59,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "NotePaths",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

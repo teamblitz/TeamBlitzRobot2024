@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "M-2"
+                  "pathName": "center-to-CM"
                 }
               },
               {
@@ -51,6 +51,6 @@
       ]
     }
   },
-  "folder": null,
+  "folder": "center",
   "choreoAuto": false
 }
