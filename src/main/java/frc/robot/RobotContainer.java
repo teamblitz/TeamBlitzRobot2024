@@ -163,7 +163,7 @@ public class RobotContainer {
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
         OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());
         OIConstants.Shooter.MANUAL_FEED.whileTrue(shooter.shootCommand());
-        OIConstants.Shooter.shooterAmp.whileTrue(shooter.shootCommand());
+        OIConstants.Shooter.SHOOTER_AMP.whileTrue(shooter.shootCommand());
         OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
 
         OIConstants.Arm.INTAKE.whileTrue(

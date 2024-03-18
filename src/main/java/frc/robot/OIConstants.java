@@ -24,7 +24,7 @@ public class OIConstants {
         public static double STICK_DEADBAND = 0.05;
 
         // Values are in percents, we have full power
-        private static final double SPIN_SPEED = .4;
+        private static final double SPIN_SPEED = .4 * 0;
         private static final double SLOW_SPEED = .3;
         public static final double NORMAL_SPEED = .6;
         public static final double FAST_SPEED = 1;
@@ -76,7 +76,7 @@ public class OIConstants {
 
     public static final class Shooter {
         public static final Trigger MANUAL_FEED = OPERATOR_CONTROLLER.rightBumper();
-        public static final Trigger shooterAmp = UNBOUND;
+        public static final Trigger SHOOTER_AMP = UNBOUND;
         public static final Trigger EJECT = OPERATOR_CONTROLLER.rightTrigger();
     }
 
