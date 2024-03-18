@@ -10,12 +10,10 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AutoConstants.StartingPos;
-import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSpark;
@@ -51,13 +48,6 @@ public class RobotContainer {
     private Intake intake;
     private Shooter shooter;
     private Arm arm;
-
-    /* ***** --- Controllers --- ***** */
-    private Controller controller;
-    //     private SaitekX52Joystick driveController;
-    private Joystick driveController;
-
-    // private final Logger logger = Logger.getInstance();
 
     /* ***** --- Autonomous --- ***** */
     // *** Must match with path names in pathplanner folder ***
@@ -113,40 +103,24 @@ public class RobotContainer {
                                                         .shootVelocity)));
     }
 
-    private final SlewRateLimiter driveMultiplierLimiter = new SlewRateLimiter(.25);
-
-    private double calculateDriveMultiplier() {
-        if (driveController.getRawButton(2)) {
-            return driveMultiplierLimiter.calculate(.3);
-        } else if (driveController.getRawButton(1)) {
-            return driveMultiplierLimiter.calculate(1);
-        } else {
-            return driveMultiplierLimiter.calculate(.60);
-        }
-    }
-
     private void setDefaultCommands() {
         drive.setDefaultCommand(
                 new TeleopSwerve(
                         drive,
-                        () ->
-                                OIConstants.inputCurve.apply(
-                                        -driveController.getY() * calculateDriveMultiplier()),
-                        () ->
-                                OIConstants.inputCurve.apply(
-                                        -driveController.getX() * calculateDriveMultiplier()),
-                        () -> OIConstants.inputCurve.apply(-driveController.getTwist()) * .40,
+                        OIConstants.Drive.X_TRANSLATION,
+                        OIConstants.Drive.Y_TRANSLATION,
+                        OIConstants.Drive.ROTATION_SPEED,
                         () -> false,
-                        () -> driveController.getPOV()));
+                        OIConstants.Drive.HEADING_CONTROL));
 
         arm.setDefaultCommand(arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_NORMAL, false));
 
-        new Trigger(() -> Math.abs(OIConstants.armSpeed.getAsDouble()) > .08)
+        new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
                         Commands.run(
                                         () -> {
                                             arm.setArmRotationSpeed(
-                                                    OIConstants.armSpeed.getAsDouble());
+                                                    OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
                                         },
                                         arm)
                                 .finallyDo(() -> arm.setArmRotationSpeed(0)));
@@ -176,42 +150,37 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSpark());
         shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark());
-
-        driveController = new Joystick(0); // Move this to Controller (and I never did)
-        controller = new Controller(0, 1);
     }
 
     private void configureButtonBindings() {
 
-        controller.restGyroTrigger().onTrue(Commands.runOnce(drive::zeroGyro));
-        controller.xBrakeTrigger().onTrue(drive.buildParkCommand());
+        OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(drive::zeroGyro));
+        OIConstants.Drive.X_BREAK.onTrue(drive.buildParkCommand());
 
-        controller.brakeModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
-        controller.coastModeTrigger().onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
+        OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
+        OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        //        controller.getStartTrigger().whileTrue(drive.driveSpeedTestCommand(1, 4));
-        //        controller.getBackTrigger().whileTrue(drive.driveSpeedTestCommand(-1, 4));
+        OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
+        OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());
+        OIConstants.Shooter.MANUAL_FEED.whileTrue(shooter.shootCommand());
+        OIConstants.Shooter.shooterAmp.whileTrue(shooter.shootCommand());
+        OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
 
-        OIConstants.SuperStructure.Intake.feed.whileTrue(intake.feedShooter());
-        OIConstants.SuperStructure.Intake.intakeRev.whileTrue(intake.ejectCommand());
-        OIConstants.SuperStructure.Shooter.shooterSpeaker.whileTrue(shooter.shootCommand());
-        OIConstants.SuperStructure.Shooter.shooterAmp.whileTrue(shooter.shootCommand());
-        OIConstants.SuperStructure.Shooter.shooterRev.whileTrue(shooter.reverseCommand());
-
-        OIConstants.SuperStructure.Arm.PRIME_INTAKE.whileTrue(
+        OIConstants.Arm.INTAKE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
                         .raceWith(intake.intakeGroundAutomatic())
-//                        .andThen(intake.indexIntake().asProxy()) // Maybe make intake indexing a default command instead
-        );
-        OIConstants.SuperStructure.Arm.PRIME_TRANSIT_STAGE.whileTrue(
+                //                        .andThen(intake.indexIntake().asProxy()) // Maybe make
+                // intake indexing a default command instead
+                );
+        OIConstants.Arm.TRANSIT_STAGE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
-        OIConstants.SuperStructure.Arm.PRIME_SCORE_SPEAKER.whileTrue(
+        OIConstants.Arm.SCORE_SPEAKER.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, false)
                         .alongWith(shooter.shootCommand()));
-        OIConstants.SuperStructure.Arm.PRIME_SCORE_AMP.whileTrue(
+        OIConstants.Arm.SCORE_AMP.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
-        OIConstants.SuperStructure.Arm.AIM_ARM_SPEAKER.whileTrue(
+        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(
                 arm.rotateToCommand(
                                 () ->
                                         MathUtil.clamp(
@@ -290,72 +259,61 @@ public class RobotContainer {
                 todoPutThisAutoShootSomewhereElse()
                         .raceWith(
                                 Commands.waitUntil(() -> shooter.atSetpoint() && arm.atGoal())
-                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        )
-//                Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
-//                                .raceWith(todoPutThisAutoShootSomewhereElse())
-        );
+                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
+                //
+                // Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
+                //                                .raceWith(todoPutThisAutoShootSomewhereElse())
+                );
 
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
-        );
+                        .alongWith(intake.intakeGroundAutomatic(.7).asProxy()));
 
-//        NamedCommands.registerCommand(
-//                "index",
-//                intake.indexIntake()
-//        );
+        //        NamedCommands.registerCommand(
+        //                "index",
+        //                intake.indexIntake()
+        //        );
 
-
-
-//        NamedCommands.registerCommand(
-//                "readyShoot",
-//                intake.setSpeedCommand(-.4)
-//                        .alongWith(shooter.reverseCommand())
-//                        .withTimeout(.5)
-//                        .alongWith(Commands.print("[Auto] readyShoot")));
+        //        NamedCommands.registerCommand(
+        //                "readyShoot",
+        //                intake.setSpeedCommand(-.4)
+        //                        .alongWith(shooter.reverseCommand())
+        //                        .withTimeout(.5)
+        //                        .alongWith(Commands.print("[Auto] readyShoot")));
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
         return autoChooser.getSelected();
     }
 
-
     public Command todoPutThisAutoShootSomewhereElse() {
         return arm.rotateToCommand(
-                () ->
-                        MathUtil.clamp(
-                                AutoAimCalculator.calculateArmAngle(
-                                        new Pose3d(drive.getLimelightPose()),
-                                        DriverStation.getAlliance().isPresent()
-                                                && DriverStation
-                                                .getAlliance()
-                                                .get()
-                                                == DriverStation
-                                                .Alliance
-                                                .Blue
-                                                ? Constants.Shooter
-                                                .AutoShootConstants
-                                                .goalPoseBlue
-                                                : Constants.Shooter
-                                                .AutoShootConstants
-                                                .goalPoseRed,
-                                        Constants.Shooter.AutoShootConstants
-                                                .botToCenterOfRotation,
-                                        Constants.Shooter.AutoShootConstants
-                                                .centerOfRotationToShooter,
-                                        Constants.Shooter.AutoShootConstants
-                                                .shootAngleOffset,
-                                        Constants.Shooter.AutoShootConstants
-                                                .shootVelocity),
-                                0,
-                                Math.PI / 2),
-                false)
+                        () ->
+                                MathUtil.clamp(
+                                        AutoAimCalculator.calculateArmAngle(
+                                                new Pose3d(drive.getLimelightPose()),
+                                                DriverStation.getAlliance().isPresent()
+                                                                && DriverStation.getAlliance().get()
+                                                                        == DriverStation.Alliance
+                                                                                .Blue
+                                                        ? Constants.Shooter.AutoShootConstants
+                                                                .goalPoseBlue
+                                                        : Constants.Shooter.AutoShootConstants
+                                                                .goalPoseRed,
+                                                Constants.Shooter.AutoShootConstants
+                                                        .botToCenterOfRotation,
+                                                Constants.Shooter.AutoShootConstants
+                                                        .centerOfRotationToShooter,
+                                                Constants.Shooter.AutoShootConstants
+                                                        .shootAngleOffset,
+                                                Constants.Shooter.AutoShootConstants.shootVelocity),
+                                        0,
+                                        Math.PI / 2),
+                        false)
                 .alongWith(
                         shooter.shootClosedLoopCommand(
                                 Constants.Shooter.AutoShootConstants.shootVelocity));
-
     }
 }

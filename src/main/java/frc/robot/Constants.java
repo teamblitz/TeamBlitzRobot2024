@@ -14,16 +14,10 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.DoubleSupplier;
-import java.util.function.Function;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -370,90 +364,9 @@ public final class Constants {
         }
     }
 
-    // TODO: Calculate needed deadband for controller (should be like 6% or less)
-    // Ran this in the pit; had issues with 10% upped to 12%
-    // Have you not seen the comment above, anyways we could probably just shift the deadband or
-    // something
-    // to fix the issues.
-    public static double STICK_DEADBAND = 0.08;
-
     public static final class Networking {
         public static final String JETSON_IP_ADDRESS = "10.20.83.130";
         public static final int PORT = 5810;
         public static final int INTERVAL = 5;
-    }
-
-    public static final class OIConstants {
-        public static final boolean TEST_CONTROLS = true;
-
-        public static final CommandGenericHID DRIVE_CONTROLLER = null;
-        public static final CommandXboxController OPERATOR_CONTROLLER =
-                new CommandXboxController(1);
-        public static final CommandXboxController TEST_CONTROLLER =
-                TEST_CONTROLS ? new CommandXboxController(2) : null;
-
-        public static final Trigger TELEOP = new Trigger(DriverStation::isTeleop).and(() -> true);
-
-        public static final class SuperStructure {
-            public static final class Intake {
-                public static final Trigger feed = OPERATOR_CONTROLLER.leftBumper();
-                public static final Trigger intakeRev = OPERATOR_CONTROLLER.leftTrigger();
-            }
-
-            public static final class Shooter {
-
-                public static final Trigger shooterSpeaker = OPERATOR_CONTROLLER.rightBumper();
-                public static final Trigger shooterAmp = OPERATOR_CONTROLLER.start();
-                public static final Trigger shooterRev = OPERATOR_CONTROLLER.rightTrigger();
-            }
-
-            public static final class Arm {
-                public static final Trigger PRIME_INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a());
-                public static final Trigger PRIME_TRANSIT_STAGE =
-                        TELEOP.and(OPERATOR_CONTROLLER.b());
-                public static final Trigger PRIME_SCORE_SPEAKER =
-                        TELEOP.and(OPERATOR_CONTROLLER.y());
-                public static final Trigger PRIME_SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
-
-                public static final Trigger AIM_ARM_SPEAKER =
-                        TELEOP.and(OPERATOR_CONTROLLER.start());
-            }
-        }
-
-        public static final class TestMode {
-            public static final Trigger zeroAbsEncoders =
-                    TEST_CONTROLLER.b().and(DriverStation::isTest);
-
-            public static final class SysId {
-                public static final class Arm {
-                    public static final Trigger armTest =
-                            new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povLeft());
-                    public static final Trigger quasistaticFwd = armTest.and(TEST_CONTROLLER.y());
-                    public static final Trigger quasistaticRev = armTest.and(TEST_CONTROLLER.x());
-                    public static final Trigger dynamicFwd = armTest.and(TEST_CONTROLLER.b());
-                    public static final Trigger dynamicRev = armTest.and(TEST_CONTROLLER.a());
-                }
-
-                public static final class Drive {
-                    public static final Trigger driveTest =
-                            new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povDown());
-                    public static final Trigger quasistaticFwd = driveTest.and(TEST_CONTROLLER.y());
-                    public static final Trigger quasistaticRev = driveTest.and(TEST_CONTROLLER.x());
-                    public static final Trigger dynamicFwd = driveTest.and(TEST_CONTROLLER.b());
-                    public static final Trigger dynamicRev = driveTest.and(TEST_CONTROLLER.a());
-                }
-            }
-        }
-
-        public static final DoubleSupplier armSpeed = () -> -OPERATOR_CONTROLLER.getLeftY() * .2;
-
-        public static final Function<Double, Double> inputCurve = (x) -> .8 * x + .2 * (x * x * x);
-
-        // Choose 1, not both.
-        public static final boolean USE_XBOX_CONTROLLER = false;
-        public static final boolean USE_SAITEK_CONTROLLER = true;
-
-        public static final int DRIVE_CONTROLLER_PORT = 0;
-        public static final int BUTTON_BOX_PORT = 1;
     }
 }
