@@ -130,25 +130,33 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-        drive =
-                new Drive(
-                        new SwerveModuleConfiguration(
-                                SwerveModuleConfiguration.MotorType.NEO,
-                                SwerveModuleConfiguration.MotorType.NEO,
-                                SwerveModuleConfiguration.EncoderType.HELIUM),
-                        Constants.Drive.Mod0.CONSTANTS,
-                        Constants.Drive.Mod1.CONSTANTS,
-                        Constants.Drive.Mod2.CONSTANTS,
-                        Constants.Drive.Mod3.CONSTANTS,
-                        Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
 
-        //        drive =
-        //                new Drive(
-        //                        new SwerveModuleIO() {},
-        //                        new SwerveModuleIO() {},
-        //                        new SwerveModuleIO() {},
-        //                        new SwerveModuleIO() {},
-        //                        new GyroIO() {});
+        if (Constants.robot == Constants.Robot.CompBot) {
+            drive =
+                    new Drive(
+                            new SwerveModuleConfiguration(
+                                    SwerveModuleConfiguration.MotorType.KRAKEN,
+                                    SwerveModuleConfiguration.MotorType.NEO,
+                                    SwerveModuleConfiguration.EncoderType.HELIUM),
+                            Constants.Drive.Mod0.CONSTANTS,
+                            Constants.Drive.Mod1.CONSTANTS,
+                            Constants.Drive.Mod2.CONSTANTS,
+                            Constants.Drive.Mod3.CONSTANTS,
+                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
+        } else {
+            drive =
+                    new Drive(
+                            new SwerveModuleConfiguration(
+                                    SwerveModuleConfiguration.MotorType.NEO,
+                                    SwerveModuleConfiguration.MotorType.NEO,
+                                    SwerveModuleConfiguration.EncoderType.HELIUM),
+                            Constants.Drive.Mod0.CONSTANTS,
+                            Constants.Drive.Mod1.CONSTANTS,
+                            Constants.Drive.Mod2.CONSTANTS,
+                            Constants.Drive.Mod3.CONSTANTS,
+                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
+
+        }
 
         intake = new Intake(new IntakeIOSpark());
         shooter = new Shooter(new ShooterIOSpark());

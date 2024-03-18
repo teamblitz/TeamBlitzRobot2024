@@ -44,6 +44,12 @@ public final class Constants {
         REPLAY
     }
 
+    public enum Robot {
+        CompBot, DevBot, SimBot
+    }
+
+    public static final Robot robot = Robot.CompBot;
+
     public static final class Drive {
         public static final int PIGEON_ID = 14;
         public static final boolean USE_PIGEON = true;
