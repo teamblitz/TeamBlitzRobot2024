@@ -34,6 +34,8 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSpark;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIOKraken;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,6 +50,7 @@ public class RobotContainer {
     private Intake intake;
     private Shooter shooter;
     private Arm arm;
+    private Climber climber;
 
     /* ***** --- Autonomous --- ***** */
     // *** Must match with path names in pathplanner folder ***
@@ -150,6 +153,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSpark());
         shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark());
+        climber = new Climber(new ClimberIOKraken());
     }
 
     private void configureButtonBindings() {
@@ -214,6 +218,16 @@ public class RobotContainer {
                                 shooter.shootClosedLoopCommand(
                                         Constants.Shooter.AutoShootConstants.shootVelocity)));
 
+        //CLIMBER COMMANDS
+        
+        OIConstants.Climber.UP_BOTH.whileTrue(climber.setSpeed(0.3, 0.3));
+        OIConstants.Climber.UP_LEFT.whileTrue(climber.setSpeed(0.3, 0));
+        OIConstants.Climber.UP_RIGHT.whileTrue(climber.setSpeed(0, 0.3));
+
+        OIConstants.Climber.DOWN_BOTH.whileTrue(climber.setSpeed(-0.3, -0.3));
+        OIConstants.Climber.DOWN_LEFT.whileTrue(climber.setSpeed(-0.3, 0));
+        OIConstants.Climber.DOWN_RIGHT.whileTrue(climber.setSpeed(0, -0.3));
+        
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
         OIConstants.TestMode.SysId.Arm.quasistaticFwd.whileTrue(
@@ -243,6 +257,8 @@ public class RobotContainer {
                         .beforeStarting(Commands.print("DriveDynamicRev")));
 
         new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
+
+
     }
 
     private void configureAutoCommands() {
