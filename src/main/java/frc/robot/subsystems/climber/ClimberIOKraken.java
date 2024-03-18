@@ -20,30 +20,37 @@ public class ClimberIOKraken implements ClimberIO {
 
     public ClimberIOKraken() {
 
-        left = new TalonFX(17);
-        right = new TalonFX(18);
+        left = new TalonFX(Climber.LEFT_MOTOR_ID); //17
+        right = new TalonFX(Climber.RIGHT_MOTOR_ID); //18
+    }
+
+    private void configMotor() {
+        TalonFXConfiguration config = new TalonFXConfiguration();
     }
 
     @Override
-    public void setSpeedLeft (double speed) {
+    public void setSpeedLeft(double speed) {
         left.set(speed);
     }
 
     @Override
-    public void setSpeedRight (double speed) {
+    public void setSpeedRight(double speed) {
         right.set(speed);
     }
         
     @Override   
     public void setSetpointLeft(double extension) {
-        left.set(extension);
+        // left.set(extension);
     }
     
 
     @Override
     public void setSetpointRight(double extension) {
-        right.set(extension);
+        // right.set(extension);
     }
+
+
 }
+
 
 

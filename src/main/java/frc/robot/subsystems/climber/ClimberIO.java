@@ -1,7 +1,6 @@
 package frc.robot.subsystems.climber;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {
@@ -11,6 +10,7 @@ public interface ClimberIO {
         public double position;
         public double velocity;
 
+        //public double extensionSpeed;
 
         public double volts;
     }

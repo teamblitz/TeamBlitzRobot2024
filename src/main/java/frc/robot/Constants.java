@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -328,6 +329,13 @@ public final class Constants {
         public static final double CURRENT_LIMIT = 100;
 
         public static final double MAX_EXTENSION = 0; //TODO set
+
+        public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;
+        //public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
+        
+        public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive;
+        //public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
+
 
 
 

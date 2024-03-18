@@ -93,6 +93,17 @@ public class OIConstants {
         public static final Trigger AUTO_AIM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());
     }
 
+    public static final class Climber {
+        public static final Trigger UP_BOTH = OPERATOR_CONTROLLER.povUp();
+        public static final Trigger UP_LEFT = OPERATOR_CONTROLLER.povUpLeft();
+        public static final Trigger UP_RIGHT = OPERATOR_CONTROLLER.povUpRight();
+
+        public static final Trigger DOWN_BOTH = OPERATOR_CONTROLLER.povDown();
+        public static final Trigger DOWN_LEFT = OPERATOR_CONTROLLER.povDownLeft();
+        public static final Trigger DOWN_RIGHT = OPERATOR_CONTROLLER.povDownRight();
+        
+    }
+
     public static final class TestMode {
         public static final Trigger zeroAbsEncoders =
                 TEST_CONTROLLER.b().and(DriverStation::isTest);
