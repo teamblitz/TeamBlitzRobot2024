@@ -56,9 +56,9 @@ public class OIConstants {
         public static final DoubleSupplier HEADING_CONTROL =
                 () ->
                         Math.hypot(DRIVE_CONTROLLER.getRightY(), DRIVE_CONTROLLER.getRightX()) > .5
-                                ? Math.atan2(
+                                ? Math.toDegrees(Math.atan2(
                                                 -DRIVE_CONTROLLER.getRightY(),
-                                                -DRIVE_CONTROLLER.getRightX())
+                                                -DRIVE_CONTROLLER.getRightX()))
                                         - 90
                                 : Double.NaN;
 
