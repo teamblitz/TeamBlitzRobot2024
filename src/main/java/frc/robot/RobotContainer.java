@@ -137,7 +137,7 @@ public class RobotContainer {
                             new SwerveModuleConfiguration(
                                     SwerveModuleConfiguration.MotorType.KRAKEN,
                                     SwerveModuleConfiguration.MotorType.NEO,
-                                    SwerveModuleConfiguration.EncoderType.HELIUM),
+                                    SwerveModuleConfiguration.EncoderType.CANCODER),
                             Constants.Drive.Mod0.CONSTANTS,
                             Constants.Drive.Mod1.CONSTANTS,
                             Constants.Drive.Mod2.CONSTANTS,
