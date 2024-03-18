@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
+import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.FeedForwardConstants;
 import frc.robot.Robot;
@@ -21,13 +22,22 @@ import org.littletonrobotics.junction.Logger;
  * this, 2 subsystems is ideal (and is kinda what we are pseudo doing)
  */
 public class Arm extends SubsystemBase implements BlitzSubsystem {
+    private final LoggedTunableNumber kP = new LoggedTunableNumber("Arm/kP", Constants.Arm.PidConstants.P);
+    private final LoggedTunableNumber kI = new LoggedTunableNumber("Arm/kI", Constants.Arm.PidConstants.I);
+    private final LoggedTunableNumber kD = new LoggedTunableNumber("Arm/kD", Constants.Arm.PidConstants.D);
+
+    private final LoggedTunableNumber kS = new LoggedTunableNumber("Arm/kS", Constants.Arm.FeedForwardConstants.KS);
+    private final LoggedTunableNumber kV = new LoggedTunableNumber("Arm/kV", Constants.Arm.FeedForwardConstants.KV);
+    private final LoggedTunableNumber kA = new LoggedTunableNumber("Arm/kA", Constants.Arm.FeedForwardConstants.KA);
+    private final LoggedTunableNumber kG = new LoggedTunableNumber("Arm/kG", Constants.Arm.FeedForwardConstants.KG);
+
 
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
     private boolean atGoal;
 
-    private final ArmFeedforward feedforward;
+    private ArmFeedforward feedforward;
 
     private final SysIdRoutine routine;
 
@@ -69,6 +79,10 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("arm", inputs);
+
+        LoggedTunableNumber.ifChanged(hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
+        LoggedTunableNumber.ifChanged(
+                hashCode(), kSGV -> feedforward = new ArmFeedforward(kSGV[0], kSGV[1], kSGV[2]), kS, kG, kV);
     }
 
     public void updateRotation(double degrees, double velocity) {

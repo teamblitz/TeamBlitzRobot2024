@@ -22,4 +22,10 @@ public interface ShooterIO {
     public default void setVolts(double volts) {}
 
     public default void setSetpoint(double velocity) {}
+
+    public default void setTopPid(double kP, double kI, double kD) {}
+    public default void setBottomPid(double kP, double kI, double kD) {}
+
+    public default void setTopFF(double kS, double kV, double kA) {}
+    public default void setBottomFF(double kS, double kV, double kA) {}
 }

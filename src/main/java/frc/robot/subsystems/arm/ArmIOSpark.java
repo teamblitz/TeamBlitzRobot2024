@@ -50,9 +50,7 @@ public class ArmIOSpark implements ArmIO {
 
         anglePid = armRotLeader.getPIDController();
 
-        anglePid.setP(Arm.PidConstants.P);
-        anglePid.setI(Arm.PidConstants.I);
-        anglePid.setD(Arm.PidConstants.D);
+        setPid(Arm.PidConstants.P, Arm.PidConstants.I, Arm.PidConstants.D);
 
         armRotLeader.setSmartCurrentLimit(60);
         armRotFollower.setSmartCurrentLimit(60);
@@ -142,5 +140,12 @@ public class ArmIOSpark implements ArmIO {
     public void setBrake(boolean brake) {
         armRotLeader.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
         armRotFollower.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+    }
+
+    @Override
+    public void setPid(double kP, double kI, double kD) {
+        anglePid.setP(kP);
+        anglePid.setI(kI);
+        anglePid.setD(kD);
     }
 }

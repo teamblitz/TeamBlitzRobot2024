@@ -17,8 +17,8 @@ public class ShooterIOSpark implements ShooterIO {
     private final SparkPIDController pidTop;
     private final SparkPIDController pidBottom;
 
-    private final SimpleMotorFeedforward feedforwardTop;
-    private final SimpleMotorFeedforward feedforwardBottom;
+    private SimpleMotorFeedforward feedforwardTop;
+    private SimpleMotorFeedforward feedforwardBottom;
 
     public ShooterIOSpark() {
         top = new CANSparkMax(Constants.Shooter.Spark.SPARK_TOP, MotorType.kBrushless);
@@ -109,5 +109,29 @@ public class ShooterIOSpark implements ShooterIO {
 
         inputs.currentTop = top.getOutputCurrent();
         inputs.currentBottom = top.getOutputCurrent();
+    }
+
+    @Override
+    public void setTopPid(double kP, double kI, double kD) {
+        pidTop.setP(kP);
+        pidTop.setI(kI);
+        pidTop.setD(kD);
+    }
+
+    @Override
+    public void setBottomPid(double kP, double kI, double kD) {
+        pidBottom.setP(kP);
+        pidBottom.setI(kI);
+        pidBottom.setD(kD);
+    }
+
+    @Override
+    public void setTopFF(double kS, double kV, double kA) {
+        feedforwardTop = new SimpleMotorFeedforward(kS, kV, kA);
+    }
+
+    @Override
+    public void setBottomFF(double kS, double kV, double kA) {
+        feedforwardBottom = new SimpleMotorFeedforward(kS, kV, kA);
     }
 }

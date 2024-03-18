@@ -35,4 +35,6 @@ public interface ArmIO {
     public default void checkLimitSwitches() {}
 
     public default void setBrake(boolean brake) {}
+
+    public default void setPid(double kP, double kI, double kD) {}
 }
