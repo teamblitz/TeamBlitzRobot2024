@@ -89,6 +89,7 @@ public class OIConstants {
         public static final Trigger MANUAL_FEED = OPERATOR_CONTROLLER.rightBumper();
         public static final Trigger SHOOTER_AMP = UNBOUND;
         public static final Trigger EJECT = OPERATOR_CONTROLLER.rightTrigger();
+        public static final Trigger SPEED_AUTO = OPERATOR_CONTROLLER.back();
     }
 
     public static final class Arm {
@@ -117,7 +118,7 @@ public class OIConstants {
 
     public static final class TestMode {
         public static final Trigger zeroAbsEncoders =
-                TEST_CONTROLLER.b().and(DriverStation::isTest);
+                UNBOUND;
 
         public static final class SysId {
             public static final class Arm {

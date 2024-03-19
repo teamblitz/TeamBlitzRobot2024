@@ -28,11 +28,14 @@ public class ShooterIOSpark implements ShooterIO {
         top.setSmartCurrentLimit(Constants.Shooter.CURRENT_LIMIT);
         top.setOpenLoopRampRate(0.5);
         top.setClosedLoopRampRate(.2);
+        top.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
         bottom.restoreFactoryDefaults();
         bottom.setSmartCurrentLimit(Constants.Shooter.CURRENT_LIMIT);
         bottom.setOpenLoopRampRate(0.5);
         bottom.setClosedLoopRampRate(.2);
+        bottom.setIdleMode(CANSparkBase.IdleMode.kCoast);
+
 
         pidTop = top.getPIDController();
         pidBottom = bottom.getPIDController();
@@ -51,27 +54,38 @@ public class ShooterIOSpark implements ShooterIO {
                         Constants.Shooter.Spark.FF_TOP_KV,
                         Constants.Shooter.Spark.FF_TOP_KA);
 
-        SmartDashboard.putNumber("MAX SHOOT", feedforwardTop.maxAchievableVelocity(12, 30));
-
         feedforwardBottom =
                 new SimpleMotorFeedforward(
                         Constants.Shooter.Spark.FF_BOTTOM_KS,
                         Constants.Shooter.Spark.FF_BOTTOM_KV,
                         Constants.Shooter.Spark.FF_BOTTOM_KA);
 
+        SmartDashboard.putNumber("MAX SHOOT Top", feedforwardTop.maxAchievableVelocity(12, 0));
+        SmartDashboard.putNumber("MAX SHOOT Bottom", feedforwardBottom.maxAchievableVelocity(12, 0));
+
         top.getEncoder()
                 .setVelocityConversionFactor(
                         (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setVelocityConversionFactor(
-                        (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        (24.0 / 22.0) * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
 
         top.getEncoder()
                 .setPositionConversionFactor(
                         (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setPositionConversionFactor(
-                        (Math.PI * 2 * Units.inchesToMeters(2)));
+                        (24.0 / 22.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+
+
+//        pidTop.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
+//        pidBottom.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
+//
+//        pidTop.setSmartMotionMaxAccel(40, 0);
+//        pidBottom.setSmartMotionMaxAccel(40, 0);
+//
+//        pidTop.setSmartMotionMaxAccel(40, 0);
+//        pidBottom.setSmartMotionMaxAccel(40, 0);
     }
 
     @Override

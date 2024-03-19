@@ -94,7 +94,7 @@ public class AutoAimCalculator {
     }
 
     public static double calculateShooterSpeedInterpolation(double distanceMeters) {
-        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters);
+        return Constants.Shooter.AutoShootConstants.feedVelocityTreeMap.get(distanceMeters);
     }
 
     public static double calculateDistanceToGoal(Pose3d botPose) {

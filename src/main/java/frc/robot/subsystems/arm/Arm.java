@@ -94,7 +94,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
         ShuffleboardTab autoShootTab = Shuffleboard.getTab("AutoShoot");
         GenericEntry testArm = autoShootTab.add("testArm", 0).getEntry();
-        autoShootTab.add("testArmCmd", this.rotateToCommand(() -> testArm.getDouble(0), false));
+        autoShootTab.add("testArmCmd", this.rotateToCommand(() -> Math.toRadians(testArm.getDouble(0)), false));
     }
 
     @Override

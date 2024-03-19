@@ -23,8 +23,8 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     private final LoggedTunableNumber topKD = new LoggedTunableNumber("Shooter/top/kD", Constants.Shooter.Spark.PID_TOP_D);
 
     private final LoggedTunableNumber bottomKP = new LoggedTunableNumber("Shooter/bottom/kP", Constants.Shooter.Spark.PID_BOTTOM_P);
-    private final LoggedTunableNumber bottomKI = new LoggedTunableNumber("Shooter/bottom/kI", Constants.Shooter.Spark.PID_BOTTOM_P);
-    private final LoggedTunableNumber bottomKD = new LoggedTunableNumber("Shooter/bottom/kD", Constants.Shooter.Spark.PID_BOTTOM_P);
+    private final LoggedTunableNumber bottomKI = new LoggedTunableNumber("Shooter/bottom/kI", Constants.Shooter.Spark.PID_BOTTOM_I);
+    private final LoggedTunableNumber bottomKD = new LoggedTunableNumber("Shooter/bottom/kD", Constants.Shooter.Spark.PID_BOTTOM_D);
 
 
     private final LoggedTunableNumber topKS = new LoggedTunableNumber("Shooter/top/kS", Constants.Shooter.Spark.FF_TOP_KS);
@@ -75,7 +75,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void shootOpenLoop() {
-        io.setPercent(.8); // TODO CONST
+        io.setPercent(1); // TODO CONST
     }
 
     @Override
@@ -91,7 +91,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
                 hashCode(), kSVA -> io.setBottomFF(kSVA[0], kSVA[1], kSVA[2]), bottomKS, bottomKV, bottomKA);
     }
 
-    public void shootClosedLoop(double metersPerSecond) {
+    public void  shootClosedLoop(double metersPerSecond) {
         setpoint = metersPerSecond;
         io.setSetpoint(metersPerSecond); // TODO, CONST
         Logger.recordOutput("shooter/velocitySetpoint");
@@ -118,7 +118,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Command shootClosedLoopCommand(DoubleSupplier metersPerSecond) {
-        return startEnd(() -> shootClosedLoop(metersPerSecond.getAsDouble()), this::stop);
+        return run(() -> shootClosedLoop(metersPerSecond.getAsDouble())).finallyDo(this::stop);
     }
 
     public Command shootClosedLoopCommand(double metersPerSecond) {

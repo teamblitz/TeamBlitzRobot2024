@@ -53,7 +53,7 @@ public class RobotContainer {
     private Climber climber;
 
     /* ***** --- Shared Commands --- ***** */
-    private Command autoAim;
+    public Command autoShootSpeed;
 
     /* ***** --- Autonomous --- ***** */
     // *** Must match with path names in pathplanner folder ***
@@ -86,27 +86,14 @@ public class RobotContainer {
 
         Shuffleboard.getTab("AutoShoot")
                 .addDouble(
-                        "Calculated angle",
-                        () ->
-                                Units.radiansToDegrees(
-                                        AutoAimCalculator.calculateArmAngle(
-                                                new Pose3d(drive.getLimelightPose()),
-                                                DriverStation.getAlliance().isPresent()
-                                                                && DriverStation.getAlliance().get()
-                                                                        == DriverStation.Alliance
-                                                                                .Blue
-                                                        ? Constants.Shooter.AutoShootConstants
-                                                                .goalPoseBlue
-                                                        : Constants.Shooter.AutoShootConstants
-                                                                .goalPoseRed,
-                                                Constants.Shooter.AutoShootConstants
-                                                        .botToCenterOfRotation,
-                                                Constants.Shooter.AutoShootConstants
-                                                        .centerOfRotationToShooter,
-                                                Constants.Shooter.AutoShootConstants
-                                                        .shootAngleOffset,
-                                                Constants.Shooter.AutoShootConstants
-                                                        .shootVelocity)));
+                        "distance", () -> AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose())));
+
+        Shuffleboard.getTab("AutoShoot")
+                        .addDouble(
+                                "speed", () -> AutoAimCalculator.calculateShooterSpeedInterpolation(
+                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
+                                )
+        );
     }
 
     private void setDefaultCommands() {
@@ -166,26 +153,13 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSpark());
         climber = new Climber(new ClimberIOKraken());
 
-
-        autoAim =
-                arm.rotateToCommand(
-                        () ->
-                                MathUtil.clamp(
-                                        AutoAimCalculator.calculateArmAngleInterpolation(
-                                                AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
-                                        ),
-                                        0,
-                                        Math.PI/2
-                                ),
-                        false
-                ).alongWith(
-                        shooter.shootClosedLoopCommand(
-                                () ->
-                                        AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                                AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
-                                        )
+        autoShootSpeed = shooter.shootClosedLoopCommand(
+                () ->
+                        AutoAimCalculator.calculateShooterSpeedInterpolation(
+                                AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
                         )
-                );
+        );
+
     }
 
     private void configureButtonBindings() {
@@ -201,6 +175,7 @@ public class RobotContainer {
         OIConstants.Shooter.MANUAL_FEED.whileTrue(shooter.shootCommand());
         OIConstants.Shooter.SHOOTER_AMP.whileTrue(shooter.shootCommand());
         OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
+        OIConstants.Shooter.SPEED_AUTO.whileTrue(autoShootSpeed);
 
         OIConstants.Arm.INTAKE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE,
@@ -215,7 +190,7 @@ public class RobotContainer {
         OIConstants.Arm.SCORE_AMP.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
-        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(autoAim);
+        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(buildAutoShootCommand());
 
         //CLIMBER COMMANDS
         
@@ -271,7 +246,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "autoShoot",
-                autoAim
+                buildAutoShootCommand()
                         .raceWith(
                                 Commands.waitUntil(() -> shooter.atSetpoint() && arm.atGoal())
                                         .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
@@ -331,4 +306,25 @@ public class RobotContainer {
 //                        shooter.shootClosedLoopCommand(
 //                                Constants.Shooter.AutoShootConstants.shootVelocity));
 //    }
+
+    public Command buildAutoShootCommand() {
+        return arm.rotateToCommand(
+                () ->
+                        MathUtil.clamp(
+                                AutoAimCalculator.calculateArmAngleInterpolation(
+                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
+                                ),
+                                0,
+                                Math.PI/2
+                        ),
+                false
+        ).alongWith(
+                shooter.shootClosedLoopCommand(
+                        () ->
+                                AutoAimCalculator.calculateShooterSpeedInterpolation(
+                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
+                                )
+                )
+        );
+    }
 }
