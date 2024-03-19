@@ -26,7 +26,7 @@ public class OIConstants {
         public static double STICK_DEADBAND = 0.05;
 
         // Values are in percents, we have full power
-        private static final double SPIN_SPEED = .4;
+        private static final double SPIN_SPEED = Constants.compBot() ? .28 : .4;
         private static final double SLOW_SPEED = .3;
         public static final double NORMAL_SPEED = .6;
         public static final double FAST_SPEED = 1;

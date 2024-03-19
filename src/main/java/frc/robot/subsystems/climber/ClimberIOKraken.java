@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.*;
@@ -30,6 +31,11 @@ public class ClimberIOKraken implements ClimberIO {
 
         left.getConfigurator().apply(config.MotorOutput.withInverted(Climber.LEFT_INVERT));
         right.getConfigurator().apply(config.MotorOutput.withInverted(Climber.RIGHT_INVERT));
+
+        left.optimizeBusUtilization();
+        right.optimizeBusUtilization();
+
+//        BaseStatusSignal.setUpdateFrequencyForAll(100, left.getVelocity());
     }
 
     @Override

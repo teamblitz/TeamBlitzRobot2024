@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive.swerveModule.drive;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -20,6 +21,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
         /* Drive motor */
         motor = new TalonFX(moduleConstants.driveMotorID);
         configDriveMotor();
+
     }
 
     @Override
@@ -69,6 +71,10 @@ public class DriveMotorIOKraken implements DriveMotorIO {
         motor.getConfigurator().apply(config);
 
         configurePID(Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);
+
+        motor.optimizeBusUtilization();
+
+        BaseStatusSignal.setUpdateFrequencyForAll(100, motor.getVelocity(), motor.getPosition());
     }
 
     @Override
