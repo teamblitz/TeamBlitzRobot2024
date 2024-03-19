@@ -294,21 +294,21 @@ public final class Constants {
             public static final int SPARK_TOP = 22; // TODO SET
             public static final int SPARK_BOTTOM = 23; // TODO SET
 
-            public static final double PID_TOP_P = 0.013715; // TODO SET Was 0.013715
+            public static final double PID_TOP_P = compBot() ? 0.0087929 : 0.013715; // TODO SET Was 0.013715
             public static final int PID_TOP_I = 0; // TODO SET
             public static final int PID_TOP_D = 0; // TODO SET
 
-            public static final double PID_BOTTOM_P = 0.013715; // TODO SET
+            public static final double PID_BOTTOM_P = compBot() ? 0.009135 : 0.013715; // TODO SET
             public static final int PID_BOTTOM_I = 0; // TODO SET
             public static final int PID_BOTTOM_D = 0; // TODO SET
 
-            public static final double FF_TOP_KS = 0.043031; // TODO SET
-            public static final double FF_TOP_KV = 0.39694; // TODO SET
-            public static final double FF_TOP_KA = 0.086385;
+            public static final double FF_TOP_KS = compBot() ? 0.14683 : 0.043031; // TODO SET
+            public static final double FF_TOP_KV = compBot() ? 0.39798 : 0.39694; // TODO SET
+            public static final double FF_TOP_KA = compBot() ? 0.064637 : 0.086385;
 
-            public static final double FF_BOTTOM_KS = 0.043031; // TODO SET
-            public static final double FF_BOTTOM_KV = 0.39694; // TODO SET
-            public static final double FF_BOTTOM_KA = 0.086385;
+            public static final double FF_BOTTOM_KS = compBot() ? 0.15486 : 0.043031; // TODO SET
+            public static final double FF_BOTTOM_KV = compBot() ? 0.35913 : 0.39694; // TODO SET
+            public static final double FF_BOTTOM_KA = compBot() ? 0.063401 : 0.086385;
         }
 
         public static class Talon {
