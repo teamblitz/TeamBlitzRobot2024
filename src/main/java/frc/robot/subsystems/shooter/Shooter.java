@@ -14,6 +14,8 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.function.DoubleSupplier;
+
 public class Shooter extends SubsystemBase implements BlitzSubsystem {
     private final LoggedTunableNumber topKP = new LoggedTunableNumber("Shooter/top/kP", Constants.Shooter.Spark.PID_TOP_P);
     private final LoggedTunableNumber topKI = new LoggedTunableNumber("Shooter/top/kI", Constants.Shooter.Spark.PID_TOP_I);
@@ -109,8 +111,12 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
         return startEnd(this::reverse, this::stop);
     }
 
+    public Command shootClosedLoopCommand(DoubleSupplier metersPerSecond) {
+        return startEnd(() -> shootClosedLoop(metersPerSecond.getAsDouble()), this::stop);
+    }
+
     public Command shootClosedLoopCommand(double metersPerSecond) {
-        return startEnd(() -> shootClosedLoop(metersPerSecond), this::stop);
+        return shootClosedLoopCommand(() -> metersPerSecond);
     }
 
     public boolean atSetpoint() {

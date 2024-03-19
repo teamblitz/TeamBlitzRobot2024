@@ -52,6 +52,9 @@ public class RobotContainer {
     private Arm arm;
     private Climber climber;
 
+    /* ***** --- Shared Commands --- ***** */
+    private Command autoAim;
+
     /* ***** --- Autonomous --- ***** */
     // *** Must match with path names in pathplanner folder ***
     private final SendableChooser<Command> autoChooser;
@@ -162,6 +165,27 @@ public class RobotContainer {
         shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark());
         climber = new Climber(new ClimberIOKraken());
+
+
+        autoAim =
+                arm.rotateToCommand(
+                        () ->
+                                MathUtil.clamp(
+                                        AutoAimCalculator.calculateArmAngleInterpolation(
+                                                AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
+                                        ),
+                                        0,
+                                        Math.PI/2
+                                ),
+                        false
+                ).alongWith(
+                        shooter.shootClosedLoopCommand(
+                                () ->
+                                        AutoAimCalculator.calculateShooterSpeedInterpolation(
+                                                AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
+                                        )
+                        )
+                );
     }
 
     private void configureButtonBindings() {
@@ -191,39 +215,7 @@ public class RobotContainer {
         OIConstants.Arm.SCORE_AMP.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
-        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(
-                arm.rotateToCommand(
-                                () ->
-                                        MathUtil.clamp(
-                                                AutoAimCalculator.calculateArmAngle(
-                                                        new Pose3d(drive.getLimelightPose()),
-                                                        DriverStation.getAlliance().isPresent()
-                                                                        && DriverStation
-                                                                                        .getAlliance()
-                                                                                        .get()
-                                                                                == DriverStation
-                                                                                        .Alliance
-                                                                                        .Blue
-                                                                ? Constants.Shooter
-                                                                        .AutoShootConstants
-                                                                        .goalPoseBlue
-                                                                : Constants.Shooter
-                                                                        .AutoShootConstants
-                                                                        .goalPoseRed,
-                                                        Constants.Shooter.AutoShootConstants
-                                                                .botToCenterOfRotation,
-                                                        Constants.Shooter.AutoShootConstants
-                                                                .centerOfRotationToShooter,
-                                                        Constants.Shooter.AutoShootConstants
-                                                                .shootAngleOffset,
-                                                        Constants.Shooter.AutoShootConstants
-                                                                .shootVelocity),
-                                                0,
-                                                Math.PI / 2),
-                                false)
-                        .alongWith(
-                                shooter.shootClosedLoopCommand(
-                                        Constants.Shooter.AutoShootConstants.shootVelocity)));
+        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(autoAim);
 
         //CLIMBER COMMANDS
         
@@ -279,7 +271,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "autoShoot",
-                todoPutThisAutoShootSomewhereElse()
+                autoAim
                         .raceWith(
                                 Commands.waitUntil(() -> shooter.atSetpoint() && arm.atGoal())
                                         .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
@@ -311,32 +303,32 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 
-    public Command todoPutThisAutoShootSomewhereElse() {
-        return arm.rotateToCommand(
-                        () ->
-                                MathUtil.clamp(
-                                        AutoAimCalculator.calculateArmAngle(
-                                                new Pose3d(drive.getLimelightPose()),
-                                                DriverStation.getAlliance().isPresent()
-                                                                && DriverStation.getAlliance().get()
-                                                                        == DriverStation.Alliance
-                                                                                .Blue
-                                                        ? Constants.Shooter.AutoShootConstants
-                                                                .goalPoseBlue
-                                                        : Constants.Shooter.AutoShootConstants
-                                                                .goalPoseRed,
-                                                Constants.Shooter.AutoShootConstants
-                                                        .botToCenterOfRotation,
-                                                Constants.Shooter.AutoShootConstants
-                                                        .centerOfRotationToShooter,
-                                                Constants.Shooter.AutoShootConstants
-                                                        .shootAngleOffset,
-                                                Constants.Shooter.AutoShootConstants.shootVelocity),
-                                        0,
-                                        Math.PI / 2),
-                        false)
-                .alongWith(
-                        shooter.shootClosedLoopCommand(
-                                Constants.Shooter.AutoShootConstants.shootVelocity));
-    }
+//    public Command todoPutThisAutoShootSomewhereElse() {
+//        return arm.rotateToCommand(
+//                        () ->
+//                                MathUtil.clamp(
+//                                        AutoAimCalculator.calculateArmAngle(
+//                                                new Pose3d(drive.getLimelightPose()),
+//                                                DriverStation.getAlliance().isPresent()
+//                                                                && DriverStation.getAlliance().get()
+//                                                                        == DriverStation.Alliance
+//                                                                                .Blue
+//                                                        ? Constants.Shooter.AutoShootConstants
+//                                                                .goalPoseBlue
+//                                                        : Constants.Shooter.AutoShootConstants
+//                                                                .goalPoseRed,
+//                                                Constants.Shooter.AutoShootConstants
+//                                                        .botToCenterOfRotation,
+//                                                Constants.Shooter.AutoShootConstants
+//                                                        .centerOfRotationToShooter,
+//                                                Constants.Shooter.AutoShootConstants
+//                                                        .shootAngleOffset,
+//                                                Constants.Shooter.AutoShootConstants.shootVelocity),
+//                                        0,
+//                                        Math.PI / 2),
+//                        false)
+//                .alongWith(
+//                        shooter.shootClosedLoopCommand(
+//                                Constants.Shooter.AutoShootConstants.shootVelocity));
+//    }
 }

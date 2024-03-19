@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.lib.math.Trajectories;
@@ -86,5 +87,27 @@ public class AutoAimCalculator {
         Logger.recordOutput("AutoShoot/shooterAngle", Units.radiansToDegrees(shooterAngleDebug));
 
         return armRot + Units.degreesToRadians(angleOffset.getDouble(0));
+    }
+
+    public static double calculateArmAngleInterpolation(double distanceMeters) {
+        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters);
+    }
+
+    public static double calculateShooterSpeedInterpolation(double distanceMeters) {
+        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters);
+    }
+
+    public static double calculateDistanceToGoal(Pose3d botPose) {
+        return calculateBotToGoal2d(
+                botPose,
+                DriverStation.getAlliance().isPresent()
+                        && DriverStation.getAlliance().get()
+                        == DriverStation.Alliance
+                        .Blue
+                        ? Constants.Shooter.AutoShootConstants
+                        .goalPoseBlue
+                        : Constants.Shooter.AutoShootConstants
+                        .goalPoseRed
+        ).getX();
     }
 }

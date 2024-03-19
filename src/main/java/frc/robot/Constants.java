@@ -12,11 +12,15 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
+
+import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.List;
 
@@ -328,6 +332,23 @@ public final class Constants {
                             Rotation2d.fromRadians(0));
 
             public static final double shootAngleOffset = Units.degreesToRadians(20);
+
+
+            public static final InterpolatingDoubleTreeMap angleTreeMap = new InterpolatingDoubleTreeMap();
+
+            static {
+                angleTreeMap.put(0., 0.);
+            }
+
+            public static final InterpolatingDoubleTreeMap feedVelocityTreeMap = new InterpolatingDoubleTreeMap();
+
+            static {
+                feedVelocityTreeMap.put(10.0, .8);
+                feedVelocityTreeMap.put(3.0, .8);
+                feedVelocityTreeMap.put(0.0, .5);
+            }
+
+
 
             public static final Pose3d goalPoseBlue =
                     new Pose3d(0.2269, 5.5526, 2.0451, new Rotation3d());
