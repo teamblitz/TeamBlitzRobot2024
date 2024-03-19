@@ -180,9 +180,7 @@ public class RobotContainer {
 
         OIConstants.Arm.INTAKE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .raceWith(intake.intakeGroundAutomatic())
-                //                        .andThen(intake.indexIntake().asProxy()) // Maybe make
-                // intake indexing a default command instead
+                        .raceWith(intake.intakeGroundAutomatic().alongWith(shooter.reverseCommand()))
                 );
         OIConstants.Arm.TRANSIT_STAGE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
