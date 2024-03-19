@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -66,6 +67,11 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
 
         tab.add("ShooterDynamicFwd", sysIdDynamic(SysIdRoutine.Direction.kForward));
         tab.add("ShooterDynamicRev", sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+        ShuffleboardTab autoShootTab = Shuffleboard.getTab("AutoShoot");
+        GenericEntry testSpeed = autoShootTab.add("testSpeed", 0).getEntry();
+        autoShootTab.add("testSpeedCmd", this.shootClosedLoopCommand(() -> testSpeed.getDouble(0)));
+
     }
 
     public void shootOpenLoop() {

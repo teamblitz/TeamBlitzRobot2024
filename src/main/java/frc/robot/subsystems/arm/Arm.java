@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -35,7 +36,6 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     private final LoggedTunableNumber kV = new LoggedTunableNumber("Arm/kV", Constants.Arm.FeedForwardConstants.KV);
     private final LoggedTunableNumber kA = new LoggedTunableNumber("Arm/kA", Constants.Arm.FeedForwardConstants.KA);
     private final LoggedTunableNumber kG = new LoggedTunableNumber("Arm/kG", Constants.Arm.FeedForwardConstants.KG);
-
 
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
@@ -91,6 +91,10 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         tab.add("ArmDynamicFwd", sysIdDynamic(SysIdRoutine.Direction.kForward));
         tab.add("ArmDynamicRev", sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
+
+        ShuffleboardTab autoShootTab = Shuffleboard.getTab("AutoShoot");
+        GenericEntry testArm = autoShootTab.add("testArm", 0).getEntry();
+        autoShootTab.add("testArmCmd", this.rotateToCommand(() -> testArm.getDouble(0), false));
     }
 
     @Override
