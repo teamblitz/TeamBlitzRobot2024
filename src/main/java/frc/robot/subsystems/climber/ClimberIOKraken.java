@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.*;
@@ -19,6 +20,8 @@ public class ClimberIOKraken implements ClimberIO {
     public final TalonFX left;
     public final TalonFX right;
 
+    public final PositionVoltage closedLoopPosition = new PositionVoltage(0);
+    public final MotionMagic
 
     public ClimberIOKraken() {
         left = new TalonFX(Climber.LEFT_MOTOR_ID); //17
@@ -26,8 +29,15 @@ public class ClimberIOKraken implements ClimberIO {
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-        config.CurrentLimits.withStatorCurrentLimit(Climber.CURRENT_LIMIT);
+        config.MotorOutput
+                .withNeutralMode(NeutralModeValue.Brake);
+
+        config.CurrentLimits
+                .withStatorCurrentLimit(Climber.CURRENT_LIMIT);
+
+        config.Feedback.withSensorToMechanismRatio(
+                Climber.GEAR_RATIO * (Climber.SPOOL_DIAMETER * Math.PI)
+        );
 
         left.getConfigurator().apply(config.MotorOutput.withInverted(Climber.LEFT_INVERT));
         right.getConfigurator().apply(config.MotorOutput.withInverted(Climber.RIGHT_INVERT));
@@ -36,6 +46,23 @@ public class ClimberIOKraken implements ClimberIO {
         right.optimizeBusUtilization();
 
 //        BaseStatusSignal.setUpdateFrequencyForAll(100, left.getVelocity());
+        left.configVoltageComSaturation(12);
+        left.enableVoltageCompensation(true);
+    }
+
+    @Override
+    public void updateInputs(ClimberIOInputs inputs) {
+        inputs.positionLeft = left.getPosition().getValueAsDouble();
+        inputs.positionRight = right.getPosition().getValueAsDouble();
+
+        inputs.velocityLeft = left.getVelocity().getValueAsDouble();
+        inputs.velocityRight = right.getVelocity().getValueAsDouble();
+
+        inputs.voltsLeft = left.getMotorVoltage().getValueAsDouble();
+        inputs.voltsRight = right.getMotorVoltage().getValueAsDouble();
+
+        inputs.torqueCurrentLeft = left.getTorqueCurrent().getValueAsDouble();
+        inputs.torqueCurrentRight = right.getTorqueCurrent().getValueAsDouble();
     }
 
     @Override
@@ -50,7 +77,7 @@ public class ClimberIOKraken implements ClimberIO {
         
     @Override   
     public void setSetpointLeft(double extension) {
-        // left.set(extension);
+        left.setControl(closedLoopPosition.withPosition(extension).with);
     }
     
 
@@ -58,8 +85,6 @@ public class ClimberIOKraken implements ClimberIO {
     public void setSetpointRight(double extension) {
         // right.set(extension);
     }
-
-
 }
 
 

@@ -27,7 +27,10 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
     private final ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
-    //private final ElevatorFeedforward feedforward;
+    private ElevatorFeedforward ffLoadedLeft;
+    private ElevatorFeedforward ffLoadedRight;
+    private ElevatorFeedforward ffUnLoadedLeft;
+    private ElevatorFeedforward ffUnLoadedRight;
 
     //private final SysIdRoutine routine;
 
