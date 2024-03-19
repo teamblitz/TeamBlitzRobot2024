@@ -20,6 +20,7 @@ public class OIConstants {
     public static final Trigger UNBOUND = new Trigger(() -> false);
 
     public static final Function<Double, Double> INPUT_CURVE = (x) -> .8 * x + .2 * (x * x * x);
+    public static final Function<Double, Double> SPIN_CURVE = (x) -> (x * x * x);
 
     public static final class Drive {
         public static double STICK_DEADBAND = 0.05;
@@ -61,7 +62,7 @@ public class OIConstants {
                                 * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier ROTATION_SPEED =
-                () -> INPUT_CURVE.apply(SPIN_SPEED * -DRIVE_CONTROLLER.getTwist());
+                () -> SPIN_SPEED * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getTwist());
 
         public static final DoubleSupplier HEADING_CONTROL =
                 () -> Double.NaN;

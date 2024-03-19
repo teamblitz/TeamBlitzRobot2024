@@ -22,6 +22,6 @@ public class EncoderIOCanCoder implements EncoderIO {
 
     @Override
     public void updateInputs(EncoderIO.EncoderIOInputs inputs) {
-        inputs.position = encoder.getAbsolutePosition().getValueAsDouble();
+        inputs.position = encoder.getAbsolutePosition().getValueAsDouble() * 360;
     }
 }

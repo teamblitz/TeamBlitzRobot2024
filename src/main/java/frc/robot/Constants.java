@@ -50,6 +50,10 @@ public final class Constants {
 
     public static final Robot robot = Robot.CompBot;
 
+    public static boolean compBot() {
+        return robot == Robot.CompBot;
+    }
+
     public static final class Drive {
         public static final int PIGEON_ID = 14;
         public static final boolean USE_PIGEON = true;
@@ -169,7 +173,7 @@ public final class Constants {
 
         /* Neutral Modes */
         public static final boolean ANGLE_BRAKE_MODE = false;
-        public static final boolean DRIVE_BRAKE_MODE = false;
+        public static final boolean DRIVE_BRAKE_MODE = true;
 
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
@@ -177,7 +181,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 6;
             public static final int ANGLE_MOTOR_ID = 7;
             public static final int CAN_CODER_ID = 2;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(359.077);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(robot == Robot.CompBot ? 103.711 : 359.077);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -188,7 +192,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 8;
             public static final int ANGLE_MOTOR_ID = 9;
             public static final int CAN_CODER_ID = 3;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(269.736);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(robot == Robot.CompBot ? -37.617 : 269.736);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -199,7 +203,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 10;
             public static final int ANGLE_MOTOR_ID = 11;
             public static final int CAN_CODER_ID = 4;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(1.582);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(robot == Robot.CompBot ? -71.895 : 1.582);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -210,7 +214,7 @@ public final class Constants {
             public static final int DRIVE_MOTOR_ID = 12;
             public static final int ANGLE_MOTOR_ID = 13;
             public static final int CAN_CODER_ID = 5;
-            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(89.253);
+            public static final Rotation2d ANGLE_OFFSET = Rotation2d.fromDegrees(robot == Robot.CompBot ? -105.117 : 89.253);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -227,12 +231,12 @@ public final class Constants {
 
         // TODO CONFIG
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(120);
-        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(200); // prev 240
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 200); // prev 240
 
         public static final int ARM_ROT_LEADER = 16;
         public static final int ARM_ROT_FOLLOWER = 15;
 
-        public static final int ABS_ENCODER = 1; // TODO CONFIG
+        public static final int ABS_ENCODER = 0;
 
         public static final int TOP_LIMIT_SWITCH = 2; // TODO CONFIG
         public static final int BOTTOM_LIMIT_SWITCH = 3; // TODO CONFIG
@@ -264,7 +268,7 @@ public final class Constants {
             );
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
-            public static final double SCORE_AMP = Units.degreesToRadians(110);
+            public static final double SCORE_AMP = Units.degreesToRadians(105);
             public static final double SCORE_SPEAKER = Units.degreesToRadians(30);
         }
     }
