@@ -8,6 +8,8 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -67,10 +69,6 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                 );
 
 
-
-        // Constructor of armio?
-//        io.seedArmPosition();
-
         routine =
                 new SysIdRoutine(
                         new SysIdRoutine.Config(
@@ -85,6 +83,14 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                                 },
                                 null, // No log consumer, since data is recorded by URCL
                                 this));
+
+        ShuffleboardTab tab = Shuffleboard.getTab("Sysid");
+        tab.add("ArmQuasistaticFwd", sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        tab.add("ArmQuasistaticRev", sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+        tab.add("ArmDynamicFwd", sysIdDynamic(SysIdRoutine.Direction.kForward));
+        tab.add("ArmDynamicRev", sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
     }
 
     @Override
