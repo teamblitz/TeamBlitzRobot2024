@@ -12,6 +12,7 @@ public interface ArmIO {
         public double absArmRot;
 
         public double absArmEncoder;
+        public double absArmEncoderDeg;
 
         public boolean topRotationLimit;
         public boolean bottomRotationLimit;
@@ -24,7 +25,7 @@ public interface ArmIO {
     /** Updates the set of loggable inputs. */
     public default void updateInputs(ArmIOInputs inputs) {}
 
-    public default void setRotationSetpoint(double degrees, double arbFFPercent) {}
+    public default void setRotationSetpoint(double degrees, double arbFFVolts) {}
 
     public default void setArmSpeed(double percent) {}
 
@@ -37,4 +38,6 @@ public interface ArmIO {
     public default void setBrake(boolean brake) {}
 
     public default void setPid(double kP, double kI, double kD) {}
+
+    public default void stop() {}
 }

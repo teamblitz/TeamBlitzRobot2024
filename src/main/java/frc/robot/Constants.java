@@ -227,7 +227,7 @@ public final class Constants {
 
         public static final double STARTING_POS =
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
-        public static final double ABS_ENCODER_OFFSET = 0; // TODO CONFIG
+        public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(23.324 - 90);
 
         // TODO CONFIG
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(120);

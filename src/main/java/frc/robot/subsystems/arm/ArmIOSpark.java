@@ -71,6 +71,7 @@ public class ArmIOSpark implements ArmIO {
         inputs.absArmRot = getAbsolutePosition();
         inputs.absArmEncoder =
                 Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2 * Math.PI);
+        inputs.absArmEncoderDeg = Math.toDegrees(inputs.absArmEncoder);
 
         inputs.topRotationLimit = armTopLimitSwitch.get();
         inputs.bottomRotationLimit = armBottomLimitSwitch.get();
@@ -147,5 +148,11 @@ public class ArmIOSpark implements ArmIO {
         anglePid.setP(kP);
         anglePid.setI(kI);
         anglePid.setD(kD);
+    }
+
+    @Override
+    public void stop() {
+        armRotLeader.stopMotor();
+        armRotFollower.stopMotor();
     }
 }

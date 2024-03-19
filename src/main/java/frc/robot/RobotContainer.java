@@ -179,8 +179,9 @@ public class RobotContainer {
         OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
 
         OIConstants.Arm.INTAKE.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
-                        .raceWith(intake.intakeGroundAutomatic().alongWith(shooter.reverseCommand()))
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE,
+                                true, true)
+                        .raceWith(intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)))
                 );
         OIConstants.Arm.TRANSIT_STAGE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));

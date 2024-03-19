@@ -97,6 +97,10 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
         io.setPercent(0);
     }
 
+    public Command setSpeedCommand(double speed) {
+        return runEnd(() -> io.setPercent(speed), this::stop);
+    }
+
     public Command shootCommand() {
         return startEnd(this::shootOpenLoop, this::stop);
     }

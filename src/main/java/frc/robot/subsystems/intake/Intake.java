@@ -49,7 +49,10 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Command feedShooter() {
-        return setSpeedCommand(.7);
+        return setSpeedCommand(.7)
+                .alongWith(
+                        Commands.run(() -> state = State.Empty)
+                );
     }
 
 
@@ -59,10 +62,10 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     public Command indexIntake() {
         return setSpeedCommand(-.07)
                 .raceWith(
-                        Commands.waitSeconds(.2).andThen(
+                        Commands.waitSeconds(0).andThen(
                                 Commands.waitUntil(() -> inputs.breakBeam)
                                         .andThen(() -> state = State.Indexed)
-                        ));
+                        )).onlyIf(() -> !inputs.breakBeam);
     }
 
     public Command automaticIndex() {

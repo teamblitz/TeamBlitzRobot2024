@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -17,6 +18,8 @@ public class IntakeIOSpark implements IntakeIO {
 
         motor.restoreFactoryDefaults();
         motor.setSmartCurrentLimit(Constants.Intake.CURRENT_LIMIT);
+
+        motor.setIdleMode(CANSparkBase.IdleMode.kBrake);
 
         motor.setOpenLoopRampRate(0.5);
     }

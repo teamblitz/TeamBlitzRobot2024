@@ -108,7 +108,7 @@ public class ShooterIOSpark implements ShooterIO {
         inputs.rpmBottom = bottom.getEncoder().getVelocity();
 
         inputs.currentTop = top.getOutputCurrent();
-        inputs.currentBottom = top.getOutputCurrent();
+        inputs.currentBottom = bottom.getOutputCurrent();
     }
 
     @Override

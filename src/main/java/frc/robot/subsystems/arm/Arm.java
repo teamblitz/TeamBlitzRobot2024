@@ -6,7 +6,10 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
@@ -49,15 +52,24 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                         FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
 
         // Do this, but smarter
-//        Commands.waitSeconds(5)
-//                .andThen(io::seedArmPosition)
-//                .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
-//                // loop
-//                .ignoringDisable(true)
-//                .schedule();
+        new Trigger(() ->inputs.encoderConnected)
+                .onTrue(
+                        Commands.waitSeconds(.25)
+                                .andThen(io::seedArmPosition)
+                                .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
+                                .ignoringDisable(true));
+
+        new Trigger(DriverStation::isDisabled)
+                .whileTrue(
+                        run(
+                                () -> io.setArmSpeed(0) // Sparks like to go back to where they were before disabled, constantly set the setpoint to avoid this and instead use the trapezoid profile
+                        ).ignoringDisable(true)
+                );
+
+
 
         // Constructor of armio?
-        io.seedArmPosition();
+//        io.seedArmPosition();
 
         routine =
                 new SysIdRoutine(
@@ -87,6 +99,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
     public void updateRotation(double degrees, double velocity) {
         Logger.recordOutput("arm/wanted_rotation", degrees);
+        Logger.recordOutput("arm/wanted_velocity", velocity);
         io.setRotationSetpoint(degrees, feedforward.calculate(degrees, velocity));
     }
 
@@ -102,7 +115,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         io.setArmSpeed(percent);
     }
 
-    public Command rotateToCommand(DoubleSupplier goal, boolean endAutomatically) {
+    public Command rotateToCommand(DoubleSupplier goal, boolean endAutomatically, boolean restOnEnd) {
         TrapezoidProfile profile =
                 new TrapezoidProfile(
                         new TrapezoidProfile.Constraints(
@@ -141,11 +154,23 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                         (interrupted) -> {
                             if (!interrupted) updateRotation(goal.getAsDouble(), 0);
                             else if (interrupted) updateRotation(lastState.get().position, 0);
-                        });
+                        })
+                .andThen(
+                        startEnd(io::stop, io::stop).onlyIf(() -> restOnEnd)
+                )
+                .until(DriverStation::isDisabled); // cancel on disable
+    }
+
+    public Command rotateToCommand(double goal, boolean endAutomatically, boolean restOnEnd) {
+        return rotateToCommand(() -> goal, endAutomatically, restOnEnd);
+    }
+
+    public Command rotateToCommand(DoubleSupplier goal, boolean endAutomatically) {
+        return rotateToCommand(goal, endAutomatically, false);
     }
 
     public Command rotateToCommand(double goal, boolean endAutomatically) {
-        return rotateToCommand(() -> goal, endAutomatically);
+        return rotateToCommand(goal, endAutomatically, false);
     }
 
     public boolean atGoal() {
