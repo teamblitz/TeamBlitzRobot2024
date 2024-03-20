@@ -308,6 +308,9 @@ public final class Constants {
             public static final double FF_BOTTOM_KS = compBot() ? 0.15486 : 0.043031; // TODO SET
             public static final double FF_BOTTOM_KV = compBot() ? 0.35913 : 0.39694; // TODO SET
             public static final double FF_BOTTOM_KA = compBot() ? 0.063401 : 0.086385;
+
+            public static final double GEAR_RATIO = (22.0/24.0);
+
         }
 
         public static class Talon {

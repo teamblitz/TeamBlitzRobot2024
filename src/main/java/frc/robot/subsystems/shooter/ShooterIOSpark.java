@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Constants.Climber;
 
 public class ShooterIOSpark implements ShooterIO {
 
@@ -65,17 +66,17 @@ public class ShooterIOSpark implements ShooterIO {
 
         top.getEncoder()
                 .setVelocityConversionFactor(
-                        (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setVelocityConversionFactor(
-                        (24.0 / 22.0) * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
 
         top.getEncoder()
                 .setPositionConversionFactor(
-                        (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setPositionConversionFactor(
-                        (24.0 / 22.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
 
 
 //        pidTop.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
