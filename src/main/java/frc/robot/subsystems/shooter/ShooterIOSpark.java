@@ -66,17 +66,17 @@ public class ShooterIOSpark implements ShooterIO {
 
         top.getEncoder()
                 .setVelocityConversionFactor(
-                        Constants.Shooter.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setVelocityConversionFactor(
-                        Constants.Shooter.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
 
         top.getEncoder()
                 .setPositionConversionFactor(
-                        Constants.Shooter.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setPositionConversionFactor(
-                        Constants.Shooter.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
 
 
 //        pidTop.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
