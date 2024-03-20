@@ -6,7 +6,9 @@
     "NotePaths"
   ],
   "autoFolders": [
-    "center"
+    "right",
+    "center",
+    "left"
   ],
   "defaultMaxVel": 1.0,
   "defaultMaxAccel": 1.0,
