@@ -63,7 +63,7 @@ public final class Constants {
         public static final boolean USE_PIGEON = true;
 
         public static final COTSSwerveConstants CHOSEN_MODULE =
-                COTSSwerveConstants.SDSMK4i(COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
+                COTSSwerveConstants.SDSMK4i(compBot() ?  COTSSwerveConstants.driveGearRatios.SDSMK4i_L3 : COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
         public static final double TRACK_WIDTH = Units.inchesToMeters(24.75);
@@ -132,7 +132,7 @@ public final class Constants {
         public static final double CLOSED_LOOP_RAMP = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_KP = compBot() ? .002 : 0.002;
+        public static final double ANGLE_KP = compBot() ? .004 : 0.002;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
         public static final double ANGLE_KF = 0.0; // For now, should remain zero

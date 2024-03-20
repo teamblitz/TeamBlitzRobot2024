@@ -26,6 +26,7 @@ import frc.robot.Constants.AutoConstants.StartingPos;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSpark;
+import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
@@ -151,7 +152,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSpark());
         shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark());
-        climber = new Climber(new ClimberIOKraken());
+        climber = new Climber(new ClimberIOKraken() {});
 
         autoShootSpeed = shooter.shootClosedLoopCommand(
                 () ->

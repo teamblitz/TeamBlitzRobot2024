@@ -26,7 +26,7 @@ public class OIConstants {
         public static double STICK_DEADBAND = 0.05;
 
         // Values are in percents, we have full power
-        private static final double SPIN_SPEED = Constants.compBot() ? .28 : .4;
+        private static final double SPIN_SPEED = Constants.compBot() ? .32 : .4;
         private static final double SLOW_SPEED = .3;
         public static final double NORMAL_SPEED = .6;
         public static final double FAST_SPEED = 1;
@@ -43,10 +43,7 @@ public class OIConstants {
 //                                        * (FAST_SPEED - NORMAL_SPEED);
 
         private static final DoubleSupplier DRIVE_MULTIPLIER =
-                () ->
-                        DRIVE_CONTROLLER.getHID().getRawButton(2)
-                                ? SLOW_SPEED
-                                : (DRIVE_CONTROLLER.getHID().getRawButton(1)
+                () -> (DRIVE_CONTROLLER.getHID().getRawButton(1)
                                 ? FAST_SPEED : NORMAL_SPEED);
 
 
@@ -81,7 +78,7 @@ public class OIConstants {
     }
 
     public static final class Intake {
-        public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
+        public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper().or(DRIVE_CONTROLLER.button(2));
         public static final Trigger EJECT = OPERATOR_CONTROLLER.leftTrigger();
     }
 
