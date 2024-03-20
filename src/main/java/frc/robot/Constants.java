@@ -225,7 +225,7 @@ public final class Constants {
 
     public static final class Arm {
         public static final double MIN_ROT = Units.degreesToRadians(-5); // TODO, TUNE THIS
-        public static final double MAX_ROT = Units.degreesToRadians(120); // TODO, tune this
+        public static final double MAX_ROT = Units.degreesToRadians(105); // TODO, tune this
 
         public static final double STARTING_POS =
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
@@ -371,18 +371,17 @@ public final class Constants {
 
         public static final double CURRENT_LIMIT = 80;
 
-        public static final double MAX_EXTENSION = 0; //TODO set
+        public static final double MAX_EXTENSION = .46; //TODO set
 
+        public static final double GEAR_RATIO = (15.0 / 1.0);
+        public static final double SPOOL_DIAMETER = Units.inchesToMeters(.75);
         public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;
-        //public static final InvertedValue LEFT_INVERT = InvertedValue.CounterClockwise_Positive;
-        
         public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive;
-        //public static final InvertedValue RIGHT_INVERT = InvertedValue.Clockwise_Positive;
 
-
-
+        public static final double kP = 60;
 
     }
+
     public static final class AutoConstants {
 
         public static final double MAX_SPEED_METERS_PER_SECOND = 3;

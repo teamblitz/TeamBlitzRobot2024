@@ -2,6 +2,7 @@ package frc.robot.subsystems.climber;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -27,7 +28,10 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
     private final ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
 
-    //private final ElevatorFeedforward feedforward;
+    private ElevatorFeedforward ffLoadedLeft;
+    private ElevatorFeedforward ffLoadedRight;
+    private ElevatorFeedforward ffUnLoadedLeft;
+    private ElevatorFeedforward ffUnLoadedRight;
 
     //private final SysIdRoutine routine;
 
@@ -38,10 +42,6 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("climber", inputs);
-    }
-
-    public double getSpeed() {
-        return inputs.velocity;
     }
 
     public Command setSpeed(double left, double right) {
@@ -56,4 +56,33 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
             }
         );
     }
+
+    public Command climb() {
+        return runEnd(
+                () -> {
+                    io.setMotionMagicLeft(.01);
+                    io.setMotionMagicRight(.01);
+                },() ->
+                {
+                    io.setMotionMagicLeft(inputs.positionLeft);
+                    io.setMotionMagicRight(inputs.positionRight);
+                }
+                );
+    }
+
+    public Command goUp() {
+        return runEnd(
+                () -> {
+                    io.setMotionMagicLeft(Constants.Climber.MAX_EXTENSION);
+                    io.setMotionMagicRight(Constants.Climber.MAX_EXTENSION);
+                },
+                () -> {
+                    io.setSpeedLeft(0);
+                    io.setSpeedRight(0);
+                }).until(
+                () -> MathUtil.isNear(Constants.Climber.MAX_EXTENSION, inputs.positionLeft, .005)
+                        && MathUtil.isNear(Constants.Climber.MAX_EXTENSION, inputs.positionRight, .005)
+        );
+    }
 }
+

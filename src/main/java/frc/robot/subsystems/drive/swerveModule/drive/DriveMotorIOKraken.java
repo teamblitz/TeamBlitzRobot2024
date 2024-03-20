@@ -74,7 +74,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
         motor.optimizeBusUtilization();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(200, motor.getVelocity(), motor.getPosition());
+        BaseStatusSignal.setUpdateFrequencyForAll(100, motor.getVelocity(), motor.getPosition());
     }
 
     @Override

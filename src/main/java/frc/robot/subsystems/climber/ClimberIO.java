@@ -7,12 +7,17 @@ public interface ClimberIO {
     /** All units are meters and radians */
     @AutoLog
     public class ClimberIOInputs {
-        public double position;
-        public double velocity;
+        public double positionLeft;
+        public double positionRight;
 
-        //public double extensionSpeed;
+        public double velocityLeft;
+        public double velocityRight;
 
-        public double volts;
+        public double voltsLeft;
+        public double voltsRight;
+
+        public double torqueCurrentLeft;
+        public double torqueCurrentRight;
     }
 
     /** Updates the set of loggable inputs. */
@@ -21,7 +26,7 @@ public interface ClimberIO {
     public default void setSpeedLeft(double percent) {}
     public default void setSpeedRight(double percent) {}
 
-    public default void setSetpointLeft(double extension) {}
-    public default void setSetpointRight(double extension) {}
+    public default void setMotionMagicLeft(double extension) {}
+    public default void setMotionMagicRight(double extension) {}
     
 }
