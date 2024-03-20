@@ -7,6 +7,7 @@ public interface DriveMotorIO {
     public static class DriveMotorInputs {
         public double velocity;
         public double position;
+        public double volts;
     }
 
     /** Updates the set of loggable inputs. */

@@ -28,6 +28,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
     public void updateInputs(DriveMotorIO.DriveMotorInputs inputs) {
         inputs.position = motor.getPosition().getValueAsDouble();
         inputs.velocity = motor.getVelocity().getValueAsDouble();
+        inputs.volts = motor.getMotorVoltage().getValueAsDouble();
     }
 
     @Override
@@ -74,7 +75,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
         motor.optimizeBusUtilization();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(100, motor.getVelocity(), motor.getPosition());
+        BaseStatusSignal.setUpdateFrequencyForAll(100, motor.getVelocity(), motor.getPosition(), motor.getSupplyVoltage());
     }
 
     @Override
