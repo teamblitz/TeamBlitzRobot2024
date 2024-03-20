@@ -3,8 +3,11 @@ package frc.robot.subsystems.climber;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.ParentDevice;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.fasterxml.jackson.databind.JsonSerializable.Base;
+
 import frc.robot.Constants.Climber;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
@@ -29,21 +32,42 @@ public class ClimberIOKraken implements ClimberIO {
         config.CurrentLimits
                 .withStatorCurrentLimit(Climber.CURRENT_LIMIT);
 
-        config.Feedback.withSensorToMechanismRatio(
-                Climber.GEAR_RATIO * (Climber.SPOOL_DIAMETER * Math.PI)
+        config.Feedback.withSensorToMechanismRatio( // how many sensor rotations per mechanisim rotation.
+                Climber.GEAR_RATIO * (1 / (Math.PI * Climber.SPOOL_DIAMETER))
         );
 
         config.MotionMagic
-                .withMotionMagicCruiseVelocity(2)
-                .withMotionMagicAcceleration(4);
+                .withMotionMagicCruiseVelocity(.5)
+                .withMotionMagicAcceleration(1);
 
         config.Slot0.withKP(
                 Climber.kP
         );
 
+        config.MotorOutput.withInverted(Climber.LEFT_INVERT);
+        left.getConfigurator().apply(config);
 
-        left.getConfigurator().apply(config.MotorOutput.withInverted(Climber.LEFT_INVERT));
-        right.getConfigurator().apply(config.MotorOutput.withInverted(Climber.RIGHT_INVERT));
+        config.MotorOutput.withInverted(Climber.RIGHT_INVERT);
+        right.getConfigurator().apply(config);
+
+        left.setPosition(0);
+        right.setPosition(0);
+
+
+        ParentDevice.optimizeBusUtilizationForAll(left, right);
+
+        BaseStatusSignal.setUpdateFrequencyForAll(100, 
+            left.getPosition(),
+            left.getVelocity(),
+            left.getMotorVoltage(),
+            left.getTorqueCurrent(),
+            right.getPosition(),
+            right.getVelocity(),
+            right.getMotorVoltage(),
+            right.getTorqueCurrent()
+        );
+
+    
     }
 
     @Override

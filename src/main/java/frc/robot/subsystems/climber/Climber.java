@@ -61,7 +61,7 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
         return runEnd(
                 () -> {
                     io.setMotionMagicLeft(.01);
-                    io.setSpeedRight(.01);
+                    io.setMotionMagicRight(.01);
                 },() ->
                 {
                     io.setMotionMagicLeft(inputs.positionLeft);
@@ -74,7 +74,7 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
         return runEnd(
                 () -> {
                     io.setMotionMagicLeft(Constants.Climber.MAX_EXTENSION);
-                    io.setSpeedRight(Constants.Climber.MAX_EXTENSION);
+                    io.setMotionMagicRight(Constants.Climber.MAX_EXTENSION);
                 },
                 () -> {
                     io.setSpeedLeft(0);
