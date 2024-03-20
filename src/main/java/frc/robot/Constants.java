@@ -36,7 +36,7 @@ public final class Constants {
 
     public static final Mode SIM_MODE = Mode.SIM;
 
-    public static final boolean TUNING_MODE = false;
+    public static final boolean TUNING_MODE = true;
 
     public enum Mode {
         /** Running a physics simulator. */
@@ -293,11 +293,11 @@ public final class Constants {
             public static final int SPARK_TOP = 22;
             public static final int SPARK_BOTTOM = 23;
 
-            public static final double PID_TOP_P = compBot() ? 0.0089967 : 0.013715; // TODO SET Was 0.013715
+            public static final double PID_TOP_P = compBot() ? 0.03 : 0.013715; // TODO SET Was 0.0089967
             public static final int PID_TOP_I = 0; // TODO SET
             public static final int PID_TOP_D = 0; // TODO SET
 
-            public static final double PID_BOTTOM_P = compBot() ? 0.012468 : 0.013715; // TODO SET
+            public static final double PID_BOTTOM_P = compBot() ? 0.03 : 0.013715; // TODO SET was 0.012468
             public static final int PID_BOTTOM_I = 0; // TODO SET
             public static final int PID_BOTTOM_D = 0; // TODO SET
 
@@ -339,11 +339,18 @@ public final class Constants {
             public static final InterpolatingDoubleTreeMap angleTreeMap = new InterpolatingDoubleTreeMap();
 
             static {
-                angleTreeMap.put(1.49, Units.degreesToRadians(40));
-                angleTreeMap.put(1.8, Units.degreesToRadians(43));
-                angleTreeMap.put(2.0, Units.degreesToRadians(45));
-                angleTreeMap.put(2.3, Units.degreesToRadians(48));
-                angleTreeMap.put(2.5, Units.degreesToRadians(49.8));
+                angleTreeMap.put(1.45, Units.degreesToRadians(40));
+                angleTreeMap.put(1.77, Units.degreesToRadians(43));
+                angleTreeMap.put(2.02, Units.degreesToRadians(47));
+                angleTreeMap.put(2.08, Units.degreesToRadians(48));
+                angleTreeMap.put(2.4, Units.degreesToRadians(49));
+                angleTreeMap.put(2.67, Units.degreesToRadians(51.8));
+
+
+//                angleTreeMap.put(1.8, Units.degreesToRadians(43));
+//                angleTreeMap.put(2.0, Units.degreesToRadians(45));
+//                angleTreeMap.put(2.3, Units.degreesToRadians(48));
+//                angleTreeMap.put(2.5, Units.degreesToRadians(49.8));
             }
 
             public static final InterpolatingDoubleTreeMap feedVelocityTreeMap = new InterpolatingDoubleTreeMap();
