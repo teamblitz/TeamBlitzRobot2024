@@ -368,13 +368,16 @@ public final class Constants {
 
         public static final double CURRENT_LIMIT = 80;
 
-        public static final double MAX_EXTENSION = 0; //TODO set
+        public static final double MAX_EXTENSION = 1; //TODO set
 
         public static final double GEAR_RATIO = (1.0/12.0);
         public static final double SPOOL_DIAMETER = Units.inchesToMeters(.75);
 
         public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;
         public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive;
+
+        public static final double kP = 60;
+
     }
 
     public static final class AutoConstants {

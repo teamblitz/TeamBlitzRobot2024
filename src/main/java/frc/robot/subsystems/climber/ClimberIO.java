@@ -26,7 +26,7 @@ public interface ClimberIO {
     public default void setSpeedLeft(double percent) {}
     public default void setSpeedRight(double percent) {}
 
-    public default void setSetpointLeft(double extension) {}
-    public default void setSetpointRight(double extension) {}
+    public default void setMotionMagicLeft(double extension) {}
+    public default void setMotionMagicRight(double extension) {}
     
 }
