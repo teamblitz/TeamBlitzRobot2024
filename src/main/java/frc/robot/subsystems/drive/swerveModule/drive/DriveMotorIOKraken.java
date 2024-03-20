@@ -66,7 +66,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
                 .withStatorCurrentLimit(Constants.Drive.CurrentLimits.Kraken.DRIVE_STATOR);
 
         config.Feedback.withSensorToMechanismRatio(
-                1 / Constants.Drive.DRIVE_GEAR_RATIO * Constants.Drive.WHEEL_CIRCUMFERENCE);
+                Constants.Drive.DRIVE_GEAR_RATIO * (1 / Constants.Drive.WHEEL_CIRCUMFERENCE));
 
         motor.getConfigurator().apply(config);
 

@@ -64,8 +64,8 @@ public final class Constants {
                 COTSSwerveConstants.SDSMK4i(compBot() ?  COTSSwerveConstants.driveGearRatios.SDSMK4i_L3 : COTSSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
-        public static final double TRACK_WIDTH = Units.inchesToMeters(24.75);
-        public static final double WHEEL_BASE = Units.inchesToMeters(24.75);
+        public static final double TRACK_WIDTH = Units.inchesToMeters(24.75 + (compBot() ? -.25 : 0));
+        public static final double WHEEL_BASE = Units.inchesToMeters(24.75 + (compBot() ? -.25 : 0));
         public static final double WHEEL_CIRCUMFERENCE = CHOSEN_MODULE.wheelCircumference;
 
         /* Motor Inverts */
