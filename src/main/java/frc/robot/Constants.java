@@ -13,14 +13,12 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
-import java.sql.SQLOutput;
 import java.util.Arrays;
 import java.util.List;
 
@@ -123,8 +121,8 @@ public final class Constants {
             }
         }
 
-        public static final int ANGLE_SMART_CURRENT_LIMIT = 25;
-        public static final int ANGLE_SECONDARY_CURRENT_LIMIT = 40;
+        public static final int ANGLE_SMART_CURRENT_LIMIT = 35;
+        public static final int ANGLE_SECONDARY_CURRENT_LIMIT = 50;
 
         /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
          * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
@@ -244,7 +242,9 @@ public final class Constants {
         public static final int TOP_LIMIT_SWITCH = 2; // TODO CONFIG
         public static final int BOTTOM_LIMIT_SWITCH = 3; // TODO CONFIG
 
-        public static final double RAMP_RATE = 2;
+        public static final double OPEN_LOOP_RAMP = 1;
+
+        public static final int CURRENT_LIMIT = 60;
 
         public static final class FeedForwardConstants {
             public static final double KS = 0.41881;
@@ -277,7 +277,7 @@ public final class Constants {
     }
 
     public static class Intake {
-        public static final int CURRENT_LIMIT = 60;
+        public static final int CURRENT_LIMIT = 50; // Todo, I don't want to bring this too low, but this should give us plenty of time to shut off the intake if the hex bends
 
         public static final class Spark {
             public static final int MOTOR_ID = 19;

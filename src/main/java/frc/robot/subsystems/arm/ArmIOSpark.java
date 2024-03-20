@@ -32,8 +32,11 @@ public class ArmIOSpark implements ArmIO {
         armRotLeader.setIdleMode(IdleMode.kBrake);
         armRotFollower.setIdleMode(IdleMode.kBrake);
 
-        armRotLeader.setOpenLoopRampRate(Arm.RAMP_RATE);
-        armRotFollower.setOpenLoopRampRate(Arm.RAMP_RATE);
+        armRotLeader.setOpenLoopRampRate(Arm.OPEN_LOOP_RAMP);
+        armRotFollower.setOpenLoopRampRate(Arm.OPEN_LOOP_RAMP);
+
+        armRotLeader.setSmartCurrentLimit(Arm.CURRENT_LIMIT);
+        armRotLeader.setSmartCurrentLimit(Arm.CURRENT_LIMIT);
 
         armRotLeader.setInverted(false);
         armRotFollower.follow(armRotLeader, true);
