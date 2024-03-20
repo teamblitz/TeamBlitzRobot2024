@@ -286,7 +286,7 @@ public final class Constants {
 
     public static class Shooter {
 
-        public static final double MAX_VELOCITY = 29;
+        public static final double MAX_VELOCITY = 26.9;
 
         public static class Spark {
 
