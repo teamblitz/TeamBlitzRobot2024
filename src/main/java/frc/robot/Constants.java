@@ -226,14 +226,13 @@ public final class Constants {
     }
 
     public static final class Arm {
-        public static final double MIN_ROT = Units.degreesToRadians(0);
-        public static final double MAX_ROT = Units.degreesToRadians(90);
+        public static final double MIN_ROT = Units.degreesToRadians(-5); // TODO, TUNE THIS
+        public static final double MAX_ROT = Units.degreesToRadians(120); // TODO, tune this
 
         public static final double STARTING_POS =
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
         public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(23.324 - 90);
 
-        // TODO CONFIG
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(120);
         public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 200); // prev 240
 
@@ -254,7 +253,7 @@ public final class Constants {
             public static final double KG = 0.92004;
         }
 
-        public static final class PidConstants { // TODO CONFIG
+        public static final class PidConstants {
             public static final double P = 1.1; // 0.19905 from sysid
             public static final double I = 0;
             public static final double D = 0;
@@ -291,16 +290,16 @@ public final class Constants {
 
         public static class Spark {
 
-            public static final int SPARK_TOP = 22; // TODO SET
-            public static final int SPARK_BOTTOM = 23; // TODO SET
+            public static final int SPARK_TOP = 22;
+            public static final int SPARK_BOTTOM = 23;
 
             public static final double PID_TOP_P = compBot() ? 0.0087929: 0.013715; // TODO SET Was 0.013715
-            public static final int PID_TOP_I = 0; // TODO SET
-            public static final int PID_TOP_D = 0; // TODO SET
+            public static final int PID_TOP_I = 0;
+            public static final int PID_TOP_D = 0;
 
             public static final double PID_BOTTOM_P = compBot() ? 0.009135 : 0.013715; // TODO SET
-            public static final int PID_BOTTOM_I = 0; // TODO SET
-            public static final int PID_BOTTOM_D = 0; // TODO SET
+            public static final int PID_BOTTOM_I = 0;
+            public static final int PID_BOTTOM_D = 0;
 
             public static final double FF_TOP_KS = compBot() ? 0.14683 : 0.043031; // TODO SET
             public static final double FF_TOP_KV = compBot() ? 0.39798 : 0.39694; // TODO SET
@@ -313,11 +312,11 @@ public final class Constants {
 
         public static class Talon {
 
-            public static final int TALON_TOP = 22; // TODO SET
-            public static final int TALON_BOTTOM = 23; // TODO SET
+            public static final int TALON_TOP = 22;
+            public static final int TALON_BOTTOM = 23;
         }
 
-        public static final int CURRENT_LIMIT = 60; // TODO SET
+        public static final int CURRENT_LIMIT = 60;
 
         public static class AutoShootConstants {
             public static final Transform2d botToCenterOfRotation =

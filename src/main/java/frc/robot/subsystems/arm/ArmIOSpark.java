@@ -61,6 +61,9 @@ public class ArmIOSpark implements ArmIO {
         armTopLimitSwitch = new DigitalInput(Arm.TOP_LIMIT_SWITCH);
         armBottomLimitSwitch = new DigitalInput(Arm.BOTTOM_LIMIT_SWITCH);
 
+        armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) Arm.MAX_ROT);
+        armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, (float) Arm.MIN_ROT);
+
         seedArmPosition();
     }
 

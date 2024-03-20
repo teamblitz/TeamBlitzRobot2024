@@ -51,7 +51,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
         feedforward =
                 new ArmFeedforward(
-                        FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV);
+                        FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV, FeedForwardConstants.KA);
 
         // Do this, but smarter
         new Trigger(() ->inputs.encoderConnected)
@@ -104,7 +104,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
         LoggedTunableNumber.ifChanged(hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
         LoggedTunableNumber.ifChanged(
-                hashCode(), kSGV -> feedforward = new ArmFeedforward(kSGV[0], kSGV[1], kSGV[2]), kS, kG, kV);
+                hashCode(), kSGVA -> feedforward = new ArmFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]), kS, kG, kV, kA);
     }
 
     public void updateRotation(double degrees, double velocity) {
