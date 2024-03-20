@@ -195,13 +195,13 @@ public class RobotContainer {
 
         //CLIMBER COMMANDS
         
-        OIConstants.Climber.UP_BOTH.whileTrue(climber.setSpeed(0.3, 0.3));
-        OIConstants.Climber.UP_LEFT.whileTrue(climber.setSpeed(0.3, 0));
-        OIConstants.Climber.UP_RIGHT.whileTrue(climber.setSpeed(0, 0.3));
+        OIConstants.Climber.UP_BOTH.whileTrue(climber.goUp());
+//        OIConstants.Climber.UP_LEFT.whileTrue(climber.setSpeed(0.3, 0));
+//        OIConstants.Climber.UP_RIGHT.whileTrue(climber.setSpeed(0, 0.3));
 
-        OIConstants.Climber.DOWN_BOTH.whileTrue(climber.setSpeed(-0.3, -0.3));
-        OIConstants.Climber.DOWN_LEFT.whileTrue(climber.setSpeed(-0.3, 0));
-        OIConstants.Climber.DOWN_RIGHT.whileTrue(climber.setSpeed(0, -0.3));
+        OIConstants.Climber.DOWN_BOTH.whileTrue(climber.climb());
+//        OIConstants.Climber.DOWN_LEFT.whileTrue(climber.setSpeed(-0.3, 0));
+//        OIConstants.Climber.DOWN_RIGHT.whileTrue(climber.setSpeed(0, -0.3));
         
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
