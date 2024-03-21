@@ -1,0 +1,58 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7502118262381892,
+        "y": 4.402981036538514
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.285153447499878,
+        "y": 4.269245631223092
+      },
+      "isLocked": false,
+      "linkedName": "subwoofer-rigt"
+    },
+    {
+      "anchor": {
+        "x": 2.437335400986592,
+        "y": 4.238383614611841
+      },
+      "prevControl": {
+        "x": 1.8200950687615671,
+        "y": 4.258958292352676
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "right-note-CR-pickup"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -12.01678008582653,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -16.26020470831201,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "start-to-note",
+  "previewStartingState": {
+    "rotation": -59.6567511157604,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8427978760719429,
-      "y": 6.666195588030274
+      "x": 0.7502118262381892,
+      "y": 4.402981036538514
     },
-    "rotation": 60.0
+    "rotation": -60.0
   },
   "command": {
     "type": "sequential",
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "center-to-CM"
+                  "pathName": "right-to-CR"
                 }
               },
               {
@@ -54,41 +54,10 @@
               }
             ]
           }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "CM-to-CL"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CL-to-centerShoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoShoot"
-          }
         }
       ]
     }
   },
-  "folder": "center",
+  "folder": "right",
   "choreoAuto": false
 }
