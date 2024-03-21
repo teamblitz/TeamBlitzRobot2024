@@ -132,4 +132,16 @@ public class SwerveModule {
     public void resetToAbs() {
         angleMotor.seedPosition(encoderInputs.position);
     }
+
+    public double getVelocity() {
+        return driveMotorInputs.velocity;
+    }
+
+    public double getVoltsDrive() {
+        return driveMotorInputs.volts;
+    }
+
+    public double getPositionDrive() {
+        return driveMotorInputs.position;
+    }
 }

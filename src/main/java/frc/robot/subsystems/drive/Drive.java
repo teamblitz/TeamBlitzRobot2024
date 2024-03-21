@@ -2,7 +2,7 @@
 
 package frc.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.ANGLE_KD;
 import static frc.robot.Constants.Drive.ANGLE_KI;
 import static frc.robot.Constants.Drive.ANGLE_KP;
@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -219,14 +220,19 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                         new SysIdRoutine.Mechanism(
                                 (volts) -> {
                                     drive(
-                                            new Translation2d(volts.in(Units.Volts) / 12.0, 0)
+                                            new Translation2d(volts.in(Volts) / 12.0, 0)
                                                     .times(Constants.Drive.MAX_SPEED),
                                             0,
                                             false,
                                             true,
                                             true);
                                 },
-                                null,
+                                log -> {
+                                    log.motor("drive")
+                                            .voltage(Volts.of(swerveModules[0].getVoltsDrive()))
+                                            .linearVelocity(MetersPerSecond.of(swerveModules[0].getVelocity()))
+                                            .linearPosition(Meters.of(swerveModules[0].getPositionDrive()));
+                                },
                                 this));
 
         AutoBuilder.configureHolonomic(
