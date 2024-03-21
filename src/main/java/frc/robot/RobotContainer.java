@@ -243,14 +243,14 @@ public class RobotContainer {
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
-                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, true)
-                        .alongWith(Commands.waitSeconds(1))
+                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, false)
+                        .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand()));
 
         NamedCommands.registerCommand(
                 "autoShoot",
-                todoPutThisAutoShootSomewhereElse()
+                buildAutoShootCommand()
                         .raceWith(Commands.waitSeconds(1.5)
                                         .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
                 //
