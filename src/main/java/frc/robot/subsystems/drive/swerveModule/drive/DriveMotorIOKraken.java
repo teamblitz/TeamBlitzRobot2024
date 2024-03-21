@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive.swerveModule.drive;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -13,7 +14,8 @@ import frc.robot.Constants;
 public class DriveMotorIOKraken implements DriveMotorIO {
     private final TalonFX motor;
 
-    private final VelocityVoltage closedLoopVelocity = new VelocityVoltage(0);
+    private final VelocityVoltage closedLoopVelocity = new VelocityVoltage(0).withEnableFOC(true);
+    private final DutyCycleOut openLoopDutyCycle = new DutyCycleOut(0).withEnableFOC(true);
     private boolean brakeEnabled = false;
 
     public DriveMotorIOKraken(SwerveModuleConstants moduleConstants) {
@@ -33,7 +35,7 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
     @Override
     public void setDrivePercent(double percent) {
-        motor.set(percent);
+        motor.setControl(openLoopDutyCycle.withOutput(percent));
     }
 
     @Override
