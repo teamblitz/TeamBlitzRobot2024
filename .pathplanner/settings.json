@@ -3,7 +3,9 @@
   "robotLength": 0.9144,
   "holonomicMode": true,
   "pathFolders": [
-    "NotePaths"
+    "note-to-note",
+    "note-shoot-note",
+    "start-to-note"
   ],
   "autoFolders": [
     "right",
