@@ -267,7 +267,7 @@ public final class Constants {
         public static final class Positions {
             public static final double INTAKE = STARTING_POS + Units.degreesToRadians(
                     robot == Robot.CompBot ?
-                            -4 : -2
+                            -5 : -2
             );
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);

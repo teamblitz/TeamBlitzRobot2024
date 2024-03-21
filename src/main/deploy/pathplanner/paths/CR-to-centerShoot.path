@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.4634437894468206,
-        "y": 4.328361263357597
+        "x": 2.5237490474980953,
+        "y": 4.4271562828839945
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1492899126149134,
-        "y": 4.773325235873529
+        "x": 2.271319203888691,
+        "y": 4.645798800250751
       },
       "isLocked": false,
       "linkedName": "center-note-CR-pickup"
@@ -20,8 +20,8 @@
         "y": 5.515013115334288
       },
       "prevControl": {
-        "x": 2.2110139458374163,
-        "y": 4.855623946836867
+        "x": 2.416760723245758,
+        "y": 5.153956774078962
       },
       "nextControl": null,
       "isLocked": false,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "NotePaths",
+  "folder": "note-shoot-note",
   "previewStartingState": {
     "rotation": -28.342419601151384,
     "velocity": 0

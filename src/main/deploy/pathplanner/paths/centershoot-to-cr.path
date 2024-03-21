@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 2.5710708063020142,
-        "y": 4.38240635879768
+        "x": 2.5237490474980953,
+        "y": 4.4271562828839945
       },
       "prevControl": {
-        "x": 2.2624506401895013,
-        "y": 4.660164508298942
+        "x": 2.2151288813855823,
+        "y": 4.704914432385256
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "center-note-CR-pickup"
     }
   ],
   "rotationTargets": [
@@ -49,7 +49,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "NotePaths",
+  "folder": "note-shoot-note",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0
