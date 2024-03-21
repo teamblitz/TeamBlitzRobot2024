@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.38,
-      "y": 5.5
+      "x": 1.354605173665323,
+      "y": 5.534466424383086
     },
     "rotation": 0
   },
@@ -37,15 +37,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "readyShoot"
+            "waitTime": 0.25
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "autoShoot"
           }
         }
       ]
