@@ -206,6 +206,15 @@ public class RobotContainer {
         OIConstants.Climber.DOWN_BOTH.whileTrue(climber.climb());
        OIConstants.Climber.DOWN_LEFT.whileTrue(climber.setSpeed(-0.3, 0));
        OIConstants.Climber.DOWN_RIGHT.whileTrue(climber.setSpeed(0, -0.3));
+
+
+       OIConstants.Climber.DOWN_BOTH.onTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly()
+       );
+       
+       OIConstants.Climber.UP_BOTH.onTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly()
+       );
         
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
