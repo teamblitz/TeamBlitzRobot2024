@@ -275,8 +275,8 @@ public final class Constants {
 
 
             public static final double SPEAKER_SUB_FRONT = Units.degreesToRadians(30);
-            public static final double SPEAKER_SUB_SIDE = Units.degreesToRadians(25);
-            public static final double SPEAKER_PODIUM = Units.degreesToRadians(40);
+            public static final double SPEAKER_SUB_SIDE = Units.degreesToRadians(46); // actualy bot distance
+            public static final double SPEAKER_PODIUM = Units.degreesToRadians(47);
         }
     }
 

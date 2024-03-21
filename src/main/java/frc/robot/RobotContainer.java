@@ -193,11 +193,11 @@ public class RobotContainer {
                         .alongWith(shooter.shootCommand()));
 
         OIConstants.Arm.SPEAKER_SUB_SIDE.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
                         .alongWith(shooter.shootCommand()));
         
         OIConstants.Arm.SPEAKER_PODIUM.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_PODIUM, false)
                         .alongWith(shooter.shootCommand()));
 
 
