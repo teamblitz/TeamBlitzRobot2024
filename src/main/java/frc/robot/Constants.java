@@ -225,7 +225,7 @@ public final class Constants {
 
     public static final class Arm {
         public static final double MIN_ROT = Units.degreesToRadians(-5); // TODO, TUNE THIS
-        public static final double MAX_ROT = Units.degreesToRadians(105); // TODO, tune this
+        public static final double MAX_ROT = Units.degreesToRadians(103); // TODO, tune this
 
         public static final double STARTING_POS =
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
@@ -271,7 +271,7 @@ public final class Constants {
             );
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
-            public static final double SCORE_AMP = Units.degreesToRadians(105);
+            public static final double SCORE_AMP = Units.degreesToRadians(103);
             public static final double SCORE_SPEAKER = Units.degreesToRadians(30);
         }
     }
