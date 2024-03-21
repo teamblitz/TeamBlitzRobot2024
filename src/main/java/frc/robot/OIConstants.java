@@ -96,7 +96,12 @@ public class OIConstants {
         public static final Trigger INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a());
         public static final Trigger TRANSIT_STAGE = TELEOP.and(OPERATOR_CONTROLLER.povLeft());
 
-        public static final Trigger SCORE_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.y());
+        public static final Trigger SPEAKER_SUB_FRONT = TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
+        public static final Trigger SPEAKER_SUB_SIDE = TELEOP.and(OPERATOR_CONTROLLER.b().and(OPERATOR_CONTROLLER.y().negate()));
+        public static final Trigger SPEAKER_PODIUM = TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b()));
+        
+
+
         public static final Trigger SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
 
         public static final Trigger AUTO_AIM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());

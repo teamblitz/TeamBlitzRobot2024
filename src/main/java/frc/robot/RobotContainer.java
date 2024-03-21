@@ -186,9 +186,21 @@ public class RobotContainer {
                 );
         OIConstants.Arm.TRANSIT_STAGE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
-        OIConstants.Arm.SCORE_SPEAKER.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, false)
+
+
+        OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
                         .alongWith(shooter.shootCommand()));
+
+        OIConstants.Arm.SPEAKER_SUB_SIDE.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
+                        .alongWith(shooter.shootCommand()));
+        
+        OIConstants.Arm.SPEAKER_PODIUM.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
+                        .alongWith(shooter.shootCommand()));
+
+
         OIConstants.Arm.SCORE_AMP.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
@@ -253,7 +265,7 @@ public class RobotContainer {
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
-                arm.rotateToCommand(Constants.Arm.Positions.SCORE_SPEAKER, false)
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand()));
