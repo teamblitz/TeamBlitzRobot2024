@@ -261,10 +261,10 @@ public class RobotContainer {
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
                         .alongWith(shooter.reverseCommand())
-        );
+         );
         //        NamedCommands.registerCommand(
         //                "index",
         //                intake.indexIntake()
@@ -279,7 +279,11 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
-        return autoChooser.getSelected();
+        return Commands.runOnce(
+                        () -> drive.setGyro(
+                                startingPositionChooser.getSelected().angle
+                        )
+                ).andThen(autoChooser.getSelected());
     }
 
 //    public Command todoPutThisAutoShootSomewhereElse() {
