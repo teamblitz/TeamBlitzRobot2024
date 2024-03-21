@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -69,7 +70,7 @@ public class RobotContainer {
         setDefaultCommands();
         configureAutoCommands();
 
-        //        CameraServer.startAutomaticCapture();
+        CameraServer.startAutomaticCapture();
 
         DriverStation.silenceJoystickConnectionWarning(true);
         Shuffleboard.getTab("Drive")
@@ -107,7 +108,7 @@ public class RobotContainer {
                         () -> false,
                         OIConstants.Drive.HEADING_CONTROL));
 
-        arm.setDefaultCommand(arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_NORMAL, false));
+        arm.setDefaultCommand(arm.rotateToCommand(OIConstants.Arm.TRANSIT_STAGE.getAsBoolean() ? Constants.Arm.Positions.TRANSIT_STAGE : Constants.Arm.Positions.TRANSIT_NORMAL, false));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
@@ -263,7 +264,7 @@ public class RobotContainer {
                 "intake",
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE, false)
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
-                        .alongWith(shooter.reverseCommand())
+                        .alongWith(shooter.setSpeedCommand(-.1))
         );
         //        NamedCommands.registerCommand(
         //                "index",
