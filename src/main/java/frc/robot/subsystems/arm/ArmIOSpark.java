@@ -71,7 +71,7 @@ public class ArmIOSpark implements ArmIO {
         armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) Arm.MAX_ROT);
         armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, (float) Arm.MIN_ROT);
 
-        seedArmPosition();
+        seedArmPosition(true);
     }
 
     @Override
@@ -131,10 +131,10 @@ public class ArmIOSpark implements ArmIO {
     }
 
     @Override
-    public void seedArmPosition() {
+    public void seedArmPosition(boolean assumeStarting) {
         if (absRotationEncoder.isConnected()) {
             angleEncoder.setPosition(getAbsolutePosition());
-        } else {
+        } else if (assumeStarting) {
             System.out.printf(
                     "Arm absolute rotation encoder disconnected, assuming position %s%n",
                     Arm.STARTING_POS);

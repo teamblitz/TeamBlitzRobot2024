@@ -108,8 +108,8 @@ public class OIConstants {
         public static final Trigger UP_RIGHT = UNBOUND;
 
         public static final Trigger DOWN_BOTH = OPERATOR_CONTROLLER.povDown();
-        public static final Trigger DOWN_LEFT = TEST_CONTROLLER.leftBumper();
-        public static final Trigger DOWN_RIGHT = TEST_CONTROLLER.rightBumper();
+        public static final Trigger DOWN_MAN = OPERATOR_CONTROLLER.povRight();
+        // public static final Trigger DOWN_RIGHT = TEST_CONTROLLER.rightBumper();
         
     }
 

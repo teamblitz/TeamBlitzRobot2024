@@ -31,7 +31,7 @@ public interface ArmIO {
 
     public default void setArmVolts(double volts) {}
 
-    public default void seedArmPosition() {}
+    public default void seedArmPosition(boolean assumeStarting) {}
 
     public default void checkLimitSwitches() {}
 

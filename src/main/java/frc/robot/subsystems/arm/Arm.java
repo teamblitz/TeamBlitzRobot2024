@@ -57,7 +57,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         new Trigger(() ->inputs.encoderConnected)
                 .onTrue(
                         Commands.waitSeconds(.25)
-                                .andThen(io::seedArmPosition)
+                                .andThen(() -> io.seedArmPosition(false))
                                 .andThen(() -> io.setArmSpeed(0)) // Set the arm to 0 to end on board pid
                                 .ignoringDisable(true));
 
@@ -99,6 +99,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
     @Override
     public void periodic() {
+        io.seedArmPosition(false);
         io.updateInputs(inputs);
         Logger.processInputs("arm", inputs);
 
