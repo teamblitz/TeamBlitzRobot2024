@@ -55,6 +55,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                         FeedForwardConstants.KS, FeedForwardConstants.KG, FeedForwardConstants.KV, FeedForwardConstants.KA);
 
         // Do this, but smarter
+        
         new Trigger(() ->inputs.encoderConnected)
                 .onTrue(
                         Commands.waitSeconds(.25)
