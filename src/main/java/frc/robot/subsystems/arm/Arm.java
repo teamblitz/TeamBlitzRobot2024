@@ -18,6 +18,7 @@ import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
+import frc.robot.Constants.Drive;
 import frc.robot.Constants.Arm.FeedForwardConstants;
 import frc.robot.Robot;
 import java.util.function.DoubleSupplier;
@@ -106,7 +107,10 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         LoggedTunableNumber.ifChanged(
                 hashCode(), kSGVA -> feedforward = new ArmFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]), kS, kG, kV, kA);
 
+
+        if (DriverStation.isTeleop()) {
         io.seedArmPosition(false);
+        }
 
     }
 
