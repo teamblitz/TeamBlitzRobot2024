@@ -106,7 +106,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
         LoggedTunableNumber.ifChanged(
                 hashCode(), kSGVA -> feedforward = new ArmFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]), kS, kG, kV, kA);
 
-                // io.seedArmPosition(false);
+        io.seedArmPosition(false);
 
     }
 
