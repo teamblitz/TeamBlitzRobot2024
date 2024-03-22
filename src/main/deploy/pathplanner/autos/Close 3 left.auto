@@ -83,7 +83,7 @@
         {
           "type": "named",
           "data": {
-            "name": "autoShoot"
+            "name": "cShoot"
           }
         }
       ]

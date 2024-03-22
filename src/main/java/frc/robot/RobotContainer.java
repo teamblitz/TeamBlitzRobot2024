@@ -272,7 +272,14 @@ public class RobotContainer {
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
+                        .raceWith(Commands.waitSeconds(1))
+                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+                        .raceWith(shooter.shootCommand()));
+
+        NamedCommands.registerCommand(
+                "cShoot",
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand()));
