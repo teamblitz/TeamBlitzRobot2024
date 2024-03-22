@@ -79,13 +79,13 @@ public class OIConstants {
 
     public static final class Intake {
         public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper().or(DRIVE_CONTROLLER.button(2));
-        public static final Trigger EJECT = OPERATOR_CONTROLLER.leftTrigger();
+        public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
     }
 
     public static final class Shooter {
         public static final Trigger MANUAL_FEED = OPERATOR_CONTROLLER.rightBumper();
         public static final Trigger SHOOTER_AMP = UNBOUND;
-        public static final Trigger EJECT = OPERATOR_CONTROLLER.rightTrigger();
+        public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
         public static final Trigger SPEED_AUTO = OPERATOR_CONTROLLER.back();
     }
 
@@ -94,7 +94,12 @@ public class OIConstants {
                 () -> -OPERATOR_CONTROLLER.getLeftY() * .2;
 
         public static final Trigger INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a());
-        public static final Trigger TRANSIT_STAGE = TELEOP.and(OPERATOR_CONTROLLER.povLeft());
+
+        public static final Trigger TRANSIT_STAGE = TELEOP.and(
+                OPERATOR_CONTROLLER.povDown()
+                .or(OPERATOR_CONTROLLER.povDownLeft())
+                .or(OPERATOR_CONTROLLER.povDownRight())
+        );
 
         public static final Trigger SPEAKER_SUB_FRONT = TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
         public static final Trigger SPEAKER_SUB_SIDE = TELEOP.and(OPERATOR_CONTROLLER.b().and(OPERATOR_CONTROLLER.y().negate()));
@@ -108,11 +113,11 @@ public class OIConstants {
     }
 
     public static final class Climber {
-        public static final Trigger UP_BOTH = OPERATOR_CONTROLLER.povUp();
+        public static final Trigger UP_BOTH = OPERATOR_CONTROLLER.leftTrigger();
         public static final Trigger UP_LEFT = UNBOUND;
         public static final Trigger UP_RIGHT = UNBOUND;
 
-        public static final Trigger DOWN_BOTH = OPERATOR_CONTROLLER.povDown();
+        public static final Trigger DOWN_BOTH = OPERATOR_CONTROLLER.rightTrigger();
         public static final Trigger DOWN_MAN = OPERATOR_CONTROLLER.povRight();
         // public static final Trigger DOWN_RIGHT = TEST_CONTROLLER.rightBumper();
         

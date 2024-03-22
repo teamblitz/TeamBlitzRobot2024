@@ -184,8 +184,8 @@ public class RobotContainer {
                                 true, true)
                         .raceWith(intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)))
                 );
-        OIConstants.Arm.TRANSIT_STAGE.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
+        // OIConstants.Arm.TRANSIT_STAGE.whileTrue(
+        //         arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
 
 
         OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
