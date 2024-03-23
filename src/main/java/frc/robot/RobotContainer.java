@@ -188,7 +188,7 @@ public class RobotContainer {
 
         OIConstants.Arm.INTAKE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE,
-                                true, true)
+                                false)
                         .raceWith(intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)))
                 );
         // OIConstants.Arm.TRANSIT_STAGE.whileTrue(
@@ -297,7 +297,7 @@ public class RobotContainer {
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE - Math.toRadians(2), false)
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
                         .alongWith(shooter.setSpeedCommand(-.1))
         );
