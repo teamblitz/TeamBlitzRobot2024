@@ -189,7 +189,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         keepHeadingPid = new PIDController(.1, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
 
-        rotateToHeadingPid = new ProfiledPIDController(.1, 0, 0, new Constraints(360, 360 * 3));
+        rotateToHeadingPid = new ProfiledPIDController(.1, 0, 0, new Constraints(360, 360 * 2));
         rotateToHeadingPid.enableContinuousInput(-180, 180);
         initTelemetry();
 
@@ -198,7 +198,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
 
-        // Most critical 6 lines of the robot, don't delete, without these it doesn't completly work
+        // Most critical 6 lines of the robot, don't delete, without these it doesn't completely work
         // for some reason
         Commands.waitSeconds(3)
                 .andThen(
@@ -537,6 +537,48 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                                 false,
                                                 false,
                                                 false)));
+    }
+
+    /**
+     * Chase a robot relative vector and angle, ie a game piece detected by a camera.
+     * Note, unreliable behavior may occur when the inputs are not updated frequently, especially when rotation is occurring
+     * @param vector robot relative unit vector to move in the direction of
+     * @param angle robot relative heading to chase
+     * @param velocity goal velocity
+     * @param acceleration max acceleration
+     * @return Chase Vector Command.
+     */
+    public Command chaseVector(Supplier<Translation2d> vector, DoubleSupplier angle, double velocity, double acceleration) {
+        SlewRateLimiter xLimiter = new SlewRateLimiter(acceleration);
+        SlewRateLimiter yLimiter = new SlewRateLimiter(acceleration);
+
+        return Commands.runOnce(
+                () -> {
+                    xLimiter.reset(getChassisSpeeds().vxMetersPerSecond);
+                    yLimiter.reset(getChassisSpeeds().vyMetersPerSecond);
+                }
+        ).andThen(
+                run(
+                        () -> {
+                            Translation2d unitVec = vector.get().div(vector.get().getNorm());
+                            Translation2d goalSpeeds = unitVec.times(velocity);
+
+
+                            angleDrive(
+                                    new Translation2d(
+                                            xLimiter.calculate(goalSpeeds.getX()),
+                                            yLimiter.calculate(goalSpeeds.getY())
+                                    ),
+                                    0,
+                                    getYaw().getDegrees() + Math.toDegrees(angle.getAsDouble()),
+                                    false,
+                                    false,
+                                    true,
+                                    true
+                            );
+                        }
+                )
+        );
     }
 
     public Command zeroAbsEncoders() {
