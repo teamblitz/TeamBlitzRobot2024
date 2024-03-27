@@ -13,7 +13,9 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.util.LimelightHelpers;
 import frc.robot.Constants.AutoConstants.StartingPos;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
@@ -178,6 +181,27 @@ public class RobotContainer {
 
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
+
+        NetworkTableEntry intakeTx = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
+        NetworkTableEntry intakeTv = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
+
+
+        OIConstants.Drive.AUTO_PICKUP.whileTrue(
+                drive.chaseVector(
+                        () ->
+                                new Translation2d(
+                                        Math.cos(Math.toRadians(-intakeTv.getDouble(0))),
+                                        Math.sin(Math.toRadians(-intakeTv.getDouble(0)))
+                                        ).rotateBy(drive.getYaw()),
+                        () -> drive.getYaw().getDegrees() + -intakeTv.getDouble(0),
+                        2,
+                        4
+                ).onlyIf(
+                        () -> intakeTv.getBoolean(false)
+                ).until(
+                        () -> !intakeTv.getBoolean(false)
+                )
+        );
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
         OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());

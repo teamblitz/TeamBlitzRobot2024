@@ -75,6 +75,7 @@ public class OIConstants {
         public static final Trigger X_BREAK = UNBOUND;
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
+        public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(4);
     }
 
     public static final class Intake {

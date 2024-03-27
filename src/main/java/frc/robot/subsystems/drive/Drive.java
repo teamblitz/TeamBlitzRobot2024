@@ -357,6 +357,10 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         return KINEMATICS.toChassisSpeeds(getModuleStates());
     }
 
+    public ChassisSpeeds getFieldRelativeSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getYaw());
+    }
+
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
             swerveModules[0].getPosition(),
@@ -540,22 +544,21 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     }
 
     /**
-     * Chase a robot relative vector and angle, ie a game piece detected by a camera.
-     * Note, unreliable behavior may occur when the inputs are not updated frequently, especially when rotation is occurring
+     * Chase a field relative vector
      * @param vector robot relative unit vector to move in the direction of
-     * @param angle robot relative heading to chase
-     * @param velocity goal velocity
-     * @param acceleration max acceleration
+     * @param heading wanted heading of the bot in degrees
+     * @param velocity goal velocity m/s
+     * @param acceleration max acceleration m/s^2
      * @return Chase Vector Command.
      */
-    public Command chaseVector(Supplier<Translation2d> vector, DoubleSupplier angle, double velocity, double acceleration) {
+    public Command chaseVector(Supplier<Translation2d> vector, DoubleSupplier heading, double velocity, double acceleration) {
         SlewRateLimiter xLimiter = new SlewRateLimiter(acceleration);
         SlewRateLimiter yLimiter = new SlewRateLimiter(acceleration);
 
         return Commands.runOnce(
                 () -> {
-                    xLimiter.reset(getChassisSpeeds().vxMetersPerSecond);
-                    yLimiter.reset(getChassisSpeeds().vyMetersPerSecond);
+                    xLimiter.reset(getFieldRelativeSpeeds().vxMetersPerSecond);
+                    yLimiter.reset(getFieldRelativeSpeeds().vyMetersPerSecond);
                 }
         ).andThen(
                 run(
@@ -570,8 +573,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                             yLimiter.calculate(goalSpeeds.getY())
                                     ),
                                     0,
-                                    getYaw().getDegrees() + Math.toDegrees(angle.getAsDouble()),
-                                    false,
+                                    heading.getAsDouble(),
+                                    true,
                                     false,
                                     true,
                                     true
