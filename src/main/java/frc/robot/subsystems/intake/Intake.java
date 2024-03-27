@@ -49,7 +49,7 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Command feedShooter() {
-        return setSpeedCommand(.7)
+        return setSpeedCommand(.15)
                 .alongWith(
                         Commands.run(() -> state = State.Empty)
                 );
