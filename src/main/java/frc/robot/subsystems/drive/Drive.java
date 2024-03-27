@@ -32,6 +32,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Units;
@@ -63,6 +64,9 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 /**
  * Here we can probably do some cleanup, main thing we can probably do here is separate
  * telemetry/hardware io. Also, we need a better way to do dynamic pid loop tuning.
@@ -73,7 +77,6 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
-    private final Logger logger;
     private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drive");
     private final ShuffleboardTab tuningTab = Shuffleboard.getTab("DriveTuning");
     private final ShuffleboardLayout anglePidLayout =
@@ -182,7 +185,6 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         //        poseEstimator.addVisionMeasurement();
 
         this.gyroIO = gyroIO;
-        logger = Logger.getInstance();
 
         keepHeadingPid = new PIDController(.1, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
@@ -239,9 +241,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (states) ->
-                        setModuleStates(
-                                KINEMATICS.toSwerveModuleStates(states), false, false, false),
+                (speeds) ->
+                        drive(speeds, false),
                 Constants.AutoConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
                 () ->
                         DriverStation.getAlliance().isPresent()
@@ -277,13 +278,13 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             if (rotation != 0) {
                 lastTurnCommandSeconds = Timer.getFPGATimestamp();
                 keepHeadingSetpointSet = false;
-                logger.recordOutput("Drive/Turning", true);
+                Logger.recordOutput("Drive/Turning", true);
             }
             if (lastTurnCommandSeconds + .5 <= Timer.getFPGATimestamp()
                     && !keepHeadingSetpointSet) { // If it has been at least .5 seconds.
                 keepHeadingPid.setSetpoint(getYaw().getDegrees());
                 keepHeadingSetpointSet = true;
-                logger.recordOutput("Drive/Turning", false);
+                Logger.recordOutput("Drive/Turning", false);
             }
 
             if (keepHeadingSetpointSet && maintainHeading) {
@@ -291,21 +292,29 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             }
         }
 
-        logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
-        logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
-
+        Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
+        Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
+        
+        
+        drive(fieldRelative
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                translation.getX(), translation.getY(), rotation, getYaw())
+                : new ChassisSpeeds(
+                translation.getX(), translation.getY(), rotation),
+                isOpenLoop
+        );
+    }
+    
+    public void drive(ChassisSpeeds speeds, boolean openLoop) {
         SwerveModuleState[] swerveModuleStates =
                 KINEMATICS.toSwerveModuleStates(
-                        fieldRelative
-                                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                        translation.getX(), translation.getY(), rotation, getYaw())
-                                : new ChassisSpeeds(
-                                        translation.getX(), translation.getY(), rotation));
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
-
-        for (SwerveModule mod : swerveModules) {
-            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop, false, false);
-        }
+                        speeds);
+        
+        SwerveDriveKinematics.desaturateWheelSpeeds(
+                swerveModuleStates, MAX_SPEED
+        );
+        
+        setModuleStates(swerveModuleStates, openLoop, false, false);
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -320,9 +329,6 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void park() {
-        //        for (SwerveModuleState state : getModuleStates()) {
-        //            if (state.speedMetersPerSecond > .01) return;
-        //        }
         SwerveModuleState[] desiredStates = {
             (new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
             (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
@@ -345,6 +351,10 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             states[mod.moduleNumber] = mod.getState();
         }
         return states;
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return KINEMATICS.toChassisSpeeds(getModuleStates());
     }
 
     public SwerveModulePosition[] getModulePositions() {
