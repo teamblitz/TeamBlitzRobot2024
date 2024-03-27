@@ -109,7 +109,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                 hashCode(), kSGVA -> feedforward = new ArmFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]), kS, kG, kV, kA);
 
 
-        if (DriverStation.isTeleop()) {
+        if (DriverStation.isTeleop() || true) {
         io.seedArmPosition(false);
         }
 

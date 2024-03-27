@@ -90,7 +90,7 @@ public class AutoAimCalculator {
     }
 
     public static double calculateArmAngleInterpolation(double distanceMeters) {
-        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters) - Units.degreesToRadians(1);
+        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters) + Units.degreesToRadians(1);
     }
 
     public static double calculateShooterSpeedInterpolation(double distanceMeters) {

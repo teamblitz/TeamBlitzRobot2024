@@ -224,7 +224,7 @@ public final class Constants {
     }
 
     public static final class Arm {
-        public static final double MIN_ROT = Units.degreesToRadians(-5); // TODO, TUNE THIS
+        public static final double MIN_ROT = Units.degreesToRadians(-10); // TODO, TUNE THIS
         public static final double MAX_ROT = Units.degreesToRadians(103); // TODO, tune this
 
         public static final double STARTING_POS =
@@ -274,9 +274,9 @@ public final class Constants {
             public static final double SCORE_AMP = Units.degreesToRadians(103);
 
 
-            public static final double SPEAKER_SUB_FRONT = Units.degreesToRadians(30);
-            public static final double SPEAKER_SUB_SIDE = Units.degreesToRadians(46); // actualy bot distance
-            public static final double SPEAKER_PODIUM = Units.degreesToRadians(47);
+            public static final double SPEAKER_SUB_FRONT = Units.degreesToRadians(30+2);
+            public static final double SPEAKER_SUB_SIDE = Units.degreesToRadians(46+2); // actualy bot distance
+            public static final double SPEAKER_PODIUM = Units.degreesToRadians(47+2);
         }
     }
 
