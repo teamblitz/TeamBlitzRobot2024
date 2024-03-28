@@ -3,20 +3,7 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.Drive.ANGLE_KD;
-import static frc.robot.Constants.Drive.ANGLE_KI;
-import static frc.robot.Constants.Drive.ANGLE_KP;
-import static frc.robot.Constants.Drive.BL;
-import static frc.robot.Constants.Drive.BR;
-import static frc.robot.Constants.Drive.CAN_CODER_INVERT;
-import static frc.robot.Constants.Drive.CENTER_TO_MODULE;
-import static frc.robot.Constants.Drive.DRIVE_KD;
-import static frc.robot.Constants.Drive.DRIVE_KI;
-import static frc.robot.Constants.Drive.DRIVE_KP;
-import static frc.robot.Constants.Drive.FL;
-import static frc.robot.Constants.Drive.FR;
-import static frc.robot.Constants.Drive.KINEMATICS;
-import static frc.robot.Constants.Drive.MAX_SPEED;
+import static frc.robot.Constants.Drive.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -186,11 +173,13 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         this.gyroIO = gyroIO;
 
-        keepHeadingPid = new PIDController(.1, 0, 0);
+        keepHeadingPid = new PIDController(.0005, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
+        keepHeadingPid.setTolerance(2);
 
-        rotateToHeadingPid = new ProfiledPIDController(.1, 0, 0, new Constraints(360, 360 * 2));
+        rotateToHeadingPid = new ProfiledPIDController(.001, 0, 0, new Constraints(180, 360));
         rotateToHeadingPid.enableContinuousInput(-180, 180);
+        keepHeadingPid.setTolerance(2);
         initTelemetry();
 
         gyroIO.preMatchZero(0);
@@ -457,6 +446,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             drivePIDChanged = true;
             driveD = driveDEntry.getDouble(driveD);
         }
+//        anglePIDChanged = false;
+//        drivePIDChanged = false;
 
         if (drivePIDChanged) {
             for (SwerveModule module : swerveModules) {
@@ -575,7 +566,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                     0,
                                     heading.getAsDouble(),
                                     true,
-                                    false,
+                                    true,
                                     true,
                                     true
                             );

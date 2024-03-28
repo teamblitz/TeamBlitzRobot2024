@@ -89,4 +89,8 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     }
 
     private State state = State.Indexed;
+
+    public boolean hasNote() {
+        return state != State.Empty; // Todo, current logic kina fails here. We need note shot detection.
+    }
 }

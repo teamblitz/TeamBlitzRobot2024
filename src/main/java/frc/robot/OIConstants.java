@@ -23,7 +23,7 @@ public class OIConstants {
     public static final Function<Double, Double> SPIN_CURVE = (x) -> (x * x * x);
 
     public static final class Drive {
-        public static double STICK_DEADBAND = 0.05;
+        public static double STICK_DEADBAND = 0.08;
 
         // Values are in percents, we have full power
         private static final double SPIN_SPEED = Constants.compBot() ? .32 : .4;

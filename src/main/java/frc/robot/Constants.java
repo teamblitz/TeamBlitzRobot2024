@@ -50,7 +50,7 @@ public final class Constants {
         CompBot, DevBot, SimBot
     }
 
-    public static final Robot robot = Robot.CompBot;
+    public static final Robot robot = Robot.DevBot;
 
     public static boolean compBot() {
         return robot == Robot.CompBot;
@@ -130,7 +130,7 @@ public final class Constants {
         public static final double CLOSED_LOOP_RAMP = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_KP = compBot() ? .004 : 0.002;
+        public static final double ANGLE_KP = compBot() ? .0004 : 0.0000002;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
         public static final double ANGLE_KF = 0.0; // For now, should remain zero
@@ -232,7 +232,7 @@ public final class Constants {
         public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(23.324 - 90);
 
         public static final double ROTATION_VELOCITY = Units.degreesToRadians(120);
-        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 200); // prev 240
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 150); // prev 240
 
         public static final int ARM_ROT_LEADER = 16;
         public static final int ARM_ROT_FOLLOWER = 15;

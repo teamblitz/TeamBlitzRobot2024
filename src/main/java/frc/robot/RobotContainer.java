@@ -163,7 +163,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSpark());
         shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark());
-        climber = new Climber(new ClimberIOKraken() {});
+        climber = new Climber(Constants.compBot() ? new ClimberIOKraken() {} : new ClimberIO() {});
 
         autoShootSpeed = shooter.shootClosedLoopCommand(
                 () ->
@@ -194,13 +194,15 @@ public class RobotContainer {
                                         Math.sin(Math.toRadians(-intakeTv.getDouble(0)))
                                         ).rotateBy(drive.getYaw()),
                         () -> drive.getYaw().getDegrees() + -intakeTv.getDouble(0),
-                        2,
-                        4
+                        0,
+                        0
                 ).onlyIf(
-                        () -> intakeTv.getBoolean(false)
-                ).until(
-                        () -> !intakeTv.getBoolean(false)
+                        () -> intakeTv.getDouble(0) == 1
                 )
+//                        .until(
+//                        () -> intakeTv.getDouble(0) != 1
+//                )
+                .beforeStarting(Commands.print("AHHHHHH"))
         );
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
