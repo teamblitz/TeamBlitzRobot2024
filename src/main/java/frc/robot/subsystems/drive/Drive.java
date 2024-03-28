@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -21,7 +22,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.Subscriber;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -105,6 +109,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     private double lastVisionTimeStamp;
 
     private Rotation2d gyroOffset = new Rotation2d();
+    private final NetworkTableEntry limelightPose = LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
 
     public Drive(
             SwerveModuleConfiguration configuration,
@@ -168,10 +173,6 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         poseEstimator =
                 new SwerveDrivePoseEstimator(
                         KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
-
-        //        LimelightHelpers.getLatency_Capture();
-
-        //        poseEstimator.addVisionMeasurement();
 
         this.gyroIO = gyroIO;
 
@@ -414,6 +415,25 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         swerveOdometry.update(getYaw(), getModulePositions());
         poseEstimator.update(getYaw(), getModulePositions());
+
+
+        /* Vision stuff no touchy*/
+
+        LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
+        if(
+                (limelightMeasurement.tagCount >= 2
+                        || limelightMeasurement.avgTagDist <= 2) // maybe this will work for the amp, I am unconvinced
+                        && limelightMeasurement.timestampSeconds > lastVisionTimeStamp)  {
+            poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999)); // Standard deviations, basically vision measurements very up to .7m, and just don't trust the vision angle at all
+            poseEstimator.addVisionMeasurement(
+                    limelightMeasurement.pose,
+                    limelightMeasurement.timestampSeconds);
+        }
+
+        lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
+
+
 
         Logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
         Logger.recordOutput("Drive/Vision+Odometry", poseEstimator.getEstimatedPosition());
