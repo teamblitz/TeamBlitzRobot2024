@@ -313,7 +313,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, MAX_SPEED);
 
         for (SwerveModule mod : swerveModules) {
-            mod.setDesiredState(desiredStates[mod.moduleNumber], false, tuning, parking);
+            mod.setDesiredState(desiredStates[mod.moduleNumber], openLoop, tuning, parking);
         }
     }
 
