@@ -2,6 +2,7 @@
 
 package frc.robot.subsystems.drive.swerveModule;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -86,10 +87,11 @@ public class SwerveModule {
             driveMotor.setDrivePercent(percentOutput);
             Logger.recordOutput(logKey + "/drivePercent", percentOutput);
         } else {
-            Logger.recordOutput(logKey + "/speedSetpoint", desiredState.speedMetersPerSecond);
+            double speed = MathUtil.applyDeadband(desiredState.speedMetersPerSecond, .01);
+            Logger.recordOutput(logKey + "/speedSetpoint", speed);
             driveMotor.setSetpoint(
-                    desiredState.speedMetersPerSecond,
-                    driveFeedforward.calculate(desiredState.speedMetersPerSecond));
+                    speed,
+                    driveFeedforward.calculate(speed));
         }
     }
 
