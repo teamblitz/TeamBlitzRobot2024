@@ -190,12 +190,12 @@ public class RobotContainer {
                 drive.chaseVector(
                         () ->
                                 new Translation2d(
-                                        Math.cos(Math.toRadians(-intakeTv.getDouble(0))),
-                                        Math.sin(Math.toRadians(-intakeTv.getDouble(0)))
+                                        Math.cos(Math.toRadians(-intakeTx.getDouble(0))),
+                                        Math.sin(Math.toRadians(-intakeTx.getDouble(0)))
                                         ).rotateBy(drive.getYaw()),
-                        () -> drive.getYaw().getDegrees() + -intakeTv.getDouble(0),
-                        0,
-                        0
+                        () -> drive.getYaw().getDegrees() + -intakeTx.getDouble(0),
+                        1,
+                        1
                 ).onlyIf(
                         () -> intakeTv.getDouble(0) == 1
                 )
