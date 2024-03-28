@@ -29,10 +29,11 @@ public class Leds extends SubsystemBase {
     public boolean requestAmp = false;
     public boolean intaking = false;
     public boolean hasNote = false;
+    public boolean autoPickupReady = false;
+    public boolean autoPickupActive = false;
     public boolean autoShoot = false;
     public boolean autoDrive = false;
     public boolean climbing = false;
-    public boolean trapping = false;
     public boolean endgameAlert = false;
     public boolean sameBattery = false;
     public boolean armCoast = false;
@@ -44,7 +45,7 @@ public class Leds extends SubsystemBase {
 
     private Optional<Alliance> alliance = Optional.empty();
     private Color allianceColor = Color.kGreen;
-    private Color secondaryDisabledColor = Color.kDarkBlue;
+    private Color secondaryDisabledColor = Color.kYellow;
     private boolean lastEnabledAuto = false;
     private double lastEnabledTime = 0.0;
     private boolean estopped = false;
@@ -174,11 +175,18 @@ public class Leds extends SubsystemBase {
                 solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
             }
         } else { // Enabled
-            if (requestAmp) {
-                strobe(Color.kWhite, strobeFastDuration);
-            } else if (trapping || climbing || autoDrive || autoShoot) {
-                rainbow(rainbowCycleLength, rainbowDuration);
-            } else if (hasNote) {
+//            if (requestAmp) {
+//                strobe(Color.kWhite, strobeFastDuration);
+//            } else if (trapping || climbing || autoDrive || autoShoot) {
+//                rainbow(rainbowCycleLength, rainbowDuration);
+            if (hasNote) {
+                strobe(Color.kGreen, strobeSlowDuration);
+            } else if (autoPickupActive) {
+                strobe(Color.kOrange, strobeFastDuration);
+            } else if (autoPickupReady) {
+                strobe(Color.kOrange, strobeSlowDuration);
+            }
+            else {
                 solid(Color.kGreen);
             }
 
@@ -190,6 +198,12 @@ public class Leds extends SubsystemBase {
         // Arm estop alert
         if (armEstopped) {
             solid(Color.kRed);
+        }
+
+//        solid(Color.kBlue);
+
+        for (int i=0; i < buffer.getLength(); i++) {
+            buffer.setLED(i, toGRB(buffer.getLED(i)));
         }
 
         // Update LEDs
@@ -269,5 +283,9 @@ public class Leds extends SubsystemBase {
             colorIndex = colors.size() - 1 - colorIndex;
             buffer.setLED(i, colors.get(colorIndex));
         }
+    }
+
+    public Color toGRB(Color color) {
+        return new Color(color.green, color.red, color.blue);
     }
 }

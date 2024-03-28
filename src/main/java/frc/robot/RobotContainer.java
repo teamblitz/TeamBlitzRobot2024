@@ -66,6 +66,8 @@ public class RobotContainer {
     private final SendableChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
 
     public RobotContainer() {
+        Leds.getInstance();
+
         configureSubsystems();
 
         configureButtonBindings();
