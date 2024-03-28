@@ -173,11 +173,11 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         this.gyroIO = gyroIO;
 
-        keepHeadingPid = new PIDController(.0005, 0, 0);
+        keepHeadingPid = new PIDController(.1, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
         keepHeadingPid.setTolerance(2);
 
-        rotateToHeadingPid = new ProfiledPIDController(.001, 0, 0, new Constraints(180, 360));
+        rotateToHeadingPid = new ProfiledPIDController(.1, 0, 0, new Constraints(180, 360));
         rotateToHeadingPid.enableContinuousInput(-180, 180);
         keepHeadingPid.setTolerance(2);
         initTelemetry();
