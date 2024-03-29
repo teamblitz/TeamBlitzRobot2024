@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5237490474980953,
-        "y": 4.4271562828839945
+        "x": 2.424537171349224,
+        "y": 4.133828172869615
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.271319203888691,
-        "y": 4.645798800250751
+        "x": 2.3564505896784307,
+        "y": 4.960593807443538
       },
       "isLocked": false,
       "linkedName": "center-note-CR-pickup"
     },
     {
       "anchor": {
-        "x": 2.405083862300426,
-        "y": 5.515013115334288
+        "x": 1.354605173665323,
+        "y": 5.534466424383086
       },
       "prevControl": {
-        "x": 2.416760723245758,
-        "y": 5.153956774078962
+        "x": 2.0354709903732604,
+        "y": 5.349659988419503
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "center-shoot"
+      "linkedName": "subwoofer-center"
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
   "reversed": false,
   "folder": "note-shoot-note",
   "previewStartingState": {
-    "rotation": -28.342419601151384,
+    "rotation": -2.3859440303888513,
     "velocity": 0
   },
   "useDefaultConstraints": true
