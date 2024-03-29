@@ -39,6 +39,7 @@ import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSpark;
 import frc.robot.subsystems.climber.Climber;
@@ -58,6 +59,7 @@ public class RobotContainer {
     private Shooter shooter;
     private Arm arm;
     private Climber climber;
+    private Leds leds = Leds.getInstance();
 
     /* ***** --- Shared Commands --- ***** */
     public Command autoShootSpeed;
@@ -69,6 +71,8 @@ public class RobotContainer {
     private final SendableChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
 
     public RobotContainer() {
+        Leds.getInstance();
+
         configureSubsystems();
 
         configureButtonBindings();
