@@ -537,12 +537,12 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     /**
      * Chase a field relative vector
      * @param vector robot relative unit vector to move in the direction of
-     * @param heading wanted heading of the bot in degrees
+     * @param angle angle error
      * @param velocity goal velocity m/s
      * @param acceleration max acceleration m/s^2
      * @return Chase Vector Command.
      */
-    public Command chaseVector(Supplier<Translation2d> vector, DoubleSupplier heading, double velocity, double acceleration) {
+    public Command chaseVector(Supplier<Translation2d> vector, DoubleSupplier angle, double velocity, double acceleration) {
         SlewRateLimiter xLimiter = new SlewRateLimiter(acceleration);
         SlewRateLimiter yLimiter = new SlewRateLimiter(acceleration);
 
@@ -563,12 +563,12 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                             xLimiter.calculate(goalSpeeds.getX()),
                                             yLimiter.calculate(goalSpeeds.getY())
                                     ),
+                                    (angle.getAsDouble() * .0008) * Constants.Drive.MAX_ANGULAR_VELOCITY,
                                     0,
-                                    heading.getAsDouble(),
                                     true,
                                     true,
                                     true,
-                                    true
+                                    false
                             );
                         }
                 )

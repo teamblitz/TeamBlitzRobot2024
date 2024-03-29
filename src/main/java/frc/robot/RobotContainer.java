@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.MutableReference;
 import frc.lib.util.LimelightHelpers;
 import frc.robot.Constants.AutoConstants.StartingPos;
 import frc.robot.commands.TeleopSwerve;
@@ -185,23 +187,34 @@ public class RobotContainer {
         NetworkTableEntry intakeTx = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
         NetworkTableEntry intakeTv = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
 
+        Debouncer tvBouncer = new Debouncer(1./10., Debouncer.DebounceType.kBoth);
+        MutableReference<Double> txCache = new MutableReference<>(0.);
+        MutableReference<Boolean> tvCache = new MutableReference<>(false);
 
         OIConstants.Drive.AUTO_PICKUP.whileTrue(
+                Commands.run(
+                        () -> {
+                            tvCache.set(tvBouncer.calculate(intakeTv.getDouble(0) == 1));
+                            if (intakeTv.getDouble(0) == 1) {
+                                txCache.set(intakeTx.getDouble(0));
+                            }
+                        }
+                ).alongWith(
                 drive.chaseVector(
                         () ->
                                 new Translation2d(
-                                        Math.cos(Math.toRadians(-intakeTx.getDouble(0))),
-                                        Math.sin(Math.toRadians(-intakeTx.getDouble(0)))
+                                        Math.cos(Math.toRadians(-txCache.get())),
+                                        Math.sin(Math.toRadians(-txCache.get()))
                                         ).rotateBy(drive.getYaw()),
-                        () -> drive.getYaw().getDegrees() + -intakeTx.getDouble(0),
-                        1,
-                        1
+                        () -> -intakeTx.getDouble(0),
+                        2,
+                        4
                 ).onlyIf(
-                        () -> intakeTv.getDouble(0) == 1
+                        () -> tvCache.get()
+                ))
+                        .until(
+                        () -> !tvCache.get()
                 )
-//                        .until(
-//                        () -> intakeTv.getDouble(0) != 1
-//                )
                 .beforeStarting(Commands.print("AHHHHHH"))
         );
 
