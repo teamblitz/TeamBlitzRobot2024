@@ -104,6 +104,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
     private double lastVisionTimeStamp;
 
+    private Rotation2d gyroOffset = new Rotation2d();
+
     public Drive(
             SwerveModuleConfiguration configuration,
             SwerveModuleConstants flConstants,
@@ -182,7 +184,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         keepHeadingPid.setTolerance(2);
         initTelemetry();
 
-        gyroIO.preMatchZero(0);
+        zeroGyro();
 
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
@@ -381,17 +383,17 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     }
 
     public void zeroGyro() {
-        gyroIO.zeroGyro();
+        setGyro(0);
+    }
+
+    public void setGyro(double degrees) {
+        gyroOffset = Rotation2d.fromDegrees(degrees).minus(Rotation2d.fromDegrees(gyroInputs.yaw));
         keepHeadingSetpointSet = false;
         lastTurnCommandSeconds = Timer.getFPGATimestamp();
     }
 
-    public void setGyro(double degrees) {
-        gyroIO.preMatchZero(degrees);
-    }
-
     public Rotation2d getYaw() {
-        return Rotation2d.fromDegrees(gyroInputs.yaw);
+        return Rotation2d.fromDegrees(gyroInputs.yaw).plus(gyroOffset);
     }
 
     public double getPitch() {
