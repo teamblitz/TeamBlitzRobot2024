@@ -8,9 +8,7 @@
     "start-to-note"
   ],
   "autoFolders": [
-    "right",
-    "center",
-    "left"
+    "center"
   ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 2.0,
