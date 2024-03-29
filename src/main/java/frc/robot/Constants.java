@@ -130,7 +130,7 @@ public final class Constants {
         public static final double CLOSED_LOOP_RAMP = 0.0;
 
         /* Angle Motor PID Values */
-        public static final double ANGLE_KP = compBot() ? .004 : 0.002;
+        public static final double ANGLE_KP = compBot() ? .004 : 0.0035;
         public static final double ANGLE_KI = 0.0;
         public static final double ANGLE_KD = 0.0;
         public static final double ANGLE_KF = 0.0; // For now, should remain zero
@@ -231,8 +231,8 @@ public final class Constants {
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
         public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(23.324 - 90);
 
-        public static final double ROTATION_VELOCITY = Units.degreesToRadians(120);
-        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 150); // prev 240
+        public static final double ROTATION_VELOCITY = Units.degreesToRadians(compBot() ? 120 : 80);
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 100); // prev 240
 
         public static final int ARM_ROT_LEADER = 16;
         public static final int ARM_ROT_FOLLOWER = 15;
@@ -267,7 +267,7 @@ public final class Constants {
         public static final class Positions {
             public static final double INTAKE = STARTING_POS + Units.degreesToRadians(
                     robot == Robot.CompBot ?
-                            -5 : -2
+                            -5 : 0
             );
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);

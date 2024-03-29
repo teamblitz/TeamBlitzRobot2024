@@ -173,7 +173,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         this.gyroIO = gyroIO;
 
-        keepHeadingPid = new PIDController(.1, 0, 0);
+        keepHeadingPid = new PIDController(.15, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
         keepHeadingPid.setTolerance(2);
 
@@ -563,7 +563,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                             xLimiter.calculate(goalSpeeds.getX()),
                                             yLimiter.calculate(goalSpeeds.getY())
                                     ),
-                                    (angle.getAsDouble() * .0008) * Constants.Drive.MAX_ANGULAR_VELOCITY,
+                                    angle.getAsDouble() * .0 * MAX_ANGULAR_VELOCITY,
                                     0,
                                     true,
                                     true,

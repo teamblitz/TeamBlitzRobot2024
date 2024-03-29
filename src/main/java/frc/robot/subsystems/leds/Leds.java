@@ -61,7 +61,7 @@ public class Leds extends SubsystemBase {
     private static final int length = 32;
     private static final int staticSectionLength = 3;
     private static final double strobeFastDuration = 0.1;
-    private static final double strobeSlowDuration = 0.2;
+    private static final double strobeSlowDuration = 0.3;
     private static final double breathDuration = 1.0;
     private static final double rainbowCycleLength = 25.0;
     private static final double rainbowDuration = 0.25;
@@ -182,9 +182,9 @@ public class Leds extends SubsystemBase {
             if (hasNote) {
                 strobe(Color.kGreen, strobeSlowDuration);
             } else if (autoPickupActive) {
-                strobe(Color.kOrange, strobeFastDuration);
+                strobe(Color.kOrangeRed, strobeFastDuration);
             } else if (autoPickupReady) {
-                strobe(Color.kOrange, strobeSlowDuration);
+                strobe(Color.kOrangeRed, strobeSlowDuration);
             }
             else {
                 solid(Color.kGreen);

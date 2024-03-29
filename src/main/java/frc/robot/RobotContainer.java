@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -79,7 +78,6 @@ public class RobotContainer {
         setDefaultCommands();
         configureAutoCommands();
 
-        CameraServer.startAutomaticCapture();
 
         DriverStation.silenceJoystickConnectionWarning(true);
         Shuffleboard.getTab("Drive")
@@ -191,36 +189,47 @@ public class RobotContainer {
         NetworkTableEntry intakeTx = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
         NetworkTableEntry intakeTv = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
 
-        Debouncer tvBouncer = new Debouncer(1./10., Debouncer.DebounceType.kBoth);
+        Debouncer tvBouncer = new Debouncer(2./30., Debouncer.DebounceType.kBoth);
         MutableReference<Double> txCache = new MutableReference<>(0.);
         MutableReference<Boolean> tvCache = new MutableReference<>(false);
 
         OIConstants.Drive.AUTO_PICKUP.whileTrue(
-                Commands.run(
-                        () -> {
-                            tvCache.set(tvBouncer.calculate(intakeTv.getDouble(0) == 1));
-                            if (intakeTv.getDouble(0) == 1) {
-                                txCache.set(intakeTx.getDouble(0));
-                            }
-                        }
-                ).alongWith(
                 drive.chaseVector(
                         () ->
                                 new Translation2d(
-                                        Math.cos(Math.toRadians(-txCache.get())),
-                                        Math.sin(Math.toRadians(-txCache.get()))
+                                        Math.cos(Math.toRadians(-txCache.get() * 1.3)),
+                                        Math.sin(Math.toRadians(-txCache.get() * 1.3))
                                         ).rotateBy(drive.getYaw()),
-                        () -> -intakeTx.getDouble(0),
-                        2,
-                        4
+                        () -> -txCache.get(),
+                        3,
+                        6
+                ).until(
+                        () -> !tvCache.get()
+                ).beforeStarting(
+                        () -> Leds.getInstance().autoPickupActive = true
+                ).finallyDo(
+                        () -> Leds.getInstance().autoPickupActive = false
                 ).onlyIf(
                         () -> tvCache.get()
-                ))
-                        .until(
-                        () -> !tvCache.get()
                 )
-                .beforeStarting(Commands.print("AHHHHHH"))
         );
+
+        Commands.run(
+                () -> {
+                    tvCache.set(tvBouncer.calculate(intakeTv.getDouble(0) == 1));
+                    if (intakeTv.getDouble(0) == 1) {
+                        txCache.set(intakeTx.getDouble(0));
+                    }
+                }
+        ).ignoringDisable(true).schedule();
+
+        new Trigger(() -> tvBouncer.calculate(intakeTv.getDouble(0) == 1))
+                .whileTrue(
+                        Commands.startEnd(
+                                () -> Leds.getInstance().autoPickupReady = true,
+                                () -> Leds.getInstance().autoPickupReady = false
+                        ).ignoringDisable(true)
+                );
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
         OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());
