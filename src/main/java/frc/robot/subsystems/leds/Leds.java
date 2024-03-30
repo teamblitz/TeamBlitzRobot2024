@@ -29,6 +29,7 @@ public class Leds extends SubsystemBase {
     public boolean requestAmp = false;
     public boolean intaking = false;
     public boolean hasNote = false;
+    public boolean indexing = false;
     public boolean autoPickupReady = false;
     public boolean autoPickupActive = false;
     public boolean autoShoot = false;
@@ -169,7 +170,7 @@ public class Leds extends SubsystemBase {
                 breath(Color.kRed, Color.kBlack);
             }
         } else if (DriverStation.isAutonomous()) {
-            wave(Color.kGold, Color.kDarkBlue, waveFastCycleLength, waveFastDuration);
+            wave(Color.kGreen, Color.kYellow, waveFastCycleLength, waveFastDuration);
             if (autoFinished) {
                 double fullTime = (double) length / waveFastCycleLength * waveFastDuration;
                 solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
@@ -179,7 +180,9 @@ public class Leds extends SubsystemBase {
 //                strobe(Color.kWhite, strobeFastDuration);
 //            } else if (trapping || climbing || autoDrive || autoShoot) {
 //                rainbow(rainbowCycleLength, rainbowDuration);
-            if (hasNote) {
+            if (indexing) {
+                strobe(Color.kYellow, strobeSlowDuration);
+            } else if (hasNote) {
                 strobe(Color.kGreen, strobeSlowDuration);
             } else if (autoPickupActive) {
                 strobe(Color.kOrangeRed, strobeFastDuration);

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
+import frc.robot.subsystems.leds.Leds;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.function.BooleanSupplier;
@@ -34,6 +35,10 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
                                 Commands.run(() -> noteState = NoteState.Empty)
                         )
                 );
+
+        // Update LEDs
+        Leds.getInstance().hasNote = hasNote();
+        Leds.getInstance().indexing = intakeState == IntakeState.Indexing;
     }
 
     @Override
