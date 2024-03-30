@@ -182,12 +182,12 @@ public class Leds extends SubsystemBase {
 //                rainbow(rainbowCycleLength, rainbowDuration);
             if (indexing) {
                 strobe(Color.kYellow, strobeSlowDuration);
-            } else if (hasNote) {
-                strobe(Color.kGreen, strobeSlowDuration);
             } else if (autoPickupActive) {
                 strobe(Color.kOrangeRed, strobeFastDuration);
             } else if (autoPickupReady) {
                 strobe(Color.kOrangeRed, strobeSlowDuration);
+            } else if (hasNote) {
+                strobe(Color.kGreen, strobeSlowDuration);
             }
             else {
                 solid(Color.kGreen);

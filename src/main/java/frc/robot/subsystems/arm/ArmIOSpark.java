@@ -25,8 +25,8 @@ public class ArmIOSpark implements ArmIO {
     double quadOffset = 0;
     private PIDController pid;
 
-    private final DigitalInput armTopLimitSwitch;
-    private final DigitalInput armBottomLimitSwitch;
+//    private final DigitalInput armTopLimitSwitch;
+//    private final DigitalInput armBottomLimitSwitch;
 
     public ArmIOSpark(boolean useInternalEncoder) {
         /* Arm Rotation */
@@ -74,12 +74,12 @@ public class ArmIOSpark implements ArmIO {
         quadEncoder = new Encoder(Arm.QUAD_A, Arm.QUAD_B, true);
 
         quadEncoder.setDistancePerPulse(
-                2048 * 2 * Math.PI
+                1 / (2048 * 2 * Math.PI)
         );
 
         /* Limit Switches */
-        armTopLimitSwitch = new DigitalInput(Arm.TOP_LIMIT_SWITCH);
-        armBottomLimitSwitch = new DigitalInput(Arm.BOTTOM_LIMIT_SWITCH);
+//        armTopLimitSwitch = new DigitalInput(Arm.TOP_LIMIT_SWITCH);
+//        armBottomLimitSwitch = new DigitalInput(Arm.BOTTOM_LIMIT_SWITCH);
 
         armRotLeader.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
         armRotLeader.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
@@ -100,8 +100,8 @@ public class ArmIOSpark implements ArmIO {
                 Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2 * Math.PI);
         inputs.absArmEncoderDeg = Math.toDegrees(inputs.absArmEncoder);
 
-        inputs.topRotationLimit = armTopLimitSwitch.get();
-        inputs.bottomRotationLimit = armBottomLimitSwitch.get();
+//        inputs.topRotationLimit = armTopLimitSwitch.get();
+//        inputs.bottomRotationLimit = armBottomLimitSwitch.get();
 
         inputs.encoderConnected = absRotationEncoder.isConnected();
         inputs.volts = armRotLeader.getBusVoltage() * armRotLeader.getAppliedOutput();
@@ -157,7 +157,7 @@ public class ArmIOSpark implements ArmIO {
 
     private double getPosition() {
         return useInternalEncoder ? Angles.wrapAnglePi(
-                quadEncoder.getDistance()
+                quadEncoder.getDistance() + quadOffset
         ) : angleEncoder.getPosition();
     }
 

@@ -83,11 +83,11 @@ public class OIConstants {
         public static final Trigger X_BREAK = UNBOUND;
         public static final Trigger COAST = UNBOUND;
         public static final Trigger BRAKE = UNBOUND;
-        public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(4);
+        public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(2);
     }
 
     public static final class Intake {
-        public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper().or(DRIVE_CONTROLLER.button(2));
+        public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
         public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
     }
 

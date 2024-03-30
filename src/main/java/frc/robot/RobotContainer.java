@@ -166,7 +166,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
         shooter = new Shooter(new ShooterIOSpark());
-        arm = new Arm(new ArmIOSpark(false));
+        arm = new Arm(new ArmIOSpark(true));
         climber = new Climber(Constants.compBot() ? new ClimberIOKraken() {} : new ClimberIO() {});
 
         autoShootSpeed = shooter.shootClosedLoopCommand(
@@ -195,10 +195,10 @@ public class RobotContainer {
 
         OIConstants.Drive.AUTO_PICKUP.whileTrue(
                 drive.chaseVector(
-                        () ->
+                         () ->
                                 new Translation2d(
-                                        Math.cos(Math.toRadians(-txCache.get() * 1.3)),
-                                        Math.sin(Math.toRadians(-txCache.get() * 1.3))
+                                        Math.cos(Math.toRadians(-txCache.get() * 1.7)),
+                                        Math.sin(Math.toRadians(-txCache.get() * 1.7))
                                         ).rotateBy(drive.getYaw()),
                         () -> -txCache.get(),
                         3,
@@ -240,7 +240,7 @@ public class RobotContainer {
 
         OIConstants.Arm.INTAKE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.INTAKE,
-                                false)
+                                true, true)
                         .raceWith(intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)))
                 );
         // OIConstants.Arm.TRANSIT_STAGE.whileTrue(
@@ -349,7 +349,7 @@ public class RobotContainer {
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE - Math.toRadians(2), false)
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
                         .alongWith(shooter.setSpeedCommand(-.1))
         );

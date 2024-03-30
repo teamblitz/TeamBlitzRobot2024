@@ -24,21 +24,14 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
         setDefaultCommand(automaticIndex());
 
 
-        // State updating
-        new Trigger(() -> intakeState == IntakeState.Feeding && hasNote())
+//         State updating
+        new Trigger(() -> intakeState == IntakeState.Feeding && noteState == NoteState.Indexed)
                 .whileTrue(
                         Commands.sequence(
                                 Commands.waitUntil(() -> !intakeSensor()),
-                                Commands.run(() -> noteState = NoteState.Unindexed),
-                                Commands.waitSeconds(.02),
-                                Commands.waitUntil(this::intakeSensor),
                                 Commands.run(() -> noteState = NoteState.Empty)
                         )
                 );
-
-        // Update LEDs
-        Leds.getInstance().hasNote = hasNote();
-        Leds.getInstance().indexing = intakeState == IntakeState.Indexing;
     }
 
     @Override
@@ -46,7 +39,12 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs("intake", inputs);
 
+        // Update LEDs
+        Leds.getInstance().hasNote = hasNote();
+        Leds.getInstance().indexing = intakeState == IntakeState.Indexing;
+
         Logger.recordOutput("Intake/NoteState", noteState.name());
+        Logger.recordOutput("Intake/IntakeState", intakeState.name());
     }
 
     private boolean intakeSensor() {
@@ -67,15 +65,16 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
 
     public Command intakeGroundAutomatic(double speed) {
-        return Commands.parallel(
+        return Commands.race(
                 setSpeedCommand(speed)
                         .until(() -> inputs.breakBeam)
-                        .andThen(() -> noteState = NoteState.Unindexed),
+                        .andThen(() -> noteState = NoteState.Unindexed)
+                .onlyIf(() -> !inputs.breakBeam && intakeState != IntakeState.Indexing),
                 Commands.startEnd(
                         () -> intakeState = IntakeState.Intaking,
                         () -> intakeState = IntakeState.Idle
                 )
-        );
+        ).onlyIf(() -> intakeState != IntakeState.Indexing);
     }
 
     public Command intakeGroundAutomatic() {
@@ -84,7 +83,7 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     public Command feedShooter() {
         return Commands.parallel(
-                setSpeedCommand(.1),
+                setSpeedCommand(.3),
                 Commands.startEnd(
                         () -> intakeState = IntakeState.Feeding,
                         () -> intakeState = IntakeState.Idle
@@ -97,18 +96,20 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
      * Note, should only after intakeCommandSmart finishes
      */
     public Command indexIntake() {
-        return Commands.parallel(
-                setSpeedCommand(-.07).raceWith(
-                        Commands.waitUntil(() -> inputs.breakBeam)
-                                .andThen(() -> noteState = NoteState.Indexed)),
-                Commands.startEnd(
-                        () -> intakeState = IntakeState.Indexing,
-                        () -> intakeState = IntakeState.Idle
-                )
-        ).onlyIf(() -> !inputs.breakBeam);
-//        return setSpeedCommand(-.07)
-//
-//                        );
+
+        return setSpeedCommand(-.07).raceWith(
+                Commands.waitSeconds(.2).andThen(
+                                Commands.waitUntil(() -> inputs.breakBeam)
+                ))
+//                .onlyIf(() -> !inputs.breakBeam)
+                .beforeStarting(
+                        () -> intakeState = IntakeState.Indexing
+                ).finallyDo(
+                        () ->  {
+                            intakeState = IntakeState.Idle;
+                            noteState = NoteState.Indexed;
+                        }
+                ).withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming);
     }
 
     public Command automaticIndex() {
@@ -126,7 +127,7 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
                         () -> intakeState = IntakeState.Ejecting,
                         () -> intakeState = IntakeState.Idle
                 )
-        );
+        ).finallyDo(() -> noteState = NoteState.Empty);
     }
 
     public Command setSpeedCommand(double speed) {
