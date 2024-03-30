@@ -164,7 +164,7 @@ public class RobotContainer {
 
         }
 
-        intake = new Intake(new IntakeIOSpark());
+        intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
         shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark());
         climber = new Climber(Constants.compBot() ? new ClimberIOKraken() {} : new ClimberIO() {});

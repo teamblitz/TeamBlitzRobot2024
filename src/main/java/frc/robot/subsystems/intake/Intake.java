@@ -4,17 +4,36 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
 import org.littletonrobotics.junction.Logger;
+
+import java.util.function.BooleanSupplier;
 
 public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-    public Intake(IntakeIO io) {
+    BooleanSupplier manualOverride;
+
+    public Intake(IntakeIO io, BooleanSupplier manualOverride) {
         this.io = io;
+        this.manualOverride = manualOverride;
         setDefaultCommand(automaticIndex());
+
+
+        // State updating
+        new Trigger(() -> intakeState == IntakeState.Feeding && hasNote())
+                .whileTrue(
+                        Commands.sequence(
+                                Commands.waitUntil(() -> !intakeSensor()),
+                                Commands.run(() -> noteState = NoteState.Unindexed),
+                                Commands.waitSeconds(.02),
+                                Commands.waitUntil(this::intakeSensor),
+                                Commands.run(() -> noteState = NoteState.Empty)
+                        )
+                );
     }
 
     @Override
@@ -22,7 +41,11 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs("intake", inputs);
 
-        Logger.recordOutput("Intake/State", state.name());
+        Logger.recordOutput("Intake/NoteState", noteState.name());
+    }
+
+    private boolean intakeSensor() {
+        return inputs.breakBeam;
     }
 
     public void intake() {
@@ -39,9 +62,15 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
 
     public Command intakeGroundAutomatic(double speed) {
-        return setSpeedCommand(speed)
-                .until(() -> inputs.breakBeam)
-                .andThen(() -> state = State.Unindexed);
+        return Commands.parallel(
+                setSpeedCommand(speed)
+                        .until(() -> inputs.breakBeam)
+                        .andThen(() -> noteState = NoteState.Unindexed),
+                Commands.startEnd(
+                        () -> intakeState = IntakeState.Intaking,
+                        () -> intakeState = IntakeState.Idle
+                )
+        );
     }
 
     public Command intakeGroundAutomatic() {
@@ -49,10 +78,13 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Command feedShooter() {
-        return setSpeedCommand(.7)
-                .alongWith(
-                        Commands.run(() -> state = State.Empty)
-                );
+        return Commands.parallel(
+                setSpeedCommand(.1),
+                Commands.startEnd(
+                        () -> intakeState = IntakeState.Feeding,
+                        () -> intakeState = IntakeState.Idle
+                )
+        );
     }
 
 
@@ -60,37 +92,55 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
      * Note, should only after intakeCommandSmart finishes
      */
     public Command indexIntake() {
-        return setSpeedCommand(-.07)
-                .raceWith(
-                        Commands.waitSeconds(0).andThen(
-                                Commands.waitUntil(() -> inputs.breakBeam)
-                                        .andThen(() -> state = State.Indexed)
-                        )).onlyIf(() -> !inputs.breakBeam);
+        return Commands.parallel(
+                setSpeedCommand(-.07).raceWith(
+                        Commands.waitUntil(() -> inputs.breakBeam)
+                                .andThen(() -> noteState = NoteState.Indexed)),
+                Commands.startEnd(
+                        () -> intakeState = IntakeState.Indexing,
+                        () -> intakeState = IntakeState.Idle
+                )
+        ).onlyIf(() -> !inputs.breakBeam);
+//        return setSpeedCommand(-.07)
+//
+//                        );
     }
 
     public Command automaticIndex() {
         return new ConditionalCommand(
                 indexIntake(),
                 Commands.none(),
-                () -> state == State.Unindexed
+                () -> noteState == NoteState.Unindexed
         );
     }
 
     public Command ejectCommand() {
-        return startEnd(this::eject, this::stop);
+        return Commands.parallel(
+                setSpeedCommand(-.3),
+                Commands.startEnd(
+                        () -> intakeState = IntakeState.Ejecting,
+                        () -> intakeState = IntakeState.Idle
+                )
+        );
     }
 
     public Command setSpeedCommand(double speed) {
         return startEnd(() -> io.set(speed), this::stop);
     }
 
-    public enum State {
-        Indexed, Unindexed, Empty
+    public enum NoteState {
+        Indexed, Unindexed, Empty, Unknown
     }
 
-    private State state = State.Indexed;
+    private NoteState noteState = NoteState.Indexed; // We start the match with the note in an indexed state
+    
+    public enum IntakeState {
+        Intaking, Feeding, Ejecting, Indexing, Idle, Manual
+    }
+
+    private IntakeState intakeState = IntakeState.Idle;
 
     public boolean hasNote() {
-        return state != State.Empty; // Todo, current logic kina fails here. We need note shot detection.
+        return noteState == NoteState.Indexed || noteState == NoteState.Unindexed;
     }
 }

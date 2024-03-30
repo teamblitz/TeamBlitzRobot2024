@@ -1,12 +1,20 @@
 package frc.robot;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.util.DashboardHelpers;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class OIConstants {
 
@@ -122,6 +130,15 @@ public class OIConstants {
         public static final Trigger DOWN_MAN = OPERATOR_CONTROLLER.povRight();
         // public static final Trigger DOWN_RIGHT = TEST_CONTROLLER.rightBumper();
         
+    }
+
+    public static final class Overrides {
+        private static final ShuffleboardTab TAB = Shuffleboard.getTab("Overrides");
+
+        @SuppressWarnings("close")
+        // I hate java, why can't BooleanSupplier implement Supplier<Boolean>
+        public static final BooleanSupplier INTAKE_OVERRIDE = DashboardHelpers.genericEntrySupplier(TAB.add("Intake", false).withWidget(BuiltInWidgets.kBooleanBox).getEntry(), false, NetworkTableType.kBoolean)::get;
+        public static final BooleanSupplier ARM_OVERRIDE = DashboardHelpers.genericEntrySupplier(TAB.add("Arm", false).withWidget(BuiltInWidgets.kBooleanBox).getEntry(), false, NetworkTableType.kBoolean)::get;
     }
 
     public static final class TestMode {
