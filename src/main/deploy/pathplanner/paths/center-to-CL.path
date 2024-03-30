@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5412570256420133,
-        "y": 5.553919733431884
+        "x": 1.3935117917629198,
+        "y": 6.458498604201
       },
       "isLocked": false,
       "linkedName": "subwoofer-center"
@@ -20,8 +20,8 @@
         "y": 6.99346460304295
       },
       "prevControl": {
-        "x": 1.510231646055709,
-        "y": 7.0615511847137435
+        "x": 1.6269515003484982,
+        "y": 7.012917912091748
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },

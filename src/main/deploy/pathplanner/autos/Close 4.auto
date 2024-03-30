@@ -74,6 +74,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -96,6 +102,12 @@
           "type": "path",
           "data": {
             "pathName": "CL-to-centerShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]

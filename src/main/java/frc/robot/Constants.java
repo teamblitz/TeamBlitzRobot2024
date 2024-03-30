@@ -231,8 +231,8 @@ public final class Constants {
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
         public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(23.324 - 90);
 
-        public static final double ROTATION_VELOCITY = Units.degreesToRadians(compBot() ? 120 : 80);
-        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 100); // prev 240
+        public static final double ROTATION_VELOCITY = Units.degreesToRadians(compBot() ? 120 : 150);
+        public static final double ROTATION_ACCELERATION = Units.degreesToRadians(compBot()? 240 : 180); // prev 240
 
         public static final int ARM_ROT_LEADER = 16;
         public static final int ARM_ROT_FOLLOWER = 15;
@@ -274,9 +274,9 @@ public final class Constants {
             public static final double SCORE_AMP = Units.degreesToRadians(103);
 
 
-            public static final double SPEAKER_SUB_FRONT = Units.degreesToRadians(30+2);
-            public static final double SPEAKER_SUB_SIDE = Units.degreesToRadians(46+2); // actualy bot distance
-            public static final double SPEAKER_PODIUM = Units.degreesToRadians(47+2);
+            public static final double SPEAKER_SUB_FRONT = Units.degreesToRadians(30+(compBot() ? 2 : 20));
+            public static final double SPEAKER_SUB_SIDE = Units.degreesToRadians(46+2); // actually bot distance
+            public static final double SPEAKER_PODIUM = Units.degreesToRadians(47 + (compBot() ? 2 : 20));
         }
     }
 

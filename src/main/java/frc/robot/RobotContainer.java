@@ -371,7 +371,7 @@ public class RobotContainer {
                         () -> drive.setGyro(
                                 startingPositionChooser.getSelected().angle
                         )
-                ).andThen(autoChooser.getSelected());
+                ).andThen(autoChooser.getSelected().asProxy());
 
         }
 
