@@ -36,15 +36,4 @@ public class GyroIONavx implements GyroIO {
         inputs.rollRate = -gyro.getRawGyroY();
         inputs.connected = gyro.isConnected();
     }
-
-    @Override
-    public void zeroGyro() {
-        gyro.zeroYaw();
-    }
-
-    @Override
-    public void preMatchZero(double degrees) {
-        gyro.setAngleAdjustment(degrees - gyro.getAngle());
-        zeroGyro();
-    }
 }
