@@ -238,6 +238,8 @@ public final class Constants {
         public static final int ARM_ROT_FOLLOWER = 15;
 
         public static final int ABS_ENCODER = 0;
+        public static final int QUAD_A = 1;
+        public static final int QUAD_B = 2;
 
         public static final int TOP_LIMIT_SWITCH = 2; // TODO CONFIG
         public static final int BOTTOM_LIMIT_SWITCH = 3; // TODO CONFIG

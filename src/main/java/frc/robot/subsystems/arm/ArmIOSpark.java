@@ -2,9 +2,11 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
 import frc.lib.math.Angles;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm;
@@ -15,16 +17,24 @@ public class ArmIOSpark implements ArmIO {
     private final CANSparkMax armRotFollower;
     private final RelativeEncoder angleEncoder;
     private final SparkPIDController anglePid;
+
     private final DutyCycleEncoder absRotationEncoder;
+    private final Encoder quadEncoder;
+
+    boolean useInternalEncoder;
+    double quadOffset = 0;
+    private PIDController pid;
 
     private final DigitalInput armTopLimitSwitch;
     private final DigitalInput armBottomLimitSwitch;
 
-    public ArmIOSpark() {
+    public ArmIOSpark(boolean useInternalEncoder) {
         /* Arm Rotation */
         armRotLeader = new CANSparkMax(Arm.ARM_ROT_LEADER, CANSparkLowLevel.MotorType.kBrushless);
         armRotFollower =
                 new CANSparkMax(Arm.ARM_ROT_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless);
+
+        this.useInternalEncoder = useInternalEncoder;
 
         armRotLeader.restoreFactoryDefaults();
         armRotFollower.restoreFactoryDefaults();
@@ -55,10 +65,17 @@ public class ArmIOSpark implements ArmIO {
 
         setPid(Arm.PidConstants.P, Arm.PidConstants.I, Arm.PidConstants.D);
 
+
+
         armRotLeader.setSmartCurrentLimit(60);
         armRotFollower.setSmartCurrentLimit(60);
 
         absRotationEncoder = new DutyCycleEncoder(Arm.ABS_ENCODER);
+        quadEncoder = new Encoder(Arm.QUAD_A, Arm.QUAD_B, true);
+
+        quadEncoder.setDistancePerPulse(
+                2048 * 2 * Math.PI
+        );
 
         /* Limit Switches */
         armTopLimitSwitch = new DigitalInput(Arm.TOP_LIMIT_SWITCH);
@@ -76,7 +93,7 @@ public class ArmIOSpark implements ArmIO {
 
     @Override
     public void updateInputs(ArmIOInputs inputs) {
-        inputs.rotation = angleEncoder.getPosition();
+        inputs.rotation = getPosition();
         inputs.armRotationSpeed = angleEncoder.getVelocity();
         inputs.absArmRot = getAbsolutePosition();
         inputs.absArmEncoder =
@@ -95,12 +112,18 @@ public class ArmIOSpark implements ArmIO {
     /** Updates the arm position setpoint. */
     @Override
     public void setRotationSetpoint(double rot, double arbFFVolts) {
-        anglePid.setReference(
-                rot,
-                CANSparkMax.ControlType.kPosition,
-                0,
-                arbFFVolts,
-                SparkPIDController.ArbFFUnits.kVoltage);
+        if (useInternalEncoder) {
+            anglePid.setReference(
+                    rot,
+                    CANSparkMax.ControlType.kPosition,
+                    0,
+                    arbFFVolts,
+                    SparkPIDController.ArbFFUnits.kVoltage);
+        } else {
+            armRotLeader.setVoltage(
+                    pid.calculate(getPosition(), rot) + arbFFVolts
+            );
+        }
     }
 
     @Override
@@ -114,26 +137,11 @@ public class ArmIOSpark implements ArmIO {
         armRotLeader.setVoltage(volts);
     }
 
-    // TODO: ADD LIMIT SWITCH IMPL
-    @Override
-    public void checkLimitSwitches() {
-        // If velocity 0 return
-        // If velocity == Math.abs velocity and top limit switch hit
-        // Check arm velocity,
-
-        //        if (armTopLimitSwitch.get() && armRotLeader.getSelectedSensorVelocity() > 0)
-        //            armRotLeader.set(ControlMode.PercentOutput, 0);
-        //        if (armBottomLimitSwitch.get() && armRotLeader.getSelectedSensorVelocity() < 0)
-        //            armRotLeader.set(ControlMode.PercentOutput, 0);
-
-        //    if (extensionBottomLimitSwitch.get() && armExtension.getSelectedSensorVelocity() < 0)
-        //        armExtension.set(ControlMode.PercentOutput, 0);
-    }
-
     @Override
     public void seedArmPosition(boolean assumeStarting) {
         if (absRotationEncoder.isConnected()) {
             angleEncoder.setPosition(getAbsolutePosition());
+            quadOffset = getAbsolutePosition() - quadEncoder.getDistance();
         } else if (assumeStarting) {
             System.out.printf(
                     "Arm absolute rotation encoder disconnected, assuming position %s%n",
@@ -147,6 +155,12 @@ public class ArmIOSpark implements ArmIO {
                 -absRotationEncoder.getAbsolutePosition() * 2 * Math.PI - Arm.ABS_ENCODER_OFFSET);
     }
 
+    private double getPosition() {
+        return useInternalEncoder ? Angles.wrapAnglePi(
+                quadEncoder.getDistance()
+        ) : angleEncoder.getPosition();
+    }
+
     @Override
     public void setBrake(boolean brake) {
         armRotLeader.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
@@ -158,6 +172,8 @@ public class ArmIOSpark implements ArmIO {
         anglePid.setP(kP);
         anglePid.setI(kI);
         anglePid.setD(kD);
+
+        pid = new PIDController(kP, kI, kD);
     }
 
     @Override
