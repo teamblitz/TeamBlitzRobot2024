@@ -166,7 +166,7 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
         shooter = new Shooter(new ShooterIOSpark());
-        arm = new Arm(new ArmIOSpark(!Constants.compBot()));
+        arm = new Arm(new ArmIOSpark(false));
         climber = new Climber(Constants.compBot() ? new ClimberIOKraken() {} : new ClimberIO() {});
 
         autoShootSpeed = shooter.shootClosedLoopCommand(
