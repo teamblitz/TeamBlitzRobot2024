@@ -221,6 +221,11 @@ public final class Constants {
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
         }
+
+        public static final class Positions {
+            public static final Pose2d AMP_BLUE = new Pose2d(); // TODO do these lul
+            public static final Pose2d AMP_RED = new Pose2d();
+        }
     }
 
     public static final class Arm {

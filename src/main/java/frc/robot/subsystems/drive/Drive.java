@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.path.*;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -20,13 +22,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.Subscriber;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -34,7 +32,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,6 +52,7 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -345,12 +343,12 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         return states;
     }
 
-    public ChassisSpeeds getChassisSpeeds() {
+    public ChassisSpeeds getRobotRelativeSpeeds() {
         return KINEMATICS.toChassisSpeeds(getModuleStates());
     }
 
     public ChassisSpeeds getFieldRelativeSpeeds() {
-        return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getYaw());
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getYaw());
     }
 
     public SwerveModulePosition[] getModulePositions() {
@@ -594,6 +592,46 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                             );
                         }
                 )
+        );
+    }
+
+    public Command goTo(Pose2d goal, Rotation2d goalDirectionOfTravel, double velocity, double acceleration) {
+        // Create a list of bezier points from poses. Each pose represents one waypoint.
+        // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+                new Pose2d(getEstimatedPose().getTranslation(), new Rotation2d(
+                        getFieldRelativeSpeeds().vxMetersPerSecond, // maybe smoother movement from in motion?
+                        getFieldRelativeSpeeds().vyMetersPerSecond
+                )),
+                new Pose2d(goal.getTranslation(), goalDirectionOfTravel)
+        );
+
+//        PathPlannerPath.fromPathPoints(
+//                List.of(
+//                        new PathPoint(getEstimatedPose().getTranslation()),
+//                        new PathPoint(goal.getTranslation(), new RotationTarget())
+//                )
+//        );
+
+// Create the path using the bezier points created above
+        PathPlannerPath path = new PathPlannerPath(
+                bezierPoints,
+                new PathConstraints(velocity, acceleration, 2 * Math.PI, 4 * Math.PI), // The constraints for this path. If using a differential drivetrain, the angular constraints have no effect.
+                new GoalEndState(0.0, goal.getRotation()) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+        );
+
+// Prevent the path from being flipped if the coordinates are already correct
+        path.preventFlipping = true;
+
+        return new FollowPathHolonomic(
+                path,
+                this::getEstimatedPose, // Robot pose supplier
+                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                (speeds) ->
+                        drive(speeds, false),
+                Constants.AutoConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
+                () -> false,
+                this // Reference to this subsystem to set requirements
         );
     }
 

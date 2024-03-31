@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.MutableReference;
+import frc.lib.util.AllianceUtils;
 import frc.lib.util.LimelightHelpers;
 import frc.robot.Constants.AutoConstants.StartingPos;
 import frc.robot.commands.TeleopSwerve;
@@ -228,7 +229,20 @@ public class RobotContainer {
                         Commands.startEnd(
                                 () -> Leds.getInstance().autoPickupReady = true,
                                 () -> Leds.getInstance().autoPickupReady = false
-                        ).ignoringDisable(true)
+                        ).ignoringDisable(true));
+
+        OIConstants.Drive.AUTO_AMP
+                .whileTrue(
+                        drive.goTo(
+                                AllianceUtils.isBlue()
+                                        ? Constants.Drive.Positions.AMP_RED
+                                        : Constants.Drive.Positions.AMP_BLUE,
+                                AllianceUtils.isBlue()
+                                        ? Constants.Drive.Positions.AMP_RED.getRotation()
+                                        : Constants.Drive.Positions.AMP_BLUE.getRotation(),
+                                3,
+                                3
+                        )
                 );
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
