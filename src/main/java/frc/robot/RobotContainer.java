@@ -113,7 +113,12 @@ public class RobotContainer {
                         OIConstants.Drive.Y_TRANSLATION,
                         OIConstants.Drive.ROTATION_SPEED,
                         () -> false,
-                        OIConstants.Drive.HEADING_CONTROL));
+                        () ->
+                            OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
+                                ? AutoAimCalculator.calculateSpeakerHeading(drive.getEstimatedPose()).getDegrees()
+                                : Double.NaN
+                )
+        );
 
         arm.setDefaultCommand(
                 arm.rotateToCommand(
