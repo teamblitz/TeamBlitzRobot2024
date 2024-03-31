@@ -20,19 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "FR-to-rightShoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "rightShoot-to-FMR"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "FMR-to-rightShoot"
+            "pathName": "FR-ethical"
           }
         }
       ]
