@@ -3,13 +3,15 @@
   "robotLength": 0.9144,
   "holonomicMode": true,
   "pathFolders": [
-    "note-to-note",
+    "positional",
     "note-shoot-note",
+    "note-to-note",
     "start-to-note"
   ],
   "autoFolders": [
-    "right",
-    "center"
+    "left",
+    "center",
+    "right"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
