@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.lib.math.Trajectories;
 import frc.lib.util.AllianceUtils;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class AutoAimCalculator {
@@ -112,6 +113,7 @@ public class AutoAimCalculator {
         ).getX();
     }
 
+    @AutoLogOutput
     public static Rotation2d calculateSpeakerHeading(Pose2d botPose) {
         Pose2d goalPose = (AllianceUtils.isBlue()
                 ? Constants.Shooter.AutoShootConstants
@@ -120,6 +122,6 @@ public class AutoAimCalculator {
                 .goalPoseRed).toPose2d();
 
         Translation2d translation = new Transform2d(new Pose2d(botPose.getTranslation(), new Rotation2d()), goalPose).getTranslation();
-        return Rotation2d.fromRadians(-Math.atan2(translation.getY(), translation.getX()));
+        return Rotation2d.fromRadians(-Math.atan2(translation.getY(), translation.getX())).plus(Rotation2d.fromDegrees(AllianceUtils.isBlue() ? 180 : 0));
     }
 }
