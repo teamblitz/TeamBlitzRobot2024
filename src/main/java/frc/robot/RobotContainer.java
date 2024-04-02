@@ -335,6 +335,12 @@ public class RobotContainer {
                         .raceWith(shooter.shootCommand()));
 
         NamedCommands.registerCommand(
+                "qshoot",
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
+                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+                        .raceWith(shooter.shootCommand()));
+
+        NamedCommands.registerCommand(
                 "cShoot",
                 arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
                         .raceWith(Commands.waitSeconds(1))
@@ -363,12 +369,11 @@ public class RobotContainer {
         //                intake.indexIntake()
         //        );
 
-        //        NamedCommands.registerCommand(
-        //                "readyShoot",
-        //                intake.setSpeedCommand(-.4)
-        //                        .alongWith(shooter.reverseCommand())
-        //                        .withTimeout(.5)
-        //                        .alongWith(Commands.print("[Auto] readyShoot")));
+                NamedCommands.registerCommand(
+                        "readyShoot",
+                        arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
+                                .alongWith(shooter.shootCommand())
+                        );
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
