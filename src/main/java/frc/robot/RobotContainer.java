@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.MutableReference;
@@ -326,43 +327,71 @@ public class RobotContainer {
     }
 
     private void configureAutoCommands() {
+
+        InternalButton readyShoot = new InternalButton();
+        InternalButton shoot = new InternalButton();
+        InternalButton qShoot = new InternalButton();
+
+        shoot
+                .whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
+                        .raceWith(Commands.waitSeconds(1))
+                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+                        .raceWith(shooter.shootCommand()).asProxy());
+
+        qShoot
+                .whileTrue(
+                        arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
+                                .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+                                .raceWith(shooter.shootCommand()).asProxy()
+                );
+
+        readyShoot.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false).asProxy()
+                        .alongWith(shooter.shootCommand().asProxy()).asProxy()
+        );
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
-                        .raceWith(Commands.waitSeconds(1))
-                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        .raceWith(shooter.shootCommand()));
+                Commands.runOnce(() ->  {
+                    shoot.setPressed(true);
+                    qShoot.setPressed(false);
+                    readyShoot.setPressed(false);
+                }).andThen(Commands.waitSeconds(1.5))
+        );
 
         NamedCommands.registerCommand(
                 "qshoot",
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
-                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        .raceWith(shooter.shootCommand()));
-
-        NamedCommands.registerCommand(
-                "cShoot",
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
-                        .raceWith(Commands.waitSeconds(1))
-                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        .raceWith(shooter.shootCommand()));
-
-        NamedCommands.registerCommand(
-                "autoShoot",
-                buildAutoShootCommand()
-                        .raceWith(Commands.waitSeconds(1.5)
-                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
-                //
-                // Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
-                //                                .raceWith(todoPutThisAutoShootSomewhereElse())
+                Commands.runOnce(() ->  {
+                    shoot.setPressed(false);
+                    qShoot.setPressed(true);
+                    readyShoot.setPressed(false);
+                }).andThen(Commands.waitSeconds(.5))
                 );
+
+
+//        NamedCommands.registerCommand(
+//                "cShoot",
+//                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
+//                        .raceWith(Commands.waitSeconds(1))
+//                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+//                        .raceWith(shooter.shootCommand()));
+
+//        NamedCommands.registerCommand(
+//                "autoShoot",
+//                buildAutoShootCommand()
+//                        .raceWith(Commands.waitSeconds(1.5)
+//                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
+//                //
+//                // Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
+//                //                                .raceWith(todoPutThisAutoShootSomewhereElse())
+//                );
 
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true).asProxy()
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
-                        .alongWith(shooter.setSpeedCommand(-.1))
+                        .alongWith(shooter.setSpeedCommand(-.1).asProxy())
         );
         //        NamedCommands.registerCommand(
         //                "index",
@@ -371,8 +400,14 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand(
                         "readyShoot",
-                        arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
-                                .alongWith(shooter.shootCommand())
+                        Commands.runOnce(() ->  {
+                            System.out.println("READY SHOOT");
+                            shoot.setPressed(false);
+                            qShoot.setPressed(false);
+                            readyShoot.setPressed(true);
+                        }).andThen(
+                                Commands.waitSeconds(1)
+                        )
                         );
     }
 

@@ -97,7 +97,7 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
      */
     public Command indexIntake() {
 
-        return setSpeedCommand(-.07).raceWith(
+        return setSpeedCommand(-.12).raceWith(
                 Commands.waitSeconds(.2).andThen(
                                 Commands.waitUntil(() -> inputs.breakBeam)
                 ))
