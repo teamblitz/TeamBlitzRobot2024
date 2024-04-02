@@ -299,21 +299,21 @@ public final class Constants {
             public static final int SPARK_TOP = 22;
             public static final int SPARK_BOTTOM = 23;
 
-            public static final double PID_TOP_P = compBot() ? 0.03 : 0.013715; // TODO SET Was 0.0089967
+            public static final double PID_TOP_P = compBot() ? 0.01182 : 0.013715; // TODO SET Was 0.03
             public static final int PID_TOP_I = 0; // TODO SET
             public static final int PID_TOP_D = 0; // TODO SET
 
-            public static final double PID_BOTTOM_P = compBot() ? 0.03 : 0.013715; // TODO SET was 0.012468
+            public static final double PID_BOTTOM_P = compBot() ? 0.0074161 : 0.013715; // TODO SET was 0.03
             public static final int PID_BOTTOM_I = 0; // TODO SET
             public static final int PID_BOTTOM_D = 0; // TODO SET
 
-            public static final double FF_TOP_KS = compBot() ? 0.22549 : 0.043031; // TODO SET
-            public static final double FF_TOP_KV = compBot() ? 0.43746 : 0.39694; // TODO SET
-            public static final double FF_TOP_KA = compBot() ? 0.068387 : 0.086385;
+            public static final double FF_TOP_KS = compBot() ? 0.12871 : 0.043031; // TODO SET
+            public static final double FF_TOP_KV = compBot() ? 0.43436 : 0.39694; // TODO SET
+            public static final double FF_TOP_KA = compBot() ? 0.079988 : 0.086385;
 
-            public static final double FF_BOTTOM_KS = compBot() ? 0.29616 : 0.043031; // TODO SET
-            public static final double FF_BOTTOM_KV = compBot() ? 0.41652 : 0.39694; // TODO SET
-            public static final double FF_BOTTOM_KA = compBot() ? 0.081573 : 0.086385;
+            public static final double FF_BOTTOM_KS = compBot() ? 0.15595 : 0.043031; // TODO SET
+            public static final double FF_BOTTOM_KV = compBot() ? 0.42368 : 0.39694; // TODO SET
+            public static final double FF_BOTTOM_KA = compBot() ? 0.060884 : 0.086385;
 
             public static final double GEAR_RATIO = (22.0/24.0);
 
