@@ -45,7 +45,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "qshoot"
           }
         },
         {
@@ -76,7 +76,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "qshoot"
           }
         },
         {
@@ -107,7 +107,7 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "qshoot"
           }
         }
       ]
