@@ -95,12 +95,12 @@ public class RobotContainer {
 
         Shuffleboard.getTab("AutoShoot")
                 .addDouble(
-                        "distance", () -> AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose())));
+                        "distance", () -> AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getEstimatedPose())));
 
         Shuffleboard.getTab("AutoShoot")
                         .addDouble(
                                 "speed", () -> AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
+                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getEstimatedPose()))
                                 )
         );
     }
@@ -414,7 +414,7 @@ public class RobotContainer {
                 () ->
                         MathUtil.clamp(
                                 AutoAimCalculator.calculateArmAngleInterpolation(
-                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
+                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getEstimatedPose()))
                                 ),
                                 0,
                                 Math.PI/2

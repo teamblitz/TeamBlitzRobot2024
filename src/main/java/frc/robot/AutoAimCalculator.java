@@ -122,6 +122,6 @@ public class AutoAimCalculator {
                 .goalPoseRed).toPose2d();
 
         Translation2d translation = new Transform2d(new Pose2d(botPose.getTranslation(), new Rotation2d()), goalPose).getTranslation();
-        return Rotation2d.fromRadians(-Math.atan2(translation.getY(), translation.getX())).plus(Rotation2d.fromDegrees(AllianceUtils.isBlue() ? 180 : 0));
+        return Rotation2d.fromRadians(-Math.atan2(translation.getY(), translation.getX())).plus(Rotation2d.fromDegrees((AllianceUtils.isBlue() ? 180 : 0)-10));
     }
 }

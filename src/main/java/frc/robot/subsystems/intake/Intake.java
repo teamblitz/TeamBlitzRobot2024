@@ -83,7 +83,7 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     public Command feedShooter() {
         return Commands.parallel(
-                setSpeedCommand(.3),
+                setSpeedCommand(.4),
                 Commands.startEnd(
                         () -> intakeState = IntakeState.Feeding,
                         () -> intakeState = IntakeState.Idle

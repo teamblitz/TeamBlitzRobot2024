@@ -292,7 +292,7 @@ public final class Constants {
 
     public static class Shooter {
 
-        public static final double MAX_VELOCITY = 26.9;
+        public static final double MAX_VELOCITY = 27.330532277373607; // the theoretical top max velocity
 
         public static class Spark {
 
@@ -345,26 +345,32 @@ public final class Constants {
             public static final InterpolatingDoubleTreeMap angleTreeMap = new InterpolatingDoubleTreeMap();
 
             static {
-                angleTreeMap.put(1.45, Units.degreesToRadians(40));
-                angleTreeMap.put(1.77, Units.degreesToRadians(43));
-                angleTreeMap.put(2.02, Units.degreesToRadians(47));
-                angleTreeMap.put(2.08, Units.degreesToRadians(48));
-                angleTreeMap.put(2.4, Units.degreesToRadians(49));
-                angleTreeMap.put(2.67, Units.degreesToRadians(51.8));
+                angleTreeMap.put(1.19, Units.degreesToRadians(29));
+                angleTreeMap.put(1.365, Units.degreesToRadians(35));
+                angleTreeMap.put(1.7, Units.degreesToRadians(39));
+                angleTreeMap.put(2.03, Units.degreesToRadians(43));
+                angleTreeMap.put(2.225, Units.degreesToRadians(46));
+                angleTreeMap.put(2.48, Units.degreesToRadians(47));
+                angleTreeMap.put(2.66, Units.degreesToRadians(48.5));
+                angleTreeMap.put(2.90, Units.degreesToRadians(50.5));
+                angleTreeMap.put(3.0, Units.degreesToRadians(51));
+                angleTreeMap.put(2.314, Units.degreesToRadians(52.25));
 
 
-//                angleTreeMap.put(1.8, Units.degreesToRadians(43));
-//                angleTreeMap.put(2.0, Units.degreesToRadians(45));
-//                angleTreeMap.put(2.3, Units.degreesToRadians(48));
-//                angleTreeMap.put(2.5, Units.degreesToRadians(49.8));
+//                angleTreeMap.put(1.45, Units.degreesToRadians(40));
+//                angleTreeMap.put(1.77, Units.degreesToRadians(43));
+//                angleTreeMap.put(2.02, Units.degreesToRadians(47));
+//                angleTreeMap.put(2.08, Units.degreesToRadians(48));
+//                angleTreeMap.put(2.4, Units.degreesToRadians(49));
+//                angleTreeMap.put(2.67, Units.degreesToRadians(51.8));
             }
 
             public static final InterpolatingDoubleTreeMap feedVelocityTreeMap = new InterpolatingDoubleTreeMap();
 
             static {
                 feedVelocityTreeMap.put(10.0, MAX_VELOCITY * .8);
-                feedVelocityTreeMap.put(3.0, MAX_VELOCITY * .8);
-                feedVelocityTreeMap.put(0.0, MAX_VELOCITY* .5);
+                feedVelocityTreeMap.put(2.0, MAX_VELOCITY * .8);
+                feedVelocityTreeMap.put(0.0, MAX_VELOCITY* .6);
             }
 
 

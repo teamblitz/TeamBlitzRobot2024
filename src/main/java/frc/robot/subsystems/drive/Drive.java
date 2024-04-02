@@ -423,6 +423,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         if(
                 (limelightMeasurement.tagCount >= 2
+                        || (limelightMeasurement.avgTagDist < 3 && limelightMeasurement.tagCount >=1)
                         ) // maybe this will work for the amp, I am unconvinced
                         && limelightMeasurement.timestampSeconds > lastVisionTimeStamp)  {
             poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999)); // Standard deviations, basically vision measurements very up to .7m, and just don't trust the vision angle at all
