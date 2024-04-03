@@ -19,8 +19,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.InternalButton;
@@ -36,9 +34,14 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
+import frc.robot.subsystems.drive.swerveModule.SwerveModule;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
+import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
+import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
+import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.leds.Leds;
@@ -69,7 +72,8 @@ public class RobotContainer {
     // *** Must match with path names in pathplanner folder ***
     private final LoggedDashboardChooser<Command> autoChooser;
 
-    private final LoggedDashboardChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
+    private final LoggedDashboardChooser<Constants.AutoConstants.StartingPos>
+            startingPositionChooser;
 
     public RobotContainer() {
         Leds.getInstance();
@@ -146,9 +150,9 @@ public class RobotContainer {
 
     private void configureSubsystems() {
 
-        if (Constants.robot == Constants.Robot.CompBot) {
-            drive =
-                    new Drive(
+        drive =
+                switch (Constants.robot) {
+                    case CompBot -> new Drive(
                             new SwerveModuleConfiguration(
                                     SwerveModuleConfiguration.MotorType.KRAKEN,
                                     SwerveModuleConfiguration.MotorType.NEO,
@@ -158,9 +162,8 @@ public class RobotContainer {
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
                             Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
-        } else {
-            drive =
-                    new Drive(
+
+                    case DevBot -> new Drive(
                             new SwerveModuleConfiguration(
                                     SwerveModuleConfiguration.MotorType.NEO,
                                     SwerveModuleConfiguration.MotorType.NEO,
@@ -170,7 +173,29 @@ public class RobotContainer {
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
                             Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
-        }
+                    case SimBot -> new Drive(
+                            new SwerveModule(
+                                    Constants.Drive.FL,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new SwerveModule(
+                                    Constants.Drive.FR,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new SwerveModule(
+                                    Constants.Drive.BL,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new SwerveModule(
+                                    Constants.Drive.BR,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new GyroIO() {});
+                };
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
         shooter = new Shooter(new ShooterIOSpark());
@@ -334,7 +359,8 @@ public class RobotContainer {
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand())
-                        .asProxy().withName("auto/shoot"));
+                        .asProxy()
+                        .withName("auto/shoot"));
 
         qShoot.whileTrue(
                 arm.rotateToCommand(
@@ -343,7 +369,8 @@ public class RobotContainer {
                                 false)
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand())
-                        .asProxy().withName("auto/qShoot"));
+                        .asProxy()
+                        .withName("auto/qShoot"));
 
         readyShoot.whileTrue(
                 arm.rotateToCommand(
@@ -352,7 +379,8 @@ public class RobotContainer {
                                 false)
                         .asProxy()
                         .alongWith(shooter.shootCommand().asProxy())
-                        .asProxy().withName("auto/readyShoot"));
+                        .asProxy()
+                        .withName("auto/readyShoot"));
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
