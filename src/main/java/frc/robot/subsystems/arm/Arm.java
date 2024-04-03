@@ -53,6 +53,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     private final SysIdRoutine routine;
 
     public Arm(ArmIO io) {
+        super("arm");
         this.io = io;
 
         feedforward =
@@ -114,6 +115,8 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
+
         io.updateInputs(inputs);
         Logger.processInputs("arm", inputs);
 

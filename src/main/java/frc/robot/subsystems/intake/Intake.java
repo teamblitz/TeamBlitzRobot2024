@@ -10,7 +10,7 @@ import frc.robot.subsystems.leds.Leds;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase implements BlitzSubsystem {
+public class Intake extends BlitzSubsystem {
 
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -18,6 +18,8 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     BooleanSupplier manualOverride;
 
     public Intake(IntakeIO io, BooleanSupplier manualOverride) {
+        super("intake");
+
         this.io = io;
         this.manualOverride = manualOverride;
         setDefaultCommand(automaticIndex());
@@ -32,6 +34,8 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
+
         io.updateInputs(inputs);
         Logger.processInputs("intake", inputs);
 

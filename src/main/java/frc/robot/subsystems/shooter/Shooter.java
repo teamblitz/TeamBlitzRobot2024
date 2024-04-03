@@ -53,6 +53,7 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     private final SysIdRoutine routine;
 
     public Shooter(ShooterIO io) {
+        super("shooter");
         this.io = io;
 
         routine =
@@ -87,6 +88,8 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
+
         io.updateInputs(inputs);
         Logger.processInputs("shooter", inputs);
 

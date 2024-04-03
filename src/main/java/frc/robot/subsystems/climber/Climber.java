@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.Logger;
  * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
  * this, 2 subsystems is ideal (and is kinda what we are pseudo doing)
  */
-public class Climber extends SubsystemBase implements BlitzSubsystem {
+public class Climber extends BlitzSubsystem {
 
     private final ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
@@ -26,11 +26,14 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
     // private final SysIdRoutine routine;
 
     public Climber(ClimberIO io) {
+        super("climber");
         this.io = io;
     }
 
     @Override
     public void periodic() {
+        super.periodic();
+
         io.updateInputs(inputs);
         Logger.processInputs("climber", inputs);
     }

@@ -32,8 +32,6 @@ public class Robot extends LoggedRobot {
     public void robotInit() {
         System.out.println("Robot Start up at: " + Timer.getFPGATimestamp());
 
-        Logger logger = Logger.getInstance();
-
         // Record metadata
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
@@ -78,19 +76,19 @@ public class Robot extends LoggedRobot {
 
         } else
             switch (Constants.SIM_MODE) {
-                    // Running a physics simulator, log to local folder
-                case SIM:
+                // Running a physics simulator, log to local folder
+                case SIM -> {
                     Logger.addDataReceiver(new WPILOGWriter(""));
                     Logger.addDataReceiver(new NT4Publisher());
-                    break;
-                    // Replaying a log, set up replay source
-                case REPLAY:
+                }
+                // Replaying a log, set up replay source
+                case REPLAY -> {
                     setUseTiming(false); // Run as fast as possible
                     String logPath = LogFileUtil.findReplayLog();
                     Logger.setReplaySource(new WPILOGReader(logPath));
                     Logger.addDataReceiver(
                             new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-                    break;
+                }
             }
 
         // Start AdvantageKit logger
@@ -98,15 +96,6 @@ public class Robot extends LoggedRobot {
         Logger.start();
 
         robotContainer = new RobotContainer();
-
-        // This should be uncommented at some point.
-        // try {
-        //     Networker networker = new Networker();
-        //     networker.start();
-        //     System.out.println("Networker Started Successfully");
-        // } catch (IOException e) {
-        //     System.out.println(e);
-        // }
     }
 
     @Override
@@ -202,7 +191,7 @@ public class Robot extends LoggedRobot {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    // Called periodicly durring simulation
+    // Called periodically during simulation
     @Override
     public void simulationPeriodic() {}
 }
