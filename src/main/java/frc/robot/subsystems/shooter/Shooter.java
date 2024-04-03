@@ -90,7 +90,7 @@ public class Shooter extends BlitzSubsystem {
         super.periodic();
 
         io.updateInputs(inputs);
-        Logger.processInputs("shooter", inputs);
+        Logger.processInputs(logKey, inputs);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setTopPid(pid[0], pid[1], pid[2]), topKP, topKI, topKD);
@@ -113,7 +113,7 @@ public class Shooter extends BlitzSubsystem {
     public void shootClosedLoop(double metersPerSecond) {
         setpoint = metersPerSecond;
         io.setSetpoint(metersPerSecond); // TODO, CONST
-        Logger.recordOutput("shooter/velocitySetpoint");
+        Logger.recordOutput(logKey + "/velocitySetpoint");
     }
 
     private void reverse() {

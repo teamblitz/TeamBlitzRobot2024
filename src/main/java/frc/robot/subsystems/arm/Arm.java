@@ -118,7 +118,7 @@ public class Arm extends BlitzSubsystem {
         super.periodic();
 
         io.updateInputs(inputs);
-        Logger.processInputs("arm", inputs);
+        Logger.processInputs(logKey, inputs);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
@@ -131,13 +131,13 @@ public class Arm extends BlitzSubsystem {
                 kA);
 
         if (DriverStation.isTeleop() || true) {
-            io.seedArmPosition(false);
+            io.seedArmPosition(false); // TODO, try removing this.
         }
     }
 
     public void updateRotation(double degrees, double velocity) {
-        Logger.recordOutput("arm/wanted_rotation", degrees);
-        Logger.recordOutput("arm/wanted_velocity", velocity);
+        Logger.recordOutput(logKey + "/wanted_rotation", degrees);
+        Logger.recordOutput(logKey + "/wanted_velocity", velocity);
         io.setRotationSetpoint(degrees, feedforward.calculate(degrees, velocity));
     }
 

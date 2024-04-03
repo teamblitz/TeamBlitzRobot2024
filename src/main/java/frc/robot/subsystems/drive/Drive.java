@@ -432,10 +432,10 @@ public class Drive extends BlitzSubsystem {
 
         lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
 
-        Logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
-        Logger.recordOutput("Drive/Vision+Odometry", poseEstimator.getEstimatedPosition());
-        Logger.recordOutput("Drive/Vision", getLimelightPose());
-        Logger.recordOutput("Drive/modules", getModuleStates());
+        Logger.recordOutput(logKey + "/Odometry", swerveOdometry.getPoseMeters());
+        Logger.recordOutput(logKey + "/Vision+Odometry", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput(logKey + "/Vision", getLimelightPose());
+        Logger.recordOutput(logKey + "/modules", getModuleStates());
 
         boolean anglePIDChanged = false;
         boolean drivePIDChanged = false;

@@ -35,7 +35,7 @@ public class Climber extends BlitzSubsystem {
         super.periodic();
 
         io.updateInputs(inputs);
-        Logger.processInputs("climber", inputs);
+        Logger.processInputs(logKey, inputs);
     }
 
     public Command setSpeed(double left, double right) {
