@@ -40,26 +40,28 @@ public class Climber extends BlitzSubsystem {
 
     public Command setSpeed(double left, double right) {
         return startEnd(
-                () -> {
-                    io.setSpeedLeft(left);
-                    io.setSpeedRight(right);
-                },
-                () -> {
-                    io.setSpeedLeft(0);
-                    io.setSpeedRight(0);
-                });
+                        () -> {
+                            io.setSpeedLeft(left);
+                            io.setSpeedRight(right);
+                        },
+                        () -> {
+                            io.setSpeedLeft(0);
+                            io.setSpeedRight(0);
+                        })
+                .withName(logKey + "/speed " + left + " " + right);
     }
 
     public Command climb() {
         return runEnd(
-                () -> {
-                    io.setMotionMagicLeft(.01);
-                    io.setMotionMagicRight(.01);
-                },
-                () -> {
-                    io.setMotionMagicLeft(inputs.positionLeft);
-                    io.setMotionMagicRight(inputs.positionRight);
-                });
+                        () -> {
+                            io.setMotionMagicLeft(.01);
+                            io.setMotionMagicRight(.01);
+                        },
+                        () -> {
+                            io.setMotionMagicLeft(inputs.positionLeft);
+                            io.setMotionMagicRight(inputs.positionRight);
+                        })
+                .withName(logKey + "/climb");
     }
 
     public Command goUp() {
@@ -81,6 +83,7 @@ public class Climber extends BlitzSubsystem {
                                         && MathUtil.isNear(
                                                 Constants.Climber.MAX_EXTENSION,
                                                 inputs.positionRight,
-                                                .005));
+                                                .005))
+                .withName(logKey + "/climbersUp");
     }
 }

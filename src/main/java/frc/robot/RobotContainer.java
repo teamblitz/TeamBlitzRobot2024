@@ -112,26 +112,27 @@ public class RobotContainer {
     private void setDefaultCommands() {
         drive.setDefaultCommand(
                 new TeleopSwerve(
-                        drive,
-                        OIConstants.Drive.X_TRANSLATION,
-                        OIConstants.Drive.Y_TRANSLATION,
-                        OIConstants.Drive.ROTATION_SPEED,
-                        () -> false,
-                        () ->
-                                OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
-                                        ? AutoAimCalculator.calculateSpeakerHeading(
-                                                        drive.getEstimatedPose())
-                                                .getDegrees()
-                                        : Double.NaN));
+                                drive,
+                                OIConstants.Drive.X_TRANSLATION,
+                                OIConstants.Drive.Y_TRANSLATION,
+                                OIConstants.Drive.ROTATION_SPEED,
+                                () -> false,
+                                () ->
+                                        OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
+                                                ? AutoAimCalculator.calculateSpeakerHeading(
+                                                                drive.getEstimatedPose())
+                                                        .getDegrees()
+                                                : Double.NaN)
+                        .withName("TeleopSwerve"));
 
         arm.setDefaultCommand(
                 arm.rotateToCommand(
-                        () -> {
-                            return (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
-                                    ? Constants.Arm.Positions.TRANSIT_STAGE
-                                    : Constants.Arm.Positions.TRANSIT_NORMAL);
-                        },
-                        false));
+                                () ->
+                                        (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
+                                                ? Constants.Arm.Positions.TRANSIT_STAGE
+                                                : Constants.Arm.Positions.TRANSIT_NORMAL),
+                                false)
+                        .withName("arm/transitPosition"));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
@@ -141,7 +142,8 @@ public class RobotContainer {
                                                     OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
                                         },
                                         arm)
-                                .finallyDo(() -> arm.setArmRotationSpeed(0)));
+                                .finallyDo(() -> arm.setArmRotationSpeed(0))
+                                .withName("arm/manual"));
     }
 
     private void configureSubsystems() {

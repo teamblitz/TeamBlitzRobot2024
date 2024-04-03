@@ -7,7 +7,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 // import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
@@ -16,7 +15,7 @@ import frc.robot.Constants;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class Shooter extends SubsystemBase implements BlitzSubsystem {
+public class Shooter extends BlitzSubsystem {
     private final LoggedTunableNumber topKP =
             new LoggedTunableNumber("Shooter/top/kP", Constants.Shooter.Spark.PID_TOP_P);
     private final LoggedTunableNumber topKI =
@@ -117,28 +116,30 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
         Logger.recordOutput("shooter/velocitySetpoint");
     }
 
-    public void reverse() {
+    private void reverse() {
         io.setPercent(-0.3);
     }
 
-    public void stop() {
+    private void stop() {
         io.setPercent(0);
     }
 
     public Command setSpeedCommand(double speed) {
-        return runEnd(() -> io.setPercent(speed), this::stop);
+        return runEnd(() -> io.setPercent(speed), this::stop).withName(logKey + "/speed " + speed);
     }
 
     public Command shootCommand() {
-        return startEnd(this::shootOpenLoop, this::stop);
+        return startEnd(this::shootOpenLoop, this::stop).withName(logKey + "/shoot");
     }
 
     public Command reverseCommand() {
-        return startEnd(this::reverse, this::stop);
+        return startEnd(this::reverse, this::stop).withName(logKey + "/eject");
     }
 
     public Command shootClosedLoopCommand(DoubleSupplier metersPerSecond) {
-        return run(() -> shootClosedLoop(metersPerSecond.getAsDouble())).finallyDo(this::stop);
+        return run(() -> shootClosedLoop(metersPerSecond.getAsDouble()))
+                .finallyDo(this::stop)
+                .withName(logKey + "/closedLoopShoot");
     }
 
     public Command shootClosedLoopCommand(double metersPerSecond) {
@@ -152,10 +153,18 @@ public class Shooter extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
+        return routine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/quasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
+        return routine.dynamic(direction)
+                .withName(
+                        logKey
+                                + "/dynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 }

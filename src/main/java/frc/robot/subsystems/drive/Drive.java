@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
@@ -529,7 +528,7 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Command buildParkCommand() {
-        return Commands.runOnce(this::park, this);
+        return Commands.runOnce(this::park, this).withName(logKey + "/park");
     }
 
     public Command driveSpeedTestCommand(double speed, double duration) {
@@ -593,7 +592,8 @@ public class Drive extends BlitzSubsystem {
                                             true,
                                             true,
                                             false);
-                                }));
+                                }))
+                .withName(logKey + "/chaseVector");
     }
 
     public Command zeroAbsEncoders() {
@@ -604,15 +604,24 @@ public class Drive extends BlitzSubsystem {
                             swerveModules[2].zeroAbsEncoders();
                             swerveModules[3].zeroAbsEncoders();
                         })
-                .ignoringDisable(true);
+                .ignoringDisable(true)
+                .withName(logKey + "/zeroAbsEncoders");
     }
 
     // Something something super class???
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
+        return routine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/quasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
+        return routine.dynamic(direction)
+                .withName(
+                        logKey
+                                + "/dynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 }

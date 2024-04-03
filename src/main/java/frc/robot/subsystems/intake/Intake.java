@@ -3,7 +3,6 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.leds.Leds;
@@ -75,7 +74,8 @@ public class Intake extends BlitzSubsystem {
                         Commands.startEnd(
                                 () -> intakeState = IntakeState.Intaking,
                                 () -> intakeState = IntakeState.Idle))
-                .onlyIf(() -> intakeState != IntakeState.Indexing);
+                .onlyIf(() -> intakeState != IntakeState.Indexing)
+                .withName(logKey + "/automaticIntake");
     }
 
     public Command intakeGroundAutomatic() {
@@ -84,10 +84,11 @@ public class Intake extends BlitzSubsystem {
 
     public Command feedShooter() {
         return Commands.parallel(
-                setSpeedCommand(.4),
-                Commands.startEnd(
-                        () -> intakeState = IntakeState.Feeding,
-                        () -> intakeState = IntakeState.Idle));
+                        setSpeedCommand(.4),
+                        Commands.startEnd(
+                                () -> intakeState = IntakeState.Feeding,
+                                () -> intakeState = IntakeState.Idle))
+                .withName(logKey + "/feed");
     }
 
     /** Note, should only after intakeCommandSmart finishes */
@@ -104,12 +105,14 @@ public class Intake extends BlitzSubsystem {
                             intakeState = IntakeState.Idle;
                             noteState = NoteState.Indexed;
                         })
-                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming);
+                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+                .withName(logKey + "/index");
     }
 
     public Command automaticIndex() {
         return new ConditionalCommand(
-                indexIntake(), Commands.none(), () -> noteState == NoteState.Unindexed);
+                        indexIntake(), Commands.none(), () -> noteState == NoteState.Unindexed)
+                .withName(logKey + "/autoIndex");
     }
 
     public Command ejectCommand() {
@@ -118,10 +121,11 @@ public class Intake extends BlitzSubsystem {
                         Commands.startEnd(
                                 () -> intakeState = IntakeState.Ejecting,
                                 () -> intakeState = IntakeState.Idle))
-                .finallyDo(() -> noteState = NoteState.Empty);
+                .finallyDo(() -> noteState = NoteState.Empty)
+                .withName(logKey + "/eject");
     }
 
-    public Command setSpeedCommand(double speed) {
+    private Command setSpeedCommand(double speed) {
         return startEnd(() -> io.set(speed), this::stop);
     }
 

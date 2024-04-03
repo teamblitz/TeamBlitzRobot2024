@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -76,12 +79,12 @@ public class Robot extends LoggedRobot {
 
         } else
             switch (Constants.SIM_MODE) {
-                // Running a physics simulator, log to local folder
+                    // Running a physics simulator, log to local folder
                 case SIM -> {
                     Logger.addDataReceiver(new WPILOGWriter(""));
                     Logger.addDataReceiver(new NT4Publisher());
                 }
-                // Replaying a log, set up replay source
+                    // Replaying a log, set up replay source
                 case REPLAY -> {
                     setUseTiming(false); // Run as fast as possible
                     String logPath = LogFileUtil.findReplayLog();
@@ -94,6 +97,37 @@ public class Robot extends LoggedRobot {
         // Start AdvantageKit logger
         Logger.registerURCL(URCL.startExternal());
         Logger.start();
+
+        // Log active commands
+        Map<String, Integer> commandCounts = new HashMap<>();
+        BiConsumer<Command, Boolean> logCommandFunction =
+                (Command command, Boolean active) -> {
+                    String name = command.getName();
+                    int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+                    commandCounts.put(name, count);
+                    Logger.recordOutput(
+                            "CommandsUnique/"
+                                    + name
+                                    + "_"
+                                    + Integer.toHexString(command.hashCode()),
+                            active);
+                    Logger.recordOutput("CommandsAll/" + name, count > 0);
+                };
+        CommandScheduler.getInstance()
+                .onCommandInitialize(
+                        (Command command) -> {
+                            logCommandFunction.accept(command, true);
+                        });
+        CommandScheduler.getInstance()
+                .onCommandFinish(
+                        (Command command) -> {
+                            logCommandFunction.accept(command, false);
+                        });
+        CommandScheduler.getInstance()
+                .onCommandInterrupt(
+                        (Command command) -> {
+                            logCommandFunction.accept(command, false);
+                        });
 
         robotContainer = new RobotContainer();
     }
