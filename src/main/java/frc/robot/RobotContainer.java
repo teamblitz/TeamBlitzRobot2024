@@ -44,6 +44,7 @@ import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSpark;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -66,9 +67,9 @@ public class RobotContainer {
 
     /* ***** --- Autonomous --- ***** */
     // *** Must match with path names in pathplanner folder ***
-    private final SendableChooser<Command> autoChooser;
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-    private final SendableChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
+    private final LoggedDashboardChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
 
     public RobotContainer() {
         Leds.getInstance();
@@ -83,15 +84,12 @@ public class RobotContainer {
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Autonomous Choices", autoChooser);
+        autoChooser = new LoggedDashboardChooser<>("autoChoice", AutoBuilder.buildAutoChooser());
 
-        startingPositionChooser = new SendableChooser<>();
-        startingPositionChooser.setDefaultOption("Center", StartingPos.CENTER);
+        startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
+        startingPositionChooser.addDefaultOption("Center", StartingPos.CENTER);
         startingPositionChooser.addOption("Left", StartingPos.LEFT);
         startingPositionChooser.addOption("Right", StartingPos.RIGHT);
-
-        SmartDashboard.putData("StaringPos", startingPositionChooser);
 
         Shuffleboard.getTab("AutoShoot")
                 .addDouble(
@@ -336,7 +334,7 @@ public class RobotContainer {
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand())
-                        .asProxy());
+                        .asProxy().withName("auto/shoot"));
 
         qShoot.whileTrue(
                 arm.rotateToCommand(
@@ -345,7 +343,7 @@ public class RobotContainer {
                                 false)
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand())
-                        .asProxy());
+                        .asProxy().withName("auto/qShoot"));
 
         readyShoot.whileTrue(
                 arm.rotateToCommand(
@@ -354,7 +352,7 @@ public class RobotContainer {
                                 false)
                         .asProxy()
                         .alongWith(shooter.shootCommand().asProxy())
-                        .asProxy());
+                        .asProxy().withName("auto/readyShoot"));
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
@@ -420,8 +418,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
-        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.getSelected().angle))
-                .andThen(autoChooser.getSelected().asProxy());
+        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
+                .andThen(autoChooser.get().asProxy());
     }
 
     //    public Command todoPutThisAutoShootSomewhereElse() {
