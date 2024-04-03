@@ -92,7 +92,8 @@ public class AutoAimCalculator {
     }
 
     public static double calculateArmAngleInterpolation(double distanceMeters) {
-        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters) + Units.degreesToRadians(1);
+        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters)
+                + Units.degreesToRadians(1);
     }
 
     public static double calculateShooterSpeedInterpolation(double distanceMeters) {
@@ -101,27 +102,27 @@ public class AutoAimCalculator {
 
     public static double calculateDistanceToGoal(Pose3d botPose) {
         return calculateBotToGoal2d(
-                botPose,
-                DriverStation.getAlliance().isPresent()
-                        && DriverStation.getAlliance().get()
-                        == DriverStation.Alliance
-                        .Blue
-                        ? Constants.Shooter.AutoShootConstants
-                        .goalPoseBlue
-                        : Constants.Shooter.AutoShootConstants
-                        .goalPoseRed
-        ).getX();
+                        botPose,
+                        DriverStation.getAlliance().isPresent()
+                                        && DriverStation.getAlliance().get()
+                                                == DriverStation.Alliance.Blue
+                                ? Constants.Shooter.AutoShootConstants.goalPoseBlue
+                                : Constants.Shooter.AutoShootConstants.goalPoseRed)
+                .getX();
     }
 
     @AutoLogOutput
     public static Rotation2d calculateSpeakerHeading(Pose2d botPose) {
-        Pose2d goalPose = (AllianceUtils.isBlue()
-                ? Constants.Shooter.AutoShootConstants
-                .goalPoseBlue
-                : Constants.Shooter.AutoShootConstants
-                .goalPoseRed).toPose2d();
+        Pose2d goalPose =
+                (AllianceUtils.isBlue()
+                                ? Constants.Shooter.AutoShootConstants.goalPoseBlue
+                                : Constants.Shooter.AutoShootConstants.goalPoseRed)
+                        .toPose2d();
 
-        Translation2d translation = new Transform2d(new Pose2d(botPose.getTranslation(), new Rotation2d()), goalPose).getTranslation();
-        return Rotation2d.fromRadians(-Math.atan2(translation.getY(), translation.getX())).plus(Rotation2d.fromDegrees((AllianceUtils.isBlue() ? 180 : 0)-10));
+        Translation2d translation =
+                new Transform2d(new Pose2d(botPose.getTranslation(), new Rotation2d()), goalPose)
+                        .getTranslation();
+        return Rotation2d.fromRadians(-Math.atan2(translation.getY(), translation.getX()))
+                .plus(Rotation2d.fromDegrees((AllianceUtils.isBlue() ? 180 : 0) - 10));
     }
 }

@@ -4,7 +4,6 @@ import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.lib.math.Angles;
@@ -25,8 +24,8 @@ public class ArmIOSpark implements ArmIO {
     double quadOffset = 0;
     private PIDController pid;
 
-//    private final DigitalInput armTopLimitSwitch;
-//    private final DigitalInput armBottomLimitSwitch;
+    //    private final DigitalInput armTopLimitSwitch;
+    //    private final DigitalInput armBottomLimitSwitch;
 
     public ArmIOSpark(boolean useInternalEncoder) {
         /* Arm Rotation */
@@ -65,25 +64,20 @@ public class ArmIOSpark implements ArmIO {
 
         setPid(Arm.PidConstants.P, Arm.PidConstants.I, Arm.PidConstants.D);
 
-
-
         armRotLeader.setSmartCurrentLimit(60);
         armRotFollower.setSmartCurrentLimit(60);
 
         absRotationEncoder = new DutyCycleEncoder(Arm.ABS_ENCODER);
         quadEncoder = new Encoder(Arm.QUAD_A, Arm.QUAD_B, true);
 
-        quadEncoder.setDistancePerPulse(
-                1 / (2048 * 2 * Math.PI)
-        );
+        quadEncoder.setDistancePerPulse(1 / (2048 * 2 * Math.PI));
 
         /* Limit Switches */
-//        armTopLimitSwitch = new DigitalInput(Arm.TOP_LIMIT_SWITCH);
-//        armBottomLimitSwitch = new DigitalInput(Arm.BOTTOM_LIMIT_SWITCH);
+        //        armTopLimitSwitch = new DigitalInput(Arm.TOP_LIMIT_SWITCH);
+        //        armBottomLimitSwitch = new DigitalInput(Arm.BOTTOM_LIMIT_SWITCH);
 
         armRotLeader.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
         armRotLeader.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
-
 
         armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) Arm.MAX_ROT);
         armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, (float) Arm.MIN_ROT);
@@ -100,8 +94,8 @@ public class ArmIOSpark implements ArmIO {
                 Angles.wrapAnglePi(-absRotationEncoder.getAbsolutePosition() * 2 * Math.PI);
         inputs.absArmEncoderDeg = Math.toDegrees(inputs.absArmEncoder);
 
-//        inputs.topRotationLimit = armTopLimitSwitch.get();
-//        inputs.bottomRotationLimit = armBottomLimitSwitch.get();
+        //        inputs.topRotationLimit = armTopLimitSwitch.get();
+        //        inputs.bottomRotationLimit = armBottomLimitSwitch.get();
 
         inputs.encoderConnected = absRotationEncoder.isConnected();
         inputs.volts = armRotLeader.getBusVoltage() * armRotLeader.getAppliedOutput();
@@ -120,9 +114,7 @@ public class ArmIOSpark implements ArmIO {
                     arbFFVolts,
                     SparkPIDController.ArbFFUnits.kVoltage);
         } else {
-            armRotLeader.setVoltage(
-                    pid.calculate(getPosition(), rot) + arbFFVolts
-            );
+            armRotLeader.setVoltage(pid.calculate(getPosition(), rot) + arbFFVolts);
         }
     }
 
@@ -156,9 +148,9 @@ public class ArmIOSpark implements ArmIO {
     }
 
     private double getPosition() {
-        return useInternalEncoder ? Angles.wrapAnglePi(
-                quadEncoder.getDistance() + quadOffset
-        ) : angleEncoder.getPosition();
+        return useInternalEncoder
+                ? Angles.wrapAnglePi(quadEncoder.getDistance() + quadOffset)
+                : angleEncoder.getPosition();
     }
 
     @Override

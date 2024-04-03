@@ -9,13 +9,11 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import java.util.List;
 import java.util.Optional;
 
 public class Leds extends SubsystemBase {
     private static Leds instance;
-
 
     public static Leds getInstance() {
         if (instance == null) {
@@ -86,7 +84,10 @@ public class Leds extends SubsystemBase {
                 new Notifier(
                         () -> {
                             synchronized (this) {
-                                breath(Color.kWhite, Color.kBlack, System.currentTimeMillis() / 1000.0);
+                                breath(
+                                        Color.kWhite,
+                                        Color.kBlack,
+                                        System.currentTimeMillis() / 1000.0);
                                 leds.setData(buffer);
                             }
                         });
@@ -98,8 +99,7 @@ public class Leds extends SubsystemBase {
         if (DriverStation.isFMSAttached()) {
             alliance = DriverStation.getAlliance();
             allianceColor =
-                    alliance
-                            .map(alliance -> alliance == Alliance.Blue ? Color.kBlue : Color.kRed)
+                    alliance.map(alliance -> alliance == Alliance.Blue ? Color.kBlue : Color.kRed)
                             .orElse(Color.kGreen);
             secondaryDisabledColor = alliance.isPresent() ? Color.kBlack : Color.kDarkBlue;
         }
@@ -134,9 +134,12 @@ public class Leds extends SubsystemBase {
             if (armCoast) {
                 // Arm coast alert
                 solid(Color.kWhite);
-            } else if (lastEnabledAuto && Timer.getFPGATimestamp() - lastEnabledTime < autoFadeMaxTime) {
+            } else if (lastEnabledAuto
+                    && Timer.getFPGATimestamp() - lastEnabledTime < autoFadeMaxTime) {
                 // Auto fade
-                solid(1.0 - ((Timer.getFPGATimestamp() - lastEnabledTime) / autoFadeTime), Color.kGreen);
+                solid(
+                        1.0 - ((Timer.getFPGATimestamp() - lastEnabledTime) / autoFadeTime),
+                        Color.kGreen);
             } else if (lowBatteryAlert) {
                 // Low battery
                 solid(Color.kOrangeRed);
@@ -162,7 +165,11 @@ public class Leds extends SubsystemBase {
                 buffer.setLED(staticSectionLength, allianceColor);
             } else {
                 // Default pattern
-                wave(allianceColor, secondaryDisabledColor, waveAllianceCycleLength, waveAllianceDuration);
+                wave(
+                        allianceColor,
+                        secondaryDisabledColor,
+                        waveAllianceCycleLength,
+                        waveAllianceDuration);
             }
 
             // Same battery alert
@@ -176,10 +183,10 @@ public class Leds extends SubsystemBase {
                 solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
             }
         } else { // Enabled
-//            if (requestAmp) {
-//                strobe(Color.kWhite, strobeFastDuration);
-//            } else if (trapping || climbing || autoDrive || autoShoot) {
-//                rainbow(rainbowCycleLength, rainbowDuration);
+            //            if (requestAmp) {
+            //                strobe(Color.kWhite, strobeFastDuration);
+            //            } else if (trapping || climbing || autoDrive || autoShoot) {
+            //                rainbow(rainbowCycleLength, rainbowDuration);
             if (indexing) {
                 strobe(Color.kYellow, strobeSlowDuration);
             } else if (autoPickupActive) {
@@ -188,8 +195,7 @@ public class Leds extends SubsystemBase {
                 strobe(Color.kOrangeRed, strobeSlowDuration);
             } else if (hasNote) {
                 strobe(Color.kGreen, strobeSlowDuration);
-            }
-            else {
+            } else {
                 solid(Color.kGreen);
             }
 
@@ -203,9 +209,9 @@ public class Leds extends SubsystemBase {
             solid(Color.kRed);
         }
 
-//        solid(Color.kBlue);
+        //        solid(Color.kBlue);
 
-        for (int i=0; i < buffer.getLength(); i++) {
+        for (int i = 0; i < buffer.getLength(); i++) {
             buffer.setLED(i, toGRB(buffer.getLED(i)));
         }
 
@@ -279,10 +285,12 @@ public class Leds extends SubsystemBase {
     }
 
     private void stripes(List<Color> colors, int length, double duration) {
-        int offset = (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
+        int offset =
+                (int) (Timer.getFPGATimestamp() % duration / duration * length * colors.size());
         for (int i = 0; i < length; i++) {
             int colorIndex =
-                    (int) (Math.floor((double) (i - offset) / length) + colors.size()) % colors.size();
+                    (int) (Math.floor((double) (i - offset) / length) + colors.size())
+                            % colors.size();
             colorIndex = colors.size() - 1 - colorIndex;
             buffer.setLED(i, colors.get(colorIndex));
         }

@@ -7,9 +7,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.leds.Leds;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.function.BooleanSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase implements BlitzSubsystem {
 
@@ -23,15 +22,12 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
         this.manualOverride = manualOverride;
         setDefaultCommand(automaticIndex());
 
-
-//         State updating
+        //         State updating
         new Trigger(() -> intakeState == IntakeState.Feeding && noteState == NoteState.Indexed)
                 .whileTrue(
                         Commands.sequence(
                                 Commands.waitUntil(() -> !intakeSensor()),
-                                Commands.run(() -> noteState = NoteState.Empty)
-                        )
-                );
+                                Commands.run(() -> noteState = NoteState.Empty)));
     }
 
     @Override
@@ -63,18 +59,19 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
         io.set(0);
     }
 
-
     public Command intakeGroundAutomatic(double speed) {
         return Commands.race(
-                setSpeedCommand(speed)
-                        .until(() -> inputs.breakBeam)
-                        .andThen(() -> noteState = NoteState.Unindexed)
-                .onlyIf(() -> !inputs.breakBeam && intakeState != IntakeState.Indexing),
-                Commands.startEnd(
-                        () -> intakeState = IntakeState.Intaking,
-                        () -> intakeState = IntakeState.Idle
-                )
-        ).onlyIf(() -> intakeState != IntakeState.Indexing);
+                        setSpeedCommand(speed)
+                                .until(() -> inputs.breakBeam)
+                                .andThen(() -> noteState = NoteState.Unindexed)
+                                .onlyIf(
+                                        () ->
+                                                !inputs.breakBeam
+                                                        && intakeState != IntakeState.Indexing),
+                        Commands.startEnd(
+                                () -> intakeState = IntakeState.Intaking,
+                                () -> intakeState = IntakeState.Idle))
+                .onlyIf(() -> intakeState != IntakeState.Indexing);
     }
 
     public Command intakeGroundAutomatic() {
@@ -86,48 +83,38 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
                 setSpeedCommand(.4),
                 Commands.startEnd(
                         () -> intakeState = IntakeState.Feeding,
-                        () -> intakeState = IntakeState.Idle
-                )
-        );
+                        () -> intakeState = IntakeState.Idle));
     }
 
-
-    /**
-     * Note, should only after intakeCommandSmart finishes
-     */
+    /** Note, should only after intakeCommandSmart finishes */
     public Command indexIntake() {
 
-        return setSpeedCommand(-.12).raceWith(
-                Commands.waitSeconds(.2).andThen(
-                                Commands.waitUntil(() -> inputs.breakBeam)
-                ))
-//                .onlyIf(() -> !inputs.breakBeam)
-                .beforeStarting(
-                        () -> intakeState = IntakeState.Indexing
-                ).finallyDo(
-                        () ->  {
+        return setSpeedCommand(-.12)
+                .raceWith(
+                        Commands.waitSeconds(.2)
+                                .andThen(Commands.waitUntil(() -> inputs.breakBeam)))
+                //                .onlyIf(() -> !inputs.breakBeam)
+                .beforeStarting(() -> intakeState = IntakeState.Indexing)
+                .finallyDo(
+                        () -> {
                             intakeState = IntakeState.Idle;
                             noteState = NoteState.Indexed;
-                        }
-                ).withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming);
+                        })
+                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming);
     }
 
     public Command automaticIndex() {
         return new ConditionalCommand(
-                indexIntake(),
-                Commands.none(),
-                () -> noteState == NoteState.Unindexed
-        );
+                indexIntake(), Commands.none(), () -> noteState == NoteState.Unindexed);
     }
 
     public Command ejectCommand() {
         return Commands.parallel(
-                setSpeedCommand(-.3),
-                Commands.startEnd(
-                        () -> intakeState = IntakeState.Ejecting,
-                        () -> intakeState = IntakeState.Idle
-                )
-        ).finallyDo(() -> noteState = NoteState.Empty);
+                        setSpeedCommand(-.3),
+                        Commands.startEnd(
+                                () -> intakeState = IntakeState.Ejecting,
+                                () -> intakeState = IntakeState.Idle))
+                .finallyDo(() -> noteState = NoteState.Empty);
     }
 
     public Command setSpeedCommand(double speed) {
@@ -135,13 +122,22 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     }
 
     public enum NoteState {
-        Indexed, Unindexed, Empty, Unknown
+        Indexed,
+        Unindexed,
+        Empty,
+        Unknown
     }
 
-    private NoteState noteState = NoteState.Indexed; // We start the match with the note in an indexed state
-    
+    private NoteState noteState =
+            NoteState.Indexed; // We start the match with the note in an indexed state
+
     public enum IntakeState {
-        Intaking, Feeding, Ejecting, Indexing, Idle, Manual
+        Intaking,
+        Feeding,
+        Ejecting,
+        Indexing,
+        Idle,
+        Manual
     }
 
     private IntakeState intakeState = IntakeState.Idle;

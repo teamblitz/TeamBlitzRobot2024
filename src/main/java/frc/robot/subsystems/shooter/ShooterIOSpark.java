@@ -8,7 +8,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.Constants.Climber;
 
 public class ShooterIOSpark implements ShooterIO {
 
@@ -37,7 +36,6 @@ public class ShooterIOSpark implements ShooterIO {
         bottom.setClosedLoopRampRate(.2);
         bottom.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
-
         pidTop = top.getPIDController();
         pidBottom = bottom.getPIDController();
 
@@ -62,31 +60,39 @@ public class ShooterIOSpark implements ShooterIO {
                         Constants.Shooter.Spark.FF_BOTTOM_KA);
 
         SmartDashboard.putNumber("MAX SHOOT Top", feedforwardTop.maxAchievableVelocity(12, 0));
-        SmartDashboard.putNumber("MAX SHOOT Bottom", feedforwardBottom.maxAchievableVelocity(12, 0));
+        SmartDashboard.putNumber(
+                "MAX SHOOT Bottom", feedforwardBottom.maxAchievableVelocity(12, 0));
 
         top.getEncoder()
                 .setVelocityConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO
+                                * (1.0 / 60.0)
+                                * (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setVelocityConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO
+                                * (1.0 / 60.0)
+                                * (Math.PI * 2 * Units.inchesToMeters(2)));
 
         top.getEncoder()
                 .setPositionConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO
+                                * (Math.PI * 2 * Units.inchesToMeters(2)));
         bottom.getEncoder()
                 .setPositionConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2)));
+                        Constants.Shooter.Spark.GEAR_RATIO
+                                * (Math.PI * 2 * Units.inchesToMeters(2)));
 
-
-//        pidTop.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
-//        pidBottom.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
-//
-//        pidTop.setSmartMotionMaxAccel(40, 0);
-//        pidBottom.setSmartMotionMaxAccel(40, 0);
-//
-//        pidTop.setSmartMotionMaxAccel(40, 0);
-//        pidBottom.setSmartMotionMaxAccel(40, 0);
+        //        pidTop.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,
+        // 0);
+        //
+        // pidBottom.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
+        //
+        //        pidTop.setSmartMotionMaxAccel(40, 0);
+        //        pidBottom.setSmartMotionMaxAccel(40, 0);
+        //
+        //        pidTop.setSmartMotionMaxAccel(40, 0);
+        //        pidBottom.setSmartMotionMaxAccel(40, 0);
     }
 
     @Override

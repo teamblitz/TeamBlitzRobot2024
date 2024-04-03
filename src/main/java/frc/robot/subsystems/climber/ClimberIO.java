@@ -1,5 +1,4 @@
 package frc.robot.subsystems.climber;
-import com.ctre.phoenix6.hardware.TalonFX;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -24,9 +23,10 @@ public interface ClimberIO {
     public default void updateInputs(ClimberIOInputs inputs) {}
 
     public default void setSpeedLeft(double percent) {}
+
     public default void setSpeedRight(double percent) {}
 
     public default void setMotionMagicLeft(double extension) {}
+
     public default void setMotionMagicRight(double extension) {}
-    
 }

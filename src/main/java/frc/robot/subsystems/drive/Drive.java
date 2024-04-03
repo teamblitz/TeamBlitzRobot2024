@@ -20,13 +20,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.Subscriber;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -34,7 +30,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,10 +48,9 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * Here we can probably do some cleanup, main thing we can probably do here is separate
@@ -109,7 +103,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     private double lastVisionTimeStamp;
 
     private Rotation2d gyroOffset = new Rotation2d();
-    private final NetworkTableEntry limelightPose = LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
+    private final NetworkTableEntry limelightPose =
+            LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
 
     public Drive(
             SwerveModuleConfiguration configuration,
@@ -190,7 +185,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
 
-        // Most critical 6 lines of the robot, don't delete, without these it doesn't completely work
+        // Most critical 6 lines of the robot, don't delete, without these it doesn't completely
+        // work
         // for some reason
         Commands.waitSeconds(3)
                 .andThen(
@@ -224,8 +220,11 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                 log -> {
                                     log.motor("drive")
                                             .voltage(Volts.of(swerveModules[0].getVoltsDrive()))
-                                            .linearVelocity(MetersPerSecond.of(swerveModules[0].getVelocity()))
-                                            .linearPosition(Meters.of(swerveModules[0].getPositionDrive()));
+                                            .linearVelocity(
+                                                    MetersPerSecond.of(
+                                                            swerveModules[0].getVelocity()))
+                                            .linearPosition(
+                                                    Meters.of(swerveModules[0].getPositionDrive()));
                                 },
                                 this));
 
@@ -233,8 +232,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds) ->
-                        drive(speeds, false),
+                (speeds) -> drive(speeds, false),
                 Constants.AutoConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
                 () ->
                         DriverStation.getAlliance().isPresent()
@@ -286,26 +284,20 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
-        
-        
-        drive(fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                translation.getX(), translation.getY(), rotation, getYaw())
-                : new ChassisSpeeds(
-                translation.getX(), translation.getY(), rotation),
-                isOpenLoop
-        );
+
+        drive(
+                fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                translation.getX(), translation.getY(), rotation, getYaw())
+                        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation),
+                isOpenLoop);
     }
-    
+
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
-        SwerveModuleState[] swerveModuleStates =
-                KINEMATICS.toSwerveModuleStates(
-                        speeds);
-        
-        SwerveDriveKinematics.desaturateWheelSpeeds(
-                swerveModuleStates, MAX_SPEED
-        );
-        
+        SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(speeds);
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
+
         setModuleStates(swerveModuleStates, openLoop, false, false);
     }
 
@@ -416,25 +408,26 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
         swerveOdometry.update(getYaw(), getModulePositions());
         poseEstimator.update(getYaw(), getModulePositions());
 
-
         /* Vision stuff no touchy*/
 
-        LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        LimelightHelpers.PoseEstimate limelightMeasurement =
+                LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
-        if(
-                (limelightMeasurement.tagCount >= 2
-                        || (limelightMeasurement.avgTagDist < 3 && limelightMeasurement.tagCount >=1)
-                        ) // maybe this will work for the amp, I am unconvinced
-                        && limelightMeasurement.timestampSeconds > lastVisionTimeStamp)  {
-            poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999)); // Standard deviations, basically vision measurements very up to .7m, and just don't trust the vision angle at all
+        if ((limelightMeasurement.tagCount >= 2
+                        || (limelightMeasurement.avgTagDist < 3
+                                && limelightMeasurement.tagCount
+                                        >= 1)) // maybe this will work for the amp, I am unconvinced
+                && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
+            poseEstimator.setVisionMeasurementStdDevs(
+                    VecBuilder.fill(
+                            .7, .7,
+                            9999999)); // Standard deviations, basically vision measurements very up
+            // to .7m, and just don't trust the vision angle at all
             poseEstimator.addVisionMeasurement(
-                    limelightMeasurement.pose,
-                    limelightMeasurement.timestampSeconds);
+                    limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
         }
 
         lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
-
-
 
         Logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
         Logger.recordOutput("Drive/Vision+Odometry", poseEstimator.getEstimatedPosition());
@@ -469,8 +462,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             drivePIDChanged = true;
             driveD = driveDEntry.getDouble(driveD);
         }
-//        anglePIDChanged = false;
-//        drivePIDChanged = false;
+        //        anglePIDChanged = false;
+        //        drivePIDChanged = false;
 
         if (drivePIDChanged) {
             for (SwerveModule module : swerveModules) {
@@ -559,43 +552,44 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
     /**
      * Chase a field relative vector
+     *
      * @param vector robot relative unit vector to move in the direction of
      * @param angle angle error
      * @param velocity goal velocity m/s
      * @param acceleration max acceleration m/s^2
      * @return Chase Vector Command.
      */
-    public Command chaseVector(Supplier<Translation2d> vector, DoubleSupplier angle, double velocity, double acceleration) {
+    public Command chaseVector(
+            Supplier<Translation2d> vector,
+            DoubleSupplier angle,
+            double velocity,
+            double acceleration) {
         SlewRateLimiter xLimiter = new SlewRateLimiter(acceleration);
         SlewRateLimiter yLimiter = new SlewRateLimiter(acceleration);
 
         return Commands.runOnce(
-                () -> {
-                    xLimiter.reset(getFieldRelativeSpeeds().vxMetersPerSecond);
-                    yLimiter.reset(getFieldRelativeSpeeds().vyMetersPerSecond);
-                }
-        ).andThen(
-                run(
                         () -> {
-                            Translation2d unitVec = vector.get().div(vector.get().getNorm());
-                            Translation2d goalSpeeds = unitVec.times(velocity);
+                            xLimiter.reset(getFieldRelativeSpeeds().vxMetersPerSecond);
+                            yLimiter.reset(getFieldRelativeSpeeds().vyMetersPerSecond);
+                        })
+                .andThen(
+                        run(
+                                () -> {
+                                    Translation2d unitVec =
+                                            vector.get().div(vector.get().getNorm());
+                                    Translation2d goalSpeeds = unitVec.times(velocity);
 
-
-                            angleDrive(
-                                    new Translation2d(
-                                            xLimiter.calculate(goalSpeeds.getX()),
-                                            yLimiter.calculate(goalSpeeds.getY())
-                                    ),
-                                    angle.getAsDouble() * .0 * MAX_ANGULAR_VELOCITY,
-                                    0,
-                                    true,
-                                    true,
-                                    true,
-                                    false
-                            );
-                        }
-                )
-        );
+                                    angleDrive(
+                                            new Translation2d(
+                                                    xLimiter.calculate(goalSpeeds.getX()),
+                                                    yLimiter.calculate(goalSpeeds.getY())),
+                                            angle.getAsDouble() * .0 * MAX_ANGULAR_VELOCITY,
+                                            0,
+                                            true,
+                                            true,
+                                            true,
+                                            false);
+                                }));
     }
 
     public Command zeroAbsEncoders() {

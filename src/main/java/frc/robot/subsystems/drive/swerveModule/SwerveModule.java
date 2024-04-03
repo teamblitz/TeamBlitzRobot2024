@@ -89,9 +89,7 @@ public class SwerveModule {
         } else {
             double speed = MathUtil.applyDeadband(desiredState.speedMetersPerSecond, .01);
             Logger.recordOutput(logKey + "/speedSetpoint", speed);
-            driveMotor.setSetpoint(
-                    speed,
-                    driveFeedforward.calculate(speed));
+            driveMotor.setSetpoint(speed, driveFeedforward.calculate(speed));
         }
     }
 

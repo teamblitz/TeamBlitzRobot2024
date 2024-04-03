@@ -32,7 +32,9 @@ import frc.robot.Constants.AutoConstants.StartingPos;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSpark;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
@@ -42,8 +44,6 @@ import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSpark;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberIOKraken;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -79,7 +79,6 @@ public class RobotContainer {
         setDefaultCommands();
         configureAutoCommands();
 
-
         DriverStation.silenceJoystickConnectionWarning(true);
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
@@ -96,14 +95,18 @@ public class RobotContainer {
 
         Shuffleboard.getTab("AutoShoot")
                 .addDouble(
-                        "distance", () -> AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getEstimatedPose())));
+                        "distance",
+                        () ->
+                                AutoAimCalculator.calculateDistanceToGoal(
+                                        new Pose3d(drive.getEstimatedPose())));
 
         Shuffleboard.getTab("AutoShoot")
-                        .addDouble(
-                                "speed", () -> AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getEstimatedPose()))
-                                )
-        );
+                .addDouble(
+                        "speed",
+                        () ->
+                                AutoAimCalculator.calculateShooterSpeedInterpolation(
+                                        AutoAimCalculator.calculateDistanceToGoal(
+                                                new Pose3d(drive.getEstimatedPose()))));
     }
 
     private void setDefaultCommands() {
@@ -115,20 +118,20 @@ public class RobotContainer {
                         OIConstants.Drive.ROTATION_SPEED,
                         () -> false,
                         () ->
-                            OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
-                                ? AutoAimCalculator.calculateSpeakerHeading(drive.getEstimatedPose()).getDegrees()
-                                : Double.NaN
-                )
-        );
+                                OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
+                                        ? AutoAimCalculator.calculateSpeakerHeading(
+                                                        drive.getEstimatedPose())
+                                                .getDegrees()
+                                        : Double.NaN));
 
         arm.setDefaultCommand(
                 arm.rotateToCommand(
-                        () -> 
-                                {
-                                        return (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean() ? Constants.Arm.Positions.TRANSIT_STAGE : Constants.Arm.Positions.TRANSIT_NORMAL);
-                                }, false
-                                        )
-        );
+                        () -> {
+                            return (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
+                                    ? Constants.Arm.Positions.TRANSIT_STAGE
+                                    : Constants.Arm.Positions.TRANSIT_NORMAL);
+                        },
+                        false));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
@@ -167,7 +170,6 @@ public class RobotContainer {
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
                             Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
-
         }
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
@@ -175,13 +177,12 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSpark(true));
         climber = new Climber(Constants.compBot() ? new ClimberIOKraken() {} : new ClimberIO() {});
 
-        autoShootSpeed = shooter.shootClosedLoopCommand(
-                () ->
-                        AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
-                        )
-        );
-
+        autoShootSpeed =
+                shooter.shootClosedLoopCommand(
+                        () ->
+                                AutoAimCalculator.calculateShooterSpeedInterpolation(
+                                        AutoAimCalculator.calculateDistanceToGoal(
+                                                new Pose3d(drive.getLimelightPose()))));
     }
 
     private void configureButtonBindings() {
@@ -192,50 +193,50 @@ public class RobotContainer {
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));
 
-        NetworkTableEntry intakeTx = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
-        NetworkTableEntry intakeTv = LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
+        NetworkTableEntry intakeTx =
+                LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
+        NetworkTableEntry intakeTv =
+                LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
 
-        Debouncer tvBouncer = new Debouncer(2./30., Debouncer.DebounceType.kBoth);
+        Debouncer tvBouncer = new Debouncer(2. / 30., Debouncer.DebounceType.kBoth);
         MutableReference<Double> txCache = new MutableReference<>(0.);
         MutableReference<Boolean> tvCache = new MutableReference<>(false);
 
         OIConstants.Drive.AUTO_PICKUP.whileTrue(
                 drive.chaseVector(
-                         () ->
-                                new Translation2d(
-                                        Math.cos(Math.toRadians(-txCache.get() * 1.7)),
-                                        Math.sin(Math.toRadians(-txCache.get() * 1.7))
-                                        ).rotateBy(drive.getYaw()),
-                        () -> -txCache.get(),
-                        3,
-                        6
-                ).until(
-                        () -> !tvCache.get()
-                ).beforeStarting(
-                        () -> Leds.getInstance().autoPickupActive = true
-                ).finallyDo(
-                        () -> Leds.getInstance().autoPickupActive = false
-                ).onlyIf(
-                        () -> tvCache.get()
-                )
-        );
+                                () ->
+                                        new Translation2d(
+                                                        Math.cos(
+                                                                Math.toRadians(
+                                                                        -txCache.get() * 1.7)),
+                                                        Math.sin(
+                                                                Math.toRadians(
+                                                                        -txCache.get() * 1.7)))
+                                                .rotateBy(drive.getYaw()),
+                                () -> -txCache.get(),
+                                3,
+                                6)
+                        .until(() -> !tvCache.get())
+                        .beforeStarting(() -> Leds.getInstance().autoPickupActive = true)
+                        .finallyDo(() -> Leds.getInstance().autoPickupActive = false)
+                        .onlyIf(() -> tvCache.get()));
 
         Commands.run(
-                () -> {
-                    tvCache.set(tvBouncer.calculate(intakeTv.getDouble(0) == 1));
-                    if (intakeTv.getDouble(0) == 1) {
-                        txCache.set(intakeTx.getDouble(0));
-                    }
-                }
-        ).ignoringDisable(true).schedule();
+                        () -> {
+                            tvCache.set(tvBouncer.calculate(intakeTv.getDouble(0) == 1));
+                            if (intakeTv.getDouble(0) == 1) {
+                                txCache.set(intakeTx.getDouble(0));
+                            }
+                        })
+                .ignoringDisable(true)
+                .schedule();
 
         new Trigger(() -> tvBouncer.calculate(intakeTv.getDouble(0) == 1))
                 .whileTrue(
                         Commands.startEnd(
-                                () -> Leds.getInstance().autoPickupReady = true,
-                                () -> Leds.getInstance().autoPickupReady = false
-                        ).ignoringDisable(true)
-                );
+                                        () -> Leds.getInstance().autoPickupReady = true,
+                                        () -> Leds.getInstance().autoPickupReady = false)
+                                .ignoringDisable(true));
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
         OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());
@@ -245,13 +246,12 @@ public class RobotContainer {
         OIConstants.Shooter.SPEED_AUTO.whileTrue(autoShootSpeed);
 
         OIConstants.Arm.INTAKE.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE,
-                                true, true)
-                        .raceWith(intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)))
-                );
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
+                        .raceWith(
+                                intake.intakeGroundAutomatic()
+                                        .raceWith(shooter.setSpeedCommand(-.1))));
         // OIConstants.Arm.TRANSIT_STAGE.whileTrue(
         //         arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
-
 
         OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
@@ -260,39 +260,35 @@ public class RobotContainer {
         OIConstants.Arm.SPEAKER_SUB_SIDE.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
                         .alongWith(shooter.shootCommand()));
-        
+
         OIConstants.Arm.SPEAKER_PODIUM.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_PODIUM, false)
                         .alongWith(shooter.shootCommand()));
-
 
         OIConstants.Arm.SCORE_AMP.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
 
         OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(buildAutoShootCommand());
 
-        //CLIMBER COMMANDS
-        
+        // CLIMBER COMMANDS
+
         // OIConstants.Climber.UP_BOTH.whileTrue(climber.setSpeed(0.3, 0.3));
         OIConstants.Climber.UP_BOTH.whileTrue(climber.goUp());
-//        OIConstants.Climber.UP_LEFT.whileTrue(climber.setSpeed(0.3, 0));
-//        OIConstants.Climber.UP_RIGHT.whileTrue(climber.setSpeed(0, 0.3));
+        //        OIConstants.Climber.UP_LEFT.whileTrue(climber.setSpeed(0.3, 0));
+        //        OIConstants.Climber.UP_RIGHT.whileTrue(climber.setSpeed(0, 0.3));
 
         // OIConstants.Climber.DOWN_BOTH.whileTrue(climber.setSpeed(-0.3, -0.3));
 
         OIConstants.Climber.DOWN_BOTH.whileTrue(climber.climb());
-       OIConstants.Climber.DOWN_MAN.whileTrue(climber.setSpeed(-0.3, -0.3));
-//        OIConstants.Climber.DOWN_RIGHT.whileTrue(climber.setSpeed(0, -0.3));
+        OIConstants.Climber.DOWN_MAN.whileTrue(climber.setSpeed(-0.3, -0.3));
+        //        OIConstants.Climber.DOWN_RIGHT.whileTrue(climber.setSpeed(0, -0.3));
 
+        OIConstants.Climber.DOWN_BOTH.onTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly());
 
-       OIConstants.Climber.DOWN_BOTH.onTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly()
-       );
-       
-       OIConstants.Climber.UP_BOTH.onTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly()
-       );
-        
+        OIConstants.Climber.UP_BOTH.onTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly());
+
         // TEST STUFF
         OIConstants.TestMode.zeroAbsEncoders.onTrue(drive.zeroAbsEncoders());
         OIConstants.TestMode.SysId.Arm.quasistaticFwd.whileTrue(
@@ -322,8 +318,6 @@ public class RobotContainer {
                         .beforeStarting(Commands.print("DriveDynamicRev")));
 
         new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
-
-
     }
 
     private void configureAutoCommands() {
@@ -332,141 +326,149 @@ public class RobotContainer {
         InternalButton shoot = new InternalButton();
         InternalButton qShoot = new InternalButton();
 
-        shoot
-                .whileTrue(arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
+        shoot.whileTrue(
+                arm.rotateToCommand(
+                                Constants.Arm.Positions.SPEAKER_SUB_FRONT
+                                        + Units.degreesToRadians(2),
+                                false)
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        .raceWith(shooter.shootCommand()).asProxy());
+                        .raceWith(shooter.shootCommand())
+                        .asProxy());
 
-        qShoot
-                .whileTrue(
-                        arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false)
-                                .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                                .raceWith(shooter.shootCommand()).asProxy()
-                );
+        qShoot.whileTrue(
+                arm.rotateToCommand(
+                                Constants.Arm.Positions.SPEAKER_SUB_FRONT
+                                        + Units.degreesToRadians(2),
+                                false)
+                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+                        .raceWith(shooter.shootCommand())
+                        .asProxy());
 
         readyShoot.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT + Units.degreesToRadians(2), false).asProxy()
-                        .alongWith(shooter.shootCommand().asProxy()).asProxy()
-        );
+                arm.rotateToCommand(
+                                Constants.Arm.Positions.SPEAKER_SUB_FRONT
+                                        + Units.degreesToRadians(2),
+                                false)
+                        .asProxy()
+                        .alongWith(shooter.shootCommand().asProxy())
+                        .asProxy());
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
-                Commands.runOnce(() ->  {
-                    shoot.setPressed(true);
-                    qShoot.setPressed(false);
-                    readyShoot.setPressed(false);
-                }).andThen(Commands.waitSeconds(1.5))
-        );
+                Commands.runOnce(
+                                () -> {
+                                    shoot.setPressed(true);
+                                    qShoot.setPressed(false);
+                                    readyShoot.setPressed(false);
+                                })
+                        .andThen(Commands.waitSeconds(1.5)));
 
         NamedCommands.registerCommand(
                 "qshoot",
-                Commands.runOnce(() ->  {
-                    shoot.setPressed(false);
-                    qShoot.setPressed(true);
-                    readyShoot.setPressed(false);
-                }).andThen(Commands.waitSeconds(.5))
-                );
+                Commands.runOnce(
+                                () -> {
+                                    shoot.setPressed(false);
+                                    qShoot.setPressed(true);
+                                    readyShoot.setPressed(false);
+                                })
+                        .andThen(Commands.waitSeconds(.5)));
 
+        //        NamedCommands.registerCommand(
+        //                "cShoot",
+        //                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
+        //                        .raceWith(Commands.waitSeconds(1))
+        //                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+        //                        .raceWith(shooter.shootCommand()));
 
-//        NamedCommands.registerCommand(
-//                "cShoot",
-//                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
-//                        .raceWith(Commands.waitSeconds(1))
-//                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-//                        .raceWith(shooter.shootCommand()));
-
-//        NamedCommands.registerCommand(
-//                "autoShoot",
-//                buildAutoShootCommand()
-//                        .raceWith(Commands.waitSeconds(1.5)
-//                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
-//                //
-//                // Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
-//                //                                .raceWith(todoPutThisAutoShootSomewhereElse())
-//                );
+        //        NamedCommands.registerCommand(
+        //                "autoShoot",
+        //                buildAutoShootCommand()
+        //                        .raceWith(Commands.waitSeconds(1.5)
+        //
+        // .andThen(intake.feedShooter().asProxy().withTimeout(.5)))
+        //                //
+        //                // Commands.waitSeconds(2).andThen(intake.intakeCommand().withTimeout(.5))
+        //                //
+        // .raceWith(todoPutThisAutoShootSomewhereElse())
+        //                );
 
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true).asProxy()
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
+                        .asProxy()
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
-                        .alongWith(shooter.setSpeedCommand(-.1).asProxy())
-        );
+                        .alongWith(shooter.setSpeedCommand(-.1).asProxy()));
         //        NamedCommands.registerCommand(
         //                "index",
         //                intake.indexIntake()
         //        );
 
-                NamedCommands.registerCommand(
-                        "readyShoot",
-                        Commands.runOnce(() ->  {
-                            System.out.println("READY SHOOT");
-                            shoot.setPressed(false);
-                            qShoot.setPressed(false);
-                            readyShoot.setPressed(true);
-                        }).andThen(
-                                Commands.waitSeconds(1)
-                        )
-                        );
+        NamedCommands.registerCommand(
+                "readyShoot",
+                Commands.runOnce(
+                                () -> {
+                                    System.out.println("READY SHOOT");
+                                    shoot.setPressed(false);
+                                    qShoot.setPressed(false);
+                                    readyShoot.setPressed(true);
+                                })
+                        .andThen(Commands.waitSeconds(1)));
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
-        return Commands.runOnce(
-                        () -> drive.setGyro(
-                                startingPositionChooser.getSelected().angle
-                        )
-                ).andThen(autoChooser.getSelected().asProxy());
+        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.getSelected().angle))
+                .andThen(autoChooser.getSelected().asProxy());
+    }
 
-        }
-
-//    public Command todoPutThisAutoShootSomewhereElse() {
-//        return arm.rotateToCommand(
-//                        () ->
-//                                MathUtil.clamp(
-//                                        AutoAimCalculator.calculateArmAngle(
-//                                                new Pose3d(drive.getLimelightPose()),
-//                                                DriverStation.getAlliance().isPresent()
-//                                                                && DriverStation.getAlliance().get()
-//                                                                        == DriverStation.Alliance
-//                                                                                .Blue
-//                                                        ? Constants.Shooter.AutoShootConstants
-//                                                                .goalPoseBlue
-//                                                        : Constants.Shooter.AutoShootConstants
-//                                                                .goalPoseRed,
-//                                                Constants.Shooter.AutoShootConstants
-//                                                        .botToCenterOfRotation,
-//                                                Constants.Shooter.AutoShootConstants
-//                                                        .centerOfRotationToShooter,
-//                                                Constants.Shooter.AutoShootConstants
-//                                                        .shootAngleOffset,
-//                                                Constants.Shooter.AutoShootConstants.shootVelocity),
-//                                        0,
-//                                        Math.PI / 2),
-//                        false)
-//                .alongWith(
-//                        shooter.shootClosedLoopCommand(
-//                                Constants.Shooter.AutoShootConstants.shootVelocity));
-//    }
+    //    public Command todoPutThisAutoShootSomewhereElse() {
+    //        return arm.rotateToCommand(
+    //                        () ->
+    //                                MathUtil.clamp(
+    //                                        AutoAimCalculator.calculateArmAngle(
+    //                                                new Pose3d(drive.getLimelightPose()),
+    //                                                DriverStation.getAlliance().isPresent()
+    //                                                                &&
+    // DriverStation.getAlliance().get()
+    //                                                                        ==
+    // DriverStation.Alliance
+    //                                                                                .Blue
+    //                                                        ? Constants.Shooter.AutoShootConstants
+    //                                                                .goalPoseBlue
+    //                                                        : Constants.Shooter.AutoShootConstants
+    //                                                                .goalPoseRed,
+    //                                                Constants.Shooter.AutoShootConstants
+    //                                                        .botToCenterOfRotation,
+    //                                                Constants.Shooter.AutoShootConstants
+    //                                                        .centerOfRotationToShooter,
+    //                                                Constants.Shooter.AutoShootConstants
+    //                                                        .shootAngleOffset,
+    //
+    // Constants.Shooter.AutoShootConstants.shootVelocity),
+    //                                        0,
+    //                                        Math.PI / 2),
+    //                        false)
+    //                .alongWith(
+    //                        shooter.shootClosedLoopCommand(
+    //                                Constants.Shooter.AutoShootConstants.shootVelocity));
+    //    }
 
     public Command buildAutoShootCommand() {
         return arm.rotateToCommand(
-                () ->
-                        MathUtil.clamp(
-                                AutoAimCalculator.calculateArmAngleInterpolation(
-                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getEstimatedPose()))
-                                ),
-                                0,
-                                Math.PI/2
-                        ),
-                false
-        ).alongWith(
-                shooter.shootClosedLoopCommand(
                         () ->
-                                AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                        AutoAimCalculator.calculateDistanceToGoal(new Pose3d(drive.getLimelightPose()))
-                                )
-                )
-        );
+                                MathUtil.clamp(
+                                        AutoAimCalculator.calculateArmAngleInterpolation(
+                                                AutoAimCalculator.calculateDistanceToGoal(
+                                                        new Pose3d(drive.getEstimatedPose()))),
+                                        0,
+                                        Math.PI / 2),
+                        false)
+                .alongWith(
+                        shooter.shootClosedLoopCommand(
+                                () ->
+                                        AutoAimCalculator.calculateShooterSpeedInterpolation(
+                                                AutoAimCalculator.calculateDistanceToGoal(
+                                                        new Pose3d(drive.getLimelightPose())))));
     }
 }

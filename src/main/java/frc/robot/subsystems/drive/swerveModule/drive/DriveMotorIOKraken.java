@@ -23,7 +23,6 @@ public class DriveMotorIOKraken implements DriveMotorIO {
         /* Drive motor */
         motor = new TalonFX(moduleConstants.driveMotorID);
         configDriveMotor();
-
     }
 
     @Override
@@ -77,7 +76,8 @@ public class DriveMotorIOKraken implements DriveMotorIO {
 
         motor.optimizeBusUtilization();
 
-        BaseStatusSignal.setUpdateFrequencyForAll(100, motor.getVelocity(), motor.getPosition(), motor.getMotorVoltage());
+        BaseStatusSignal.setUpdateFrequencyForAll(
+                100, motor.getVelocity(), motor.getPosition(), motor.getMotorVoltage());
     }
 
     @Override

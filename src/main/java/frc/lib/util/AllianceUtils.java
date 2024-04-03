@@ -6,6 +6,7 @@ public final class AllianceUtils {
     private AllianceUtils() {}
 
     public static boolean isBlue() {
-        return DriverStation.getAlliance().isEmpty() || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
+        return DriverStation.getAlliance().isEmpty()
+                || DriverStation.getAlliance().get() == DriverStation.Alliance.Blue;
     }
 }

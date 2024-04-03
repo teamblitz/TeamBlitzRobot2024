@@ -10,11 +10,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.DashboardHelpers;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class OIConstants {
 
@@ -42,41 +40,34 @@ public class OIConstants {
         private static final SlewRateLimiter DRIVE_MULTIPLIER_LIMITER =
                 new SlewRateLimiter(.25); // Todo, try without this?
 
-//        private static final DoubleSupplier DRIVE_MULTIPLIER =
-//                () ->
-//                        NORMAL_SPEED
-//                                + DRIVE_CONTROLLER.getLeftTriggerAxis()
-//                                        * (SLOW_SPEED - NORMAL_SPEED)
-//                                + DRIVE_CONTROLLER.getRightTriggerAxis()
-//                                        * (FAST_SPEED - NORMAL_SPEED);
+        //        private static final DoubleSupplier DRIVE_MULTIPLIER =
+        //                () ->
+        //                        NORMAL_SPEED
+        //                                + DRIVE_CONTROLLER.getLeftTriggerAxis()
+        //                                        * (SLOW_SPEED - NORMAL_SPEED)
+        //                                + DRIVE_CONTROLLER.getRightTriggerAxis()
+        //                                        * (FAST_SPEED - NORMAL_SPEED);
 
         private static final DoubleSupplier DRIVE_MULTIPLIER =
-                () -> (DRIVE_CONTROLLER.getHID().getRawButton(1)
-                                ? FAST_SPEED : NORMAL_SPEED);
-
-
+                () -> (DRIVE_CONTROLLER.getHID().getRawButton(1) ? FAST_SPEED : NORMAL_SPEED);
 
         public static final DoubleSupplier X_TRANSLATION =
-                () ->
-                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getY())
-                                * DRIVE_MULTIPLIER.getAsDouble();
+                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getY()) * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier Y_TRANSLATION =
-                () ->
-                        INPUT_CURVE.apply(-DRIVE_CONTROLLER.getX())
-                                * DRIVE_MULTIPLIER.getAsDouble();
+                () -> INPUT_CURVE.apply(-DRIVE_CONTROLLER.getX()) * DRIVE_MULTIPLIER.getAsDouble();
 
         public static final DoubleSupplier ROTATION_SPEED =
                 () -> SPIN_SPEED * SPIN_CURVE.apply(-DRIVE_CONTROLLER.getTwist());
 
-        public static final DoubleSupplier HEADING_CONTROL =
-                () -> Double.NaN;
-//                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(), DRIVE_CONTROLLER.getLeftX()) > .5
-//                                ? Math.toDegrees(Math.atan2(
-//                                                -DRIVE_CONTROLLER.getLeftY(),
-//                                                -DRIVE_CONTROLLER.getLeftX()))
-//                                        - 90
-//                                : Double.NaN;
+        public static final DoubleSupplier HEADING_CONTROL = () -> Double.NaN;
+        //                        0 * Math.hypot(DRIVE_CONTROLLER.getLeftY(),
+        // DRIVE_CONTROLLER.getLeftX()) > .5
+        //                                ? Math.toDegrees(Math.atan2(
+        //                                                -DRIVE_CONTROLLER.getLeftY(),
+        //                                                -DRIVE_CONTROLLER.getLeftX()))
+        //                                        - 90
+        //                                : Double.NaN;
 
         // Drive on the fly modes
         public static final Trigger RESET_GYRO = DRIVE_CONTROLLER.button(5);
@@ -106,17 +97,19 @@ public class OIConstants {
 
         public static final Trigger INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a());
 
-        public static final Trigger TRANSIT_STAGE = TELEOP.and(
-                OPERATOR_CONTROLLER.povDown()
-                .or(OPERATOR_CONTROLLER.povDownLeft())
-                .or(OPERATOR_CONTROLLER.povDownRight())
-        );
+        public static final Trigger TRANSIT_STAGE =
+                TELEOP.and(
+                        OPERATOR_CONTROLLER
+                                .povDown()
+                                .or(OPERATOR_CONTROLLER.povDownLeft())
+                                .or(OPERATOR_CONTROLLER.povDownRight()));
 
-        public static final Trigger SPEAKER_SUB_FRONT = TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
-        public static final Trigger SPEAKER_SUB_SIDE = TELEOP.and(OPERATOR_CONTROLLER.b().and(OPERATOR_CONTROLLER.y().negate()));
-        public static final Trigger SPEAKER_PODIUM = TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b()));
-        
-
+        public static final Trigger SPEAKER_SUB_FRONT =
+                TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
+        public static final Trigger SPEAKER_SUB_SIDE =
+                TELEOP.and(OPERATOR_CONTROLLER.b().and(OPERATOR_CONTROLLER.y().negate()));
+        public static final Trigger SPEAKER_PODIUM =
+                TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b()));
 
         public static final Trigger SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
 
@@ -131,7 +124,7 @@ public class OIConstants {
         public static final Trigger DOWN_BOTH = OPERATOR_CONTROLLER.rightTrigger();
         public static final Trigger DOWN_MAN = OPERATOR_CONTROLLER.povRight();
         // public static final Trigger DOWN_RIGHT = TEST_CONTROLLER.rightBumper();
-        
+
     }
 
     public static final class Overrides {
@@ -139,13 +132,27 @@ public class OIConstants {
 
         @SuppressWarnings("close")
         // I hate java, why can't BooleanSupplier implement Supplier<Boolean>
-        public static final BooleanSupplier INTAKE_OVERRIDE = DashboardHelpers.genericEntrySupplier(TAB.add("Intake", false).withWidget(BuiltInWidgets.kBooleanBox).getEntry(), false, NetworkTableType.kBoolean)::get;
-        public static final BooleanSupplier ARM_OVERRIDE = DashboardHelpers.genericEntrySupplier(TAB.add("Arm", false).withWidget(BuiltInWidgets.kBooleanBox).getEntry(), false, NetworkTableType.kBoolean)::get;
+        public static final BooleanSupplier INTAKE_OVERRIDE =
+                DashboardHelpers.genericEntrySupplier(
+                                TAB.add("Intake", false)
+                                        .withWidget(BuiltInWidgets.kBooleanBox)
+                                        .getEntry(),
+                                false,
+                                NetworkTableType.kBoolean)
+                        ::get;
+
+        public static final BooleanSupplier ARM_OVERRIDE =
+                DashboardHelpers.genericEntrySupplier(
+                                TAB.add("Arm", false)
+                                        .withWidget(BuiltInWidgets.kBooleanBox)
+                                        .getEntry(),
+                                false,
+                                NetworkTableType.kBoolean)
+                        ::get;
     }
 
     public static final class TestMode {
-        public static final Trigger zeroAbsEncoders =
-                UNBOUND;
+        public static final Trigger zeroAbsEncoders = UNBOUND;
 
         public static final class SysId {
             public static final class Arm {
