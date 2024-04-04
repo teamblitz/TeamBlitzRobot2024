@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -98,7 +99,7 @@ public class Intake extends BlitzSubsystem {
     /** Note, should only after intakeCommandSmart finishes */
     public Command indexIntake() {
 
-        return setSpeedCommand(-.12)
+        return setSpeedCommand(DriverStation.isAutonomous() ? .2 : -.12) // Index faster during auto to prevent premature shooting.
                 .raceWith(
                         Commands.waitSeconds(.2)
                                 .andThen(Commands.waitUntil(() -> inputs.breakBeam)))
