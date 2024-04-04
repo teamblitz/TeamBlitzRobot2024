@@ -26,7 +26,7 @@ import org.littletonrobotics.junction.Logger;
  * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
  * this, 2 subsystems is ideal (and is kinda what we are pseudo doing)
  */
-public class Arm extends SubsystemBase implements BlitzSubsystem {
+public class Arm extends BlitzSubsystem {
     private final LoggedTunableNumber kP =
             new LoggedTunableNumber("Arm/kP", Constants.Arm.PidConstants.P);
     private final LoggedTunableNumber kI =
@@ -53,6 +53,7 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     private final SysIdRoutine routine;
 
     public Arm(ArmIO io) {
+        super("arm");
         this.io = io;
 
         feedforward =
@@ -114,8 +115,10 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
+
         io.updateInputs(inputs);
-        Logger.processInputs("arm", inputs);
+        Logger.processInputs(logKey, inputs);
 
         LoggedTunableNumber.ifChanged(
                 hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
@@ -128,13 +131,13 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                 kA);
 
         if (DriverStation.isTeleop() || true) {
-            io.seedArmPosition(false);
+            io.seedArmPosition(false); // TODO, try removing this.
         }
     }
 
     public void updateRotation(double degrees, double velocity) {
-        Logger.recordOutput("arm/wanted_rotation", degrees);
-        Logger.recordOutput("arm/wanted_velocity", velocity);
+        Logger.recordOutput(logKey + "/wanted_rotation", degrees);
+        Logger.recordOutput(logKey + "/wanted_velocity", velocity);
         io.setRotationSetpoint(degrees, feedforward.calculate(degrees, velocity));
     }
 
@@ -192,7 +195,8 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
                             else if (interrupted) updateRotation(lastState.get().position, 0);
                         })
                 .andThen(startEnd(io::stop, io::stop).onlyIf(() -> restOnEnd))
-                .until(DriverStation::isDisabled); // cancel on disable
+                .until(DriverStation::isDisabled)
+                .withName(logKey + "/rotateTo"); // cancel on disable
     }
 
     public Command rotateToCommand(double goal, boolean endAutomatically, boolean restOnEnd) {
@@ -215,15 +219,24 @@ public class Arm extends SubsystemBase implements BlitzSubsystem {
     // Creates a SysIdRoutine
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
+        return routine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/quasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
+        return routine.dynamic(direction)
+                .withName(
+                        logKey
+                                + "/dynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
     public Command coastCommand() {
         return Commands.startEnd(() -> io.setBrake(false), () -> io.setBrake(true))
-                .ignoringDisable(true);
+                .ignoringDisable(true)
+                .withName(logKey + "/coast");
     }
 }

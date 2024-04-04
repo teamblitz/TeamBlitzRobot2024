@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.424537171349224,
-        "y": 4.133828172869615
+        "x": 2.245219347581553,
+        "y": 4.339199535541929
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3564505896784307,
-        "y": 4.960593807443538
+        "x": 2.1771327659107595,
+        "y": 5.165965170115852
       },
       "isLocked": false,
       "linkedName": "center-note-CR-pickup"
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {

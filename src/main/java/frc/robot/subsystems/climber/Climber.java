@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.Logger;
  * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
  * this, 2 subsystems is ideal (and is kinda what we are pseudo doing)
  */
-public class Climber extends SubsystemBase implements BlitzSubsystem {
+public class Climber extends BlitzSubsystem {
 
     private final ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
@@ -26,37 +26,42 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
     // private final SysIdRoutine routine;
 
     public Climber(ClimberIO io) {
+        super("climber");
         this.io = io;
     }
 
     @Override
     public void periodic() {
+        super.periodic();
+
         io.updateInputs(inputs);
-        Logger.processInputs("climber", inputs);
+        Logger.processInputs(logKey, inputs);
     }
 
     public Command setSpeed(double left, double right) {
         return startEnd(
-                () -> {
-                    io.setSpeedLeft(left);
-                    io.setSpeedRight(right);
-                },
-                () -> {
-                    io.setSpeedLeft(0);
-                    io.setSpeedRight(0);
-                });
+                        () -> {
+                            io.setSpeedLeft(left);
+                            io.setSpeedRight(right);
+                        },
+                        () -> {
+                            io.setSpeedLeft(0);
+                            io.setSpeedRight(0);
+                        })
+                .withName(logKey + "/speed " + left + " " + right);
     }
 
     public Command climb() {
         return runEnd(
-                () -> {
-                    io.setMotionMagicLeft(.01);
-                    io.setMotionMagicRight(.01);
-                },
-                () -> {
-                    io.setMotionMagicLeft(inputs.positionLeft);
-                    io.setMotionMagicRight(inputs.positionRight);
-                });
+                        () -> {
+                            io.setMotionMagicLeft(.01);
+                            io.setMotionMagicRight(.01);
+                        },
+                        () -> {
+                            io.setMotionMagicLeft(inputs.positionLeft);
+                            io.setMotionMagicRight(inputs.positionRight);
+                        })
+                .withName(logKey + "/climb");
     }
 
     public Command goUp() {
@@ -78,6 +83,7 @@ public class Climber extends SubsystemBase implements BlitzSubsystem {
                                         && MathUtil.isNear(
                                                 Constants.Climber.MAX_EXTENSION,
                                                 inputs.positionRight,
-                                                .005));
+                                                .005))
+                .withName(logKey + "/climbersUp");
     }
 }

@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
@@ -56,7 +55,7 @@ import org.littletonrobotics.junction.Logger;
  * Here we can probably do some cleanup, main thing we can probably do here is separate
  * telemetry/hardware io. Also, we need a better way to do dynamic pid loop tuning.
  */
-public class Drive extends SubsystemBase implements BlitzSubsystem {
+public class Drive extends BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDrivePoseEstimator poseEstimator;
     private final SwerveModule[] swerveModules;
@@ -159,6 +158,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
             SwerveModule backLeft,
             SwerveModule backRight,
             GyroIO gyroIO) {
+        super("drive");
+
         swerveModules =
                 new SwerveModule[] { // front left, front right, back left, back right.
                     frontLeft, frontRight, backLeft, backRight
@@ -399,6 +400,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
+
         for (SwerveModule mod : swerveModules) {
             mod.periodic();
         }
@@ -429,10 +432,10 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
 
         lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
 
-        Logger.recordOutput("Drive/Odometry", swerveOdometry.getPoseMeters());
-        Logger.recordOutput("Drive/Vision+Odometry", poseEstimator.getEstimatedPosition());
-        Logger.recordOutput("Drive/Vision", getLimelightPose());
-        Logger.recordOutput("Drive/modules", getModuleStates());
+        Logger.recordOutput(logKey + "/Odometry", swerveOdometry.getPoseMeters());
+        Logger.recordOutput(logKey + "/Vision+Odometry", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput(logKey + "/Vision", getLimelightPose());
+        Logger.recordOutput(logKey + "/modules", getModuleStates());
 
         boolean anglePIDChanged = false;
         boolean drivePIDChanged = false;
@@ -525,7 +528,7 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
     }
 
     public Command buildParkCommand() {
-        return Commands.runOnce(this::park, this);
+        return Commands.runOnce(this::park, this).withName(logKey + "/park");
     }
 
     public Command driveSpeedTestCommand(double speed, double duration) {
@@ -589,7 +592,8 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                                             true,
                                             true,
                                             false);
-                                }));
+                                }))
+                .withName(logKey + "/chaseVector");
     }
 
     public Command zeroAbsEncoders() {
@@ -600,15 +604,24 @@ public class Drive extends SubsystemBase implements BlitzSubsystem {
                             swerveModules[2].zeroAbsEncoders();
                             swerveModules[3].zeroAbsEncoders();
                         })
-                .ignoringDisable(true);
+                .ignoringDisable(true)
+                .withName(logKey + "/zeroAbsEncoders");
     }
 
     // Something something super class???
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
+        return routine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/quasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
+        return routine.dynamic(direction)
+                .withName(
+                        logKey
+                                + "/dynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 }

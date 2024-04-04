@@ -57,6 +57,8 @@ public final class Constants {
         return robot == Robot.CompBot;
     }
 
+    public static final double LOOP_PERIOD_SEC = frc.robot.Robot.defaultPeriodSecs;
+
     public static final class Drive {
         public static final int PIGEON_ID = 14;
         public static final boolean USE_PIGEON = true;

@@ -51,7 +51,7 @@ public class SwerveModule {
 
         lastAngle = getAngle();
 
-        logKey = "swerve/mod" + moduleNumber;
+        logKey = "drive/mod" + moduleNumber;
     }
 
     public void configAnglePid(double p, double i, double d) {
@@ -101,7 +101,7 @@ public class SwerveModule {
                         ? lastAngle
                         : desiredState.angle; // Prevent rotating module if speed is less than 1%.
         angleMotor.setSetpoint(angle.getDegrees());
-        Logger.recordOutput(logKey + "/AngleSetpoint", angle.getDegrees());
+        Logger.recordOutput(logKey + "/angleSetpoint", angle.getDegrees());
         lastAngle = angle;
     }
 

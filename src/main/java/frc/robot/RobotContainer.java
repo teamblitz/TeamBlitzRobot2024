@@ -19,8 +19,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.InternalButton;
@@ -36,14 +34,20 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
+import frc.robot.subsystems.drive.swerveModule.SwerveModule;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
+import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
+import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSim;
+import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIO;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSpark;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -66,9 +70,10 @@ public class RobotContainer {
 
     /* ***** --- Autonomous --- ***** */
     // *** Must match with path names in pathplanner folder ***
-    private final SendableChooser<Command> autoChooser;
+    private final LoggedDashboardChooser<Command> autoChooser;
 
-    private final SendableChooser<Constants.AutoConstants.StartingPos> startingPositionChooser;
+    private final LoggedDashboardChooser<Constants.AutoConstants.StartingPos>
+            startingPositionChooser;
 
     public RobotContainer() {
         Leds.getInstance();
@@ -83,15 +88,12 @@ public class RobotContainer {
         Shuffleboard.getTab("Drive")
                 .add("ResetOdometry", Commands.runOnce(() -> drive.resetOdometry(new Pose2d())));
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Autonomous Choices", autoChooser);
+        autoChooser = new LoggedDashboardChooser<>("autoChoice", AutoBuilder.buildAutoChooser());
 
-        startingPositionChooser = new SendableChooser<>();
-        startingPositionChooser.setDefaultOption("Center", StartingPos.CENTER);
+        startingPositionChooser = new LoggedDashboardChooser<>("startingPos");
+        startingPositionChooser.addDefaultOption("Center", StartingPos.CENTER);
         startingPositionChooser.addOption("Left", StartingPos.LEFT);
         startingPositionChooser.addOption("Right", StartingPos.RIGHT);
-
-        SmartDashboard.putData("StaringPos", startingPositionChooser);
 
         Shuffleboard.getTab("AutoShoot")
                 .addDouble(
@@ -112,26 +114,27 @@ public class RobotContainer {
     private void setDefaultCommands() {
         drive.setDefaultCommand(
                 new TeleopSwerve(
-                        drive,
-                        OIConstants.Drive.X_TRANSLATION,
-                        OIConstants.Drive.Y_TRANSLATION,
-                        OIConstants.Drive.ROTATION_SPEED,
-                        () -> false,
-                        () ->
-                                OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
-                                        ? AutoAimCalculator.calculateSpeakerHeading(
-                                                        drive.getEstimatedPose())
-                                                .getDegrees()
-                                        : Double.NaN));
+                                drive,
+                                OIConstants.Drive.X_TRANSLATION,
+                                OIConstants.Drive.Y_TRANSLATION,
+                                OIConstants.Drive.ROTATION_SPEED,
+                                () -> false,
+                                () ->
+                                        OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
+                                                ? AutoAimCalculator.calculateSpeakerHeading(
+                                                                drive.getEstimatedPose())
+                                                        .getDegrees()
+                                                : Double.NaN)
+                        .withName("TeleopSwerve"));
 
         arm.setDefaultCommand(
                 arm.rotateToCommand(
-                        () -> {
-                            return (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
-                                    ? Constants.Arm.Positions.TRANSIT_STAGE
-                                    : Constants.Arm.Positions.TRANSIT_NORMAL);
-                        },
-                        false));
+                                () ->
+                                        (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
+                                                ? Constants.Arm.Positions.TRANSIT_STAGE
+                                                : Constants.Arm.Positions.TRANSIT_NORMAL),
+                                false)
+                        .withName("arm/transitPosition"));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
@@ -141,14 +144,15 @@ public class RobotContainer {
                                                     OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
                                         },
                                         arm)
-                                .finallyDo(() -> arm.setArmRotationSpeed(0)));
+                                .finallyDo(() -> arm.setArmRotationSpeed(0))
+                                .withName("arm/manual"));
     }
 
     private void configureSubsystems() {
 
-        if (Constants.robot == Constants.Robot.CompBot) {
-            drive =
-                    new Drive(
+        drive =
+                switch (Constants.robot) {
+                    case CompBot -> new Drive(
                             new SwerveModuleConfiguration(
                                     SwerveModuleConfiguration.MotorType.KRAKEN,
                                     SwerveModuleConfiguration.MotorType.NEO,
@@ -158,9 +162,8 @@ public class RobotContainer {
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
                             Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
-        } else {
-            drive =
-                    new Drive(
+
+                    case DevBot -> new Drive(
                             new SwerveModuleConfiguration(
                                     SwerveModuleConfiguration.MotorType.NEO,
                                     SwerveModuleConfiguration.MotorType.NEO,
@@ -170,7 +173,29 @@ public class RobotContainer {
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
                             Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
-        }
+                    case SimBot -> new Drive(
+                            new SwerveModule(
+                                    Constants.Drive.FL,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new SwerveModule(
+                                    Constants.Drive.FR,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new SwerveModule(
+                                    Constants.Drive.BL,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new SwerveModule(
+                                    Constants.Drive.BR,
+                                    new AngleMotorIOSim(),
+                                    new DriveMotorIOSim(),
+                                    new EncoderIO() {}),
+                            new GyroIO() {});
+                };
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
         shooter = new Shooter(new ShooterIOSpark());
@@ -334,16 +359,19 @@ public class RobotContainer {
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand())
-                        .asProxy());
+                        .asProxy()
+                        .withName("auto/shoot"));
 
         qShoot.whileTrue(
                 arm.rotateToCommand(
                                 Constants.Arm.Positions.SPEAKER_SUB_FRONT
                                         + Units.degreesToRadians(2),
                                 false)
-                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        .raceWith(shooter.shootCommand())
-                        .asProxy());
+                                .alongWith(
+                                        intake.feedShooter(.5).asProxy()
+                                ).raceWith(shooter.shootCommand()).asProxy()
+                                .withTimeout(.5)
+                        .withName("auto/qShoot"));
 
         readyShoot.whileTrue(
                 arm.rotateToCommand(
@@ -352,7 +380,8 @@ public class RobotContainer {
                                 false)
                         .asProxy()
                         .alongWith(shooter.shootCommand().asProxy())
-                        .asProxy());
+                        .asProxy()
+                        .withName("auto/readyShoot"));
         // Does end
         NamedCommands.registerCommand(
                 "shoot",
@@ -418,8 +447,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() { // Autonomous code goes here
-        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.getSelected().angle))
-                .andThen(autoChooser.getSelected().asProxy());
+        return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
+                .andThen(autoChooser.get().asProxy());
     }
 
     //    public Command todoPutThisAutoShootSomewhereElse() {

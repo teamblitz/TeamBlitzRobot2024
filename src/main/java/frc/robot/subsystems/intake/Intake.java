@@ -3,14 +3,13 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.BlitzSubsystem;
 import frc.robot.subsystems.leds.Leds;
 import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
-public class Intake extends SubsystemBase implements BlitzSubsystem {
+public class Intake extends BlitzSubsystem {
 
     private final IntakeIO io;
     private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -18,6 +17,8 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
     BooleanSupplier manualOverride;
 
     public Intake(IntakeIO io, BooleanSupplier manualOverride) {
+        super("intake");
+
         this.io = io;
         this.manualOverride = manualOverride;
         setDefaultCommand(automaticIndex());
@@ -32,6 +33,8 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
 
     @Override
     public void periodic() {
+        super.periodic();
+
         io.updateInputs(inputs);
         Logger.processInputs("intake", inputs);
 
@@ -71,19 +74,25 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
                         Commands.startEnd(
                                 () -> intakeState = IntakeState.Intaking,
                                 () -> intakeState = IntakeState.Idle))
-                .onlyIf(() -> intakeState != IntakeState.Indexing);
+                .onlyIf(() -> intakeState != IntakeState.Indexing)
+                .withName(logKey + "/automaticIntake");
     }
 
     public Command intakeGroundAutomatic() {
         return intakeGroundAutomatic(.7);
     }
 
-    public Command feedShooter() {
+    public Command feedShooter(double speed) {
         return Commands.parallel(
-                setSpeedCommand(.4),
-                Commands.startEnd(
-                        () -> intakeState = IntakeState.Feeding,
-                        () -> intakeState = IntakeState.Idle));
+                        setSpeedCommand(speed),
+                        Commands.startEnd(
+                                () -> intakeState = IntakeState.Feeding,
+                                () -> intakeState = IntakeState.Idle))
+                .withName(logKey + "/feed");
+    }
+
+    public Command feedShooter() {
+        return feedShooter(.4);
     }
 
     /** Note, should only after intakeCommandSmart finishes */
@@ -100,12 +109,14 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
                             intakeState = IntakeState.Idle;
                             noteState = NoteState.Indexed;
                         })
-                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming);
+                // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+                .withName(logKey + "/index");
     }
 
     public Command automaticIndex() {
         return new ConditionalCommand(
-                indexIntake(), Commands.none(), () -> noteState == NoteState.Unindexed);
+                        indexIntake(), Commands.none(), () -> noteState == NoteState.Unindexed)
+                .withName(logKey + "/autoIndex");
     }
 
     public Command ejectCommand() {
@@ -114,10 +125,11 @@ public class Intake extends SubsystemBase implements BlitzSubsystem {
                         Commands.startEnd(
                                 () -> intakeState = IntakeState.Ejecting,
                                 () -> intakeState = IntakeState.Idle))
-                .finallyDo(() -> noteState = NoteState.Empty);
+                .finallyDo(() -> noteState = NoteState.Empty)
+                .withName(logKey + "/eject");
     }
 
-    public Command setSpeedCommand(double speed) {
+    private Command setSpeedCommand(double speed) {
         return startEnd(() -> io.set(speed), this::stop);
     }
 

@@ -12,10 +12,15 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.leds.Leds;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -32,7 +37,7 @@ public class Robot extends LoggedRobot {
     public void robotInit() {
         System.out.println("Robot Start up at: " + Timer.getFPGATimestamp());
 
-        Logger logger = Logger.getInstance();
+        Leds.getInstance(); // Start leds
 
         // Record metadata
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -79,34 +84,56 @@ public class Robot extends LoggedRobot {
         } else
             switch (Constants.SIM_MODE) {
                     // Running a physics simulator, log to local folder
-                case SIM:
+                case SIM -> {
                     Logger.addDataReceiver(new WPILOGWriter(""));
                     Logger.addDataReceiver(new NT4Publisher());
-                    break;
+                }
                     // Replaying a log, set up replay source
-                case REPLAY:
+                case REPLAY -> {
                     setUseTiming(false); // Run as fast as possible
                     String logPath = LogFileUtil.findReplayLog();
                     Logger.setReplaySource(new WPILOGReader(logPath));
                     Logger.addDataReceiver(
                             new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-                    break;
+                }
             }
 
         // Start AdvantageKit logger
         Logger.registerURCL(URCL.startExternal());
         Logger.start();
 
-        robotContainer = new RobotContainer();
+        // Log active commands
+        Map<String, Integer> commandCounts = new HashMap<>();
+        BiConsumer<Command, Boolean> logCommandFunction =
+                (Command command, Boolean active) -> {
+                    String name = command.getName();
+                    int count = commandCounts.getOrDefault(name, 0) + (active ? 1 : -1);
+                    commandCounts.put(name, count);
+                    Logger.recordOutput(
+                            "CommandsUnique/"
+                                    + name
+                                    + "_"
+                                    + Integer.toHexString(command.hashCode()),
+                            active);
+                    Logger.recordOutput("CommandsAll/" + name, count > 0);
+                };
+        CommandScheduler.getInstance()
+                .onCommandInitialize(
+                        (Command command) -> {
+                            logCommandFunction.accept(command, true);
+                        });
+        CommandScheduler.getInstance()
+                .onCommandFinish(
+                        (Command command) -> {
+                            logCommandFunction.accept(command, false);
+                        });
+        CommandScheduler.getInstance()
+                .onCommandInterrupt(
+                        (Command command) -> {
+                            logCommandFunction.accept(command, false);
+                        });
 
-        // This should be uncommented at some point.
-        // try {
-        //     Networker networker = new Networker();
-        //     networker.start();
-        //     System.out.println("Networker Started Successfully");
-        // } catch (IOException e) {
-        //     System.out.println(e);
-        // }
+        robotContainer = new RobotContainer();
     }
 
     @Override
@@ -202,7 +229,7 @@ public class Robot extends LoggedRobot {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
 
-    // Called periodicly durring simulation
+    // Called periodically during simulation
     @Override
     public void simulationPeriodic() {}
 }
