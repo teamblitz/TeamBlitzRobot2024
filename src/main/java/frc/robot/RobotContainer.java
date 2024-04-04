@@ -367,9 +367,10 @@ public class RobotContainer {
                                 Constants.Arm.Positions.SPEAKER_SUB_FRONT
                                         + Units.degreesToRadians(2),
                                 false)
-                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        .raceWith(shooter.shootCommand())
-                        .asProxy()
+                                .alongWith(
+                                        intake.feedShooter(.5).asProxy()
+                                ).raceWith(shooter.shootCommand()).asProxy()
+                                .withTimeout(.5)
                         .withName("auto/qShoot"));
 
         readyShoot.whileTrue(

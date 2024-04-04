@@ -82,13 +82,17 @@ public class Intake extends BlitzSubsystem {
         return intakeGroundAutomatic(.7);
     }
 
-    public Command feedShooter() {
+    public Command feedShooter(double speed) {
         return Commands.parallel(
-                        setSpeedCommand(.4),
+                        setSpeedCommand(speed),
                         Commands.startEnd(
                                 () -> intakeState = IntakeState.Feeding,
                                 () -> intakeState = IntakeState.Idle))
                 .withName(logKey + "/feed");
+    }
+
+    public Command feedShooter() {
+        return feedShooter(.4);
     }
 
     /** Note, should only after intakeCommandSmart finishes */
@@ -105,7 +109,7 @@ public class Intake extends BlitzSubsystem {
                             intakeState = IntakeState.Idle;
                             noteState = NoteState.Indexed;
                         })
-                .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
+                // .withInterruptBehavior(Command.InterruptionBehavior.kCancelIncoming)
                 .withName(logKey + "/index");
     }
 
