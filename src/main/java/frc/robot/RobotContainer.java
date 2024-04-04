@@ -368,9 +368,9 @@ public class RobotContainer {
                                         + Units.degreesToRadians(2),
                                 false)
                                 .alongWith(
-                                        intake.feedShooter(.5).asProxy()
+                                        intake.feedShooter(.7).asProxy()
                                 ).raceWith(shooter.shootCommand()).asProxy()
-                                .withTimeout(.5)
+                                .withTimeout(.75)
                         .withName("auto/qShoot"));
 
         readyShoot.whileTrue(
@@ -401,7 +401,7 @@ public class RobotContainer {
                                     qShoot.setPressed(true);
                                     readyShoot.setPressed(false);
                                 })
-                        .andThen(Commands.waitSeconds(.5)));
+                        .andThen(Commands.waitSeconds(.75)));
 
         //        NamedCommands.registerCommand(
         //                "cShoot",
