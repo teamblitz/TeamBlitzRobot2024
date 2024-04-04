@@ -230,7 +230,7 @@ public class Drive extends BlitzSubsystem {
                                 this));
 
         AutoBuilder.configureHolonomic(
-                this::getPose,
+                this::getEstimatedPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
                 (speeds) -> drive(speeds, false),
@@ -416,10 +416,7 @@ public class Drive extends BlitzSubsystem {
         LimelightHelpers.PoseEstimate limelightMeasurement =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
-        if ((limelightMeasurement.tagCount >= 2
-                        || (limelightMeasurement.avgTagDist < 3
-                                && limelightMeasurement.tagCount
-                                        >= 1)) // maybe this will work for the amp, I am unconvinced
+        if ((limelightMeasurement.tagCount >= 2)
                 && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
             poseEstimator.setVisionMeasurementStdDevs(
                     VecBuilder.fill(
