@@ -27,6 +27,7 @@ public class Leds extends SubsystemBase {
     public boolean requestAmp = false;
     public boolean intaking = false;
     public boolean hasNote = false;
+    public double lastPickupTime = 0.0; 
     public boolean indexing = false;
     public boolean autoPickupReady = false;
     public boolean autoPickupActive = false;
@@ -73,6 +74,7 @@ public class Leds extends SubsystemBase {
     private static final double waveAllianceDuration = 2.0;
     private static final double autoFadeTime = 2.5; // 3s nominal
     private static final double autoFadeMaxTime = 5.0; // Return to normal
+    public static final double pickupAlertDuration = .1;
 
     private Leds() {
         leds = new AddressableLED(2);
@@ -187,14 +189,24 @@ public class Leds extends SubsystemBase {
             //                strobe(Color.kWhite, strobeFastDuration);
             //            } else if (trapping || climbing || autoDrive || autoShoot) {
             //                rainbow(rainbowCycleLength, rainbowDuration);
-            if (indexing) {
-                strobe(Color.kYellow, strobeSlowDuration);
+            if (hasNote && lastPickupTime == -1.0) {
+                lastPickupTime = Timer.getFPGATimestamp();
+            } else if (!hasNote) {
+                lastPickupTime = -1.0;
+            }
+
+            if (climbing) {
+                rainbow(rainbowCycleLength, rainbowDuration);
+            } else if (Timer.getFPGATimestamp() - lastPickupTime <= pickupAlertDuration) {
+                strobe(Color.kBlue, strobeFastDuration);
+            } else if (indexing) {
+                strobe(Color.kGreen, strobeFastDuration);
             } else if (autoPickupActive) {
                 strobe(Color.kOrangeRed, strobeFastDuration);
             } else if (autoPickupReady) {
-                strobe(Color.kOrangeRed, strobeSlowDuration);
+                solid(Color.kOrangeRed);
             } else if (hasNote) {
-                strobe(Color.kGreen, strobeSlowDuration);
+                strobe(Color.kGreen, Color.kYellow, strobeSlowDuration);
             } else {
                 solid(Color.kGreen);
             }

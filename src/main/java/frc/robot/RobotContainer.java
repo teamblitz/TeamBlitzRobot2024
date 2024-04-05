@@ -298,14 +298,26 @@ public class RobotContainer {
         // CLIMBER COMMANDS
 
         // OIConstants.Climber.UP_BOTH.whileTrue(climber.setSpeed(0.3, 0.3));
-        OIConstants.Climber.UP_BOTH.whileTrue(climber.goUp());
+        OIConstants.Climber.UP_BOTH.whileTrue(
+                climber.goUp()
+                        .beforeStarting(() -> Leds.getInstance().climbing = true)
+                        .finallyDo(() -> Leds.getInstance().climbing = false)
+        );
         //        OIConstants.Climber.UP_LEFT.whileTrue(climber.setSpeed(0.3, 0));
         //        OIConstants.Climber.UP_RIGHT.whileTrue(climber.setSpeed(0, 0.3));
 
         // OIConstants.Climber.DOWN_BOTH.whileTrue(climber.setSpeed(-0.3, -0.3));
 
-        OIConstants.Climber.DOWN_BOTH.whileTrue(climber.climb());
-        OIConstants.Climber.DOWN_MAN.whileTrue(climber.setSpeed(-0.3, -0.3));
+        OIConstants.Climber.DOWN_BOTH.whileTrue(
+                climber.climb()
+                        .beforeStarting(() -> Leds.getInstance().climbing = true)
+                        .finallyDo(() -> Leds.getInstance().climbing = false)
+        );
+        OIConstants.Climber.DOWN_MAN.whileTrue(
+                climber.setSpeed(-0.3, -0.3)
+                        .beforeStarting(() -> Leds.getInstance().climbing = true)
+                        .finallyDo(() -> Leds.getInstance().climbing = false)
+        );
         //        OIConstants.Climber.DOWN_RIGHT.whileTrue(climber.setSpeed(0, -0.3));
 
         OIConstants.Climber.DOWN_BOTH.onTrue(
