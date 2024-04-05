@@ -74,7 +74,7 @@ public class Leds extends SubsystemBase {
     private static final double waveAllianceDuration = 2.0;
     private static final double autoFadeTime = 2.5; // 3s nominal
     private static final double autoFadeMaxTime = 5.0; // Return to normal
-    public static final double pickupAlertDuration = .1;
+    public static final double pickupAlertDuration = .5;
 
     private Leds() {
         leds = new AddressableLED(2);

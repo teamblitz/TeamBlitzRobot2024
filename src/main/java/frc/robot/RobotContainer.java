@@ -271,14 +271,19 @@ public class RobotContainer {
         OIConstants.Shooter.SPEED_AUTO.whileTrue(autoShootSpeed);
 
         OIConstants.Arm.INTAKE.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
+                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true).asProxy()
                         .raceWith(
                                 intake.intakeGroundAutomatic()
-                                        .raceWith(shooter.setSpeedCommand(-.1))));
+                                        .raceWith(shooter.setSpeedCommand(-.1)))
+                                        // .until(OIConstants.Arm.INTAKE.negate())
+                                        // .andThen(
+                                        //         intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)).withTimeout(.5).onlyIf(() -> !OIConstants.Arm.INTAKE.getAsBoolean() && !intake.hasNote()).asProxy()
+                                        // )
+                                        );
 
-        OIConstants.Arm.INTAKE.onFalse( // Keep intaking in the case we stop intaking too soon. Once we reach the sensor it will stop and index.
-                intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)).withTimeout(.5)
-        );
+        // OIConstants.Arm.INTAKE.onFalse( // Keep intaking in the case we stop intaking too soon. Once we reach the sensor it will stop and index.
+        //         intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)).withTimeout(.2).onlyIf(() -> !intake.hasNote())
+        // );
 
         OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
