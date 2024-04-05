@@ -54,8 +54,8 @@ public class Climber extends BlitzSubsystem {
     public Command climb() {
         return runEnd(
                         () -> {
-                            io.setMotionMagicLeft(.01);
-                            io.setMotionMagicRight(.01);
+                            io.setMotionMagicLeft(0);
+                            io.setMotionMagicRight(0);
                         },
                         () -> {
                             io.setMotionMagicLeft(inputs.positionLeft);
