@@ -239,8 +239,8 @@ public class RobotContainer {
                                                                         -txCache.get() * 1.7)))
                                                 .rotateBy(drive.getYaw()),
                                 () -> -txCache.get(),
-                                3,
-                                6)
+                                2,
+                                4)
                         .until(() -> !tvCache.get())
                         .beforeStarting(() -> Leds.getInstance().autoPickupActive = true)
                         .finallyDo(() -> Leds.getInstance().autoPickupActive = false)
