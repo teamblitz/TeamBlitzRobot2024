@@ -275,8 +275,10 @@ public class RobotContainer {
                         .raceWith(
                                 intake.intakeGroundAutomatic()
                                         .raceWith(shooter.setSpeedCommand(-.1))));
-        // OIConstants.Arm.TRANSIT_STAGE.whileTrue(
-        //         arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false));
+
+        OIConstants.Arm.INTAKE.onFalse( // Keep intaking in the case we stop intaking too soon. Once we reach the sensor it will stop and index.
+                intake.intakeGroundAutomatic().raceWith(shooter.setSpeedCommand(-.1)).withTimeout(.5)
+        );
 
         OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
                 arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)

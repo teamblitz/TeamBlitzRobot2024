@@ -95,7 +95,7 @@ public class OIConstants {
         public static final DoubleSupplier MANUAL_ARM_SPEED =
                 () -> -OPERATOR_CONTROLLER.getLeftY() * .2;
 
-        public static final Trigger INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a());
+        public static final Trigger INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a()).or(Drive.AUTO_PICKUP);
 
         public static final Trigger TRANSIT_STAGE =
                 TELEOP.and(
