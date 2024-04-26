@@ -36,6 +36,7 @@ public final class Constants {
     public static final Mode SIM_MODE = Mode.SIM;
 
     public static final boolean TUNING_MODE = false;
+    public static boolean DISABLE_HAL = false; // IDK What this does
 
     public enum Mode {
         /** Running a physics simulator. */
