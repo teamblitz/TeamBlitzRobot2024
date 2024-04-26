@@ -6,7 +6,7 @@ public interface GyroIO {
     @AutoLog
     public class GyroIOInputs {
         public double yaw; // counterclockwise positive
-        public double yawRate; // Rate of increase of yaw
+        public double yawRate;
         public double pitch;
         public double pitchRate;
         public double roll;

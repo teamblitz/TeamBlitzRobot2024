@@ -66,7 +66,5 @@ public class AngleMotorIOSpark implements AngleMotorIO {
                         * 360); // 1/360 rotations is 1 degree, 1 rotation is 360 degrees.
 
         configurePID(Constants.Drive.ANGLE_KP, Constants.Drive.ANGLE_KI, Constants.Drive.ANGLE_KD);
-        // TODO: Adjust this latter after we know the pid loop is not crazy
-        // angleMotor.getPIDController().setOutputRange(-.25, .25);
     }
 }

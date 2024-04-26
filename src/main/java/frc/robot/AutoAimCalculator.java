@@ -11,6 +11,7 @@ import frc.lib.util.AllianceUtils;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+@SuppressWarnings("resource")
 public class AutoAimCalculator {
     private static final ShuffleboardTab tab = Shuffleboard.getTab("AutoShoot");
 
@@ -92,12 +93,12 @@ public class AutoAimCalculator {
     }
 
     public static double calculateArmAngleInterpolation(double distanceMeters) {
-        return Constants.Shooter.AutoShootConstants.angleTreeMap.get(distanceMeters)
+        return Constants.Shooter.AutoShootConstants.ANGLE_TREE_MAP.get(distanceMeters)
                 + Units.degreesToRadians(1);
     }
 
     public static double calculateShooterSpeedInterpolation(double distanceMeters) {
-        return Constants.Shooter.AutoShootConstants.feedVelocityTreeMap.get(distanceMeters);
+        return Constants.Shooter.AutoShootConstants.SHOOT_VELOCITY_TREE_MAP.get(distanceMeters);
     }
 
     public static double calculateDistanceToGoal(Pose3d botPose) {
@@ -106,8 +107,8 @@ public class AutoAimCalculator {
                         DriverStation.getAlliance().isPresent()
                                         && DriverStation.getAlliance().get()
                                                 == DriverStation.Alliance.Blue
-                                ? Constants.Shooter.AutoShootConstants.goalPoseBlue
-                                : Constants.Shooter.AutoShootConstants.goalPoseRed)
+                                ? Constants.Shooter.AutoShootConstants.GOAL_POSE_BLUE
+                                : Constants.Shooter.AutoShootConstants.GOAL_POSE_RED)
                 .getX();
     }
 
@@ -115,8 +116,8 @@ public class AutoAimCalculator {
     public static Rotation2d calculateSpeakerHeading(Pose2d botPose) {
         Pose2d goalPose =
                 (AllianceUtils.isBlue()
-                                ? Constants.Shooter.AutoShootConstants.goalPoseBlue
-                                : Constants.Shooter.AutoShootConstants.goalPoseRed)
+                                ? Constants.Shooter.AutoShootConstants.GOAL_POSE_BLUE
+                                : Constants.Shooter.AutoShootConstants.GOAL_POSE_RED)
                         .toPose2d();
 
         Translation2d translation =

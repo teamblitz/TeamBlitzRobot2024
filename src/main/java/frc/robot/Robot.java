@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.leds.Leds;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,6 +33,7 @@ public class Robot extends LoggedRobot {
     private RobotContainer robotContainer;
 
     @Override
+    @SuppressWarnings("all") // Supress switch warnings
     public void robotInit() {
         System.out.println("Robot Start up at: " + Timer.getFPGATimestamp());
 
@@ -182,14 +182,6 @@ public class Robot extends LoggedRobot {
         }
     }
 
-    // Called periodically during teleop
-    @Override
-    public void teleopPeriodic() {}
-
-    // Called at the end of teleop.
-    @Override
-    public void teleopExit() {}
-
     /* ***** --- Test Mode --- ***** */
 
     // Called at the start of test mode
@@ -199,28 +191,6 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().cancelAll();
     }
 
-    // Called periodically during test mode
-    @Override
-    public void testPeriodic() {}
-
-    // Called at the end of test mode
-    @Override
-    public void testExit() {}
-
-    /* ***** --- Disabled --- ***** */
-
-    // Called when disabled
-    @Override
-    public void disabledInit() {}
-
-    // Called periodically when disabled
-    @Override
-    public void disabledPeriodic() {}
-
-    // Called when the robot exits disabled mode
-    @Override
-    public void disabledExit() {}
-
     /* ***** --- Simulation --- ***** */
 
     // Called when the robot enters simulation
@@ -228,8 +198,4 @@ public class Robot extends LoggedRobot {
     public void simulationInit() {
         DriverStation.silenceJoystickConnectionWarning(true);
     }
-
-    // Called periodically during simulation
-    @Override
-    public void simulationPeriodic() {}
 }

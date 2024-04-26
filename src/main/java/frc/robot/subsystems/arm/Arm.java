@@ -19,13 +19,10 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.FeedForwardConstants;
 import frc.robot.Robot;
+import frc.robot.subsystems.leds.Leds;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
-/**
- * Maybe divide this into 2 subsystems, depends on how we want to control it. The current way we do
- * this, 2 subsystems is ideal (and is kinda what we are pseudo doing)
- */
 public class Arm extends BlitzSubsystem {
     private final LoggedTunableNumber kP =
             new LoggedTunableNumber("Arm/kP", Constants.Arm.PidConstants.P);
@@ -64,7 +61,6 @@ public class Arm extends BlitzSubsystem {
                         FeedForwardConstants.KA);
 
         // Do this, but smarter
-
         new Trigger(() -> inputs.encoderConnected)
                 .onTrue(
                         Commands.waitSeconds(.25)
@@ -107,6 +103,7 @@ public class Arm extends BlitzSubsystem {
         tab.add("ArmDynamicRev", sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         ShuffleboardTab autoShootTab = Shuffleboard.getTab("AutoShoot");
+        @SuppressWarnings("resource")
         GenericEntry testArm = autoShootTab.add("testArm", 0).getEntry();
         autoShootTab.add(
                 "testArmCmd",
@@ -130,9 +127,7 @@ public class Arm extends BlitzSubsystem {
                 kV,
                 kA);
 
-        if (DriverStation.isTeleop() || true) {
-            io.seedArmPosition(false); // TODO, try removing this.
-        }
+        io.seedArmPosition(false); // TODO, try removing this.
     }
 
     public void updateRotation(double degrees, double velocity) {
@@ -158,8 +153,7 @@ public class Arm extends BlitzSubsystem {
         TrapezoidProfile profile =
                 new TrapezoidProfile(
                         new TrapezoidProfile.Constraints(
-                                Constants.Arm.ROTATION_VELOCITY,
-                                Constants.Arm.ROTATION_ACCELERATION));
+                                Constants.Arm.MAX_VELOCITY, Constants.Arm.MAX_ACCELERATION));
 
         MutableReference<TrapezoidProfile.State> lastState = new MutableReference<>();
 
@@ -217,7 +211,6 @@ public class Arm extends BlitzSubsystem {
 
     /* SYSID STUFF */
     // Creates a SysIdRoutine
-
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction)
                 .withName(
@@ -236,6 +229,8 @@ public class Arm extends BlitzSubsystem {
 
     public Command coastCommand() {
         return Commands.startEnd(() -> io.setBrake(false), () -> io.setBrake(true))
+                .beforeStarting(() -> Leds.getInstance().armCoast = true)
+                .finallyDo(() -> Leds.getInstance().armCoast = false)
                 .ignoringDisable(true)
                 .withName(logKey + "/coast");
     }

@@ -9,15 +9,12 @@ public class ShooterIOVictor implements ShooterIO {
     private final WPI_VictorSPX bottom;
 
     public ShooterIOVictor() {
-        top = new WPI_VictorSPX(Constants.Shooter.Talon.TALON_TOP); // CHECK CONSTANTS FOR THIS ID
-        bottom =
-                new WPI_VictorSPX(
-                        Constants.Shooter.Talon.TALON_BOTTOM); // CHECK CONSTANTS FOR THIS ID
+        top = new WPI_VictorSPX(Constants.Shooter.Talon.TALON_TOP);
+        bottom = new WPI_VictorSPX(Constants.Shooter.Talon.TALON_BOTTOM);
     }
 
     @Override
     public void setPercent(double speed) {
-        System.out.println("Shooter: " + speed);
         top.set(speed);
         bottom.set(speed);
     }
