@@ -56,13 +56,15 @@ public class FieldConstants {
         static {
             for (int i = 0; i < centerlineTranslations.length; i++) {
                 centerlineTranslations[i] =
-                        new Translation2d(centerlineX, centerlineFirstY + (i * centerlineSeparationY));
+                        new Translation2d(
+                                centerlineX, centerlineFirstY + (i * centerlineSeparationY));
             }
         }
 
         static {
             for (int i = 0; i < spikeTranslations.length; i++) {
-                spikeTranslations[i] = new Translation2d(spikeX, spikeFirstY + (i * spikeSeparationY));
+                spikeTranslations[i] =
+                        new Translation2d(spikeX, spikeFirstY + (i * spikeSeparationY));
             }
         }
     }
@@ -115,7 +117,10 @@ public class FieldConstants {
 
     public static final class Stage {
         public static final Pose2d podiumLeg =
-                new Pose2d(Units.inchesToMeters(126.75), Units.inchesToMeters(161.638), new Rotation2d());
+                new Pose2d(
+                        Units.inchesToMeters(126.75),
+                        Units.inchesToMeters(161.638),
+                        new Rotation2d());
         public static final Pose2d ampLeg =
                 new Pose2d(
                         Units.inchesToMeters(220.873),
@@ -133,13 +138,17 @@ public class FieldConstants {
                         Rotation2d.fromDegrees(120.0));
         public static final Pose2d centerAmpSourceChain =
                 new Pose2d(
-                        ampLeg.getTranslation().interpolate(sourceLeg.getTranslation(), 0.5), new Rotation2d());
+                        ampLeg.getTranslation().interpolate(sourceLeg.getTranslation(), 0.5),
+                        new Rotation2d());
         public static final Pose2d centerSourcePodiumChain =
                 new Pose2d(
                         sourceLeg.getTranslation().interpolate(podiumLeg.getTranslation(), 0.5),
                         Rotation2d.fromDegrees(240.0));
         public static final Pose2d center =
-                new Pose2d(Units.inchesToMeters(192.55), Units.inchesToMeters(161.638), new Rotation2d());
+                new Pose2d(
+                        Units.inchesToMeters(192.55),
+                        Units.inchesToMeters(161.638),
+                        new Rotation2d());
         public static final double centerToChainDistance =
                 center.getTranslation().getDistance(centerPodiumAmpChain.getTranslation());
     }
@@ -166,7 +175,10 @@ public class FieldConstants {
                 try {
                     layout =
                             new AprilTagFieldLayout(
-                                    Path.of(Filesystem.getDeployDirectory().getPath(), "apriltags", name + ".json"));
+                                    Path.of(
+                                            Filesystem.getDeployDirectory().getPath(),
+                                            "apriltags",
+                                            name + ".json"));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -178,7 +190,9 @@ public class FieldConstants {
                     layoutString = new ObjectMapper().writeValueAsString(layout);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(
-                            "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
+                            "Failed to serialize AprilTag layout JSON "
+                                    + toString()
+                                    + "for Northstar");
                 }
             }
         }

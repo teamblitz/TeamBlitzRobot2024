@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LimelightHelpers;
+import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.gyro.GyroIO;
@@ -47,6 +48,8 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
+
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -58,6 +61,7 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDrivePoseEstimator poseEstimator;
+
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -410,6 +414,16 @@ public class Drive extends BlitzSubsystem {
 
         swerveOdometry.update(getYaw(), getModulePositions());
         poseEstimator.update(getYaw(), getModulePositions());
+
+        ///////////////////////////////////////////////////////////////
+
+        // TODO: Whenever this PR gets merged, replace this with it https://github.com/wpilibsuite/allwpilib/pull/6426
+        Optional<Pose2d> poseTest = ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp() - 1);
+
+        poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest", pose2d));
+        Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
+        
+        ///////////////////////////////////////////////////////////////
 
         /* Vision stuff no touchy*/
 
