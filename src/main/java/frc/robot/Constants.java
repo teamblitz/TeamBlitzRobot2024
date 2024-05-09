@@ -284,7 +284,7 @@ public final class Constants {
                             : STARTING_POS + Units.degreesToRadians(-5);
             public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
-            public static final double SCORE_AMP = Units.degreesToRadians(103);
+            public static final double AMP = Units.degreesToRadians(103);
 
             public static final double SPEAKER_SUB_FRONT =
                     Units.degreesToRadians(30 + (compBot() ? 2 : 20));

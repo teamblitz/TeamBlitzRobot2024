@@ -112,7 +112,7 @@ public class OIConstants {
         public static final Trigger SPEAKER_PODIUM =
                 TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b()));
 
-        public static final Trigger SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
+        public static final Trigger AIM_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
 
         public static final Trigger AUTO_AIM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());
     }

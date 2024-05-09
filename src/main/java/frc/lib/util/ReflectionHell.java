@@ -16,18 +16,16 @@ public final class ReflectionHell {
             poseBufferField.setAccessible(true);
 
             pose2dField =
-                    PoseEstimator.class.getDeclaredClasses()[0]
-                            .getDeclaredField("poseMeters");
+                    PoseEstimator.class.getDeclaredClasses()[0].getDeclaredField("poseMeters");
             pose2dField.setAccessible(true);
 
-        } catch (NoSuchFieldException
-                | SecurityException
-                | IllegalArgumentException e) {
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException e) {
             e.printStackTrace();
         }
     }
 
-    public static Optional<Pose2d> samplePoseEstimator(PoseEstimator<?> poseEstimator, double time) {
+    public static Optional<Pose2d> samplePoseEstimator(
+            PoseEstimator<?> poseEstimator, double time) {
         try {
             var poseBuffer = (TimeInterpolatableBuffer<?>) poseBufferField.get(poseEstimator);
             var sample = poseBuffer.getSample(time);

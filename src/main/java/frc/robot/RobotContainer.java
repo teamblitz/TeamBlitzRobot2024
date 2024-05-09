@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.MutableReference;
 import frc.lib.util.LimelightHelpers;
 import frc.robot.Constants.AutoConstants.StartingPosition;
+import frc.robot.commands.ManipulatorCommands;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSpark;
@@ -266,32 +267,24 @@ public class RobotContainer {
         OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
         OIConstants.Shooter.SPEED_AUTO.whileTrue(autoShootSpeed);
 
-        OIConstants.Arm.INTAKE.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
-                        .asProxy()
-                        .raceWith(
-                                intake.intakeGroundAutomatic()
-                                        .raceWith(shooter.setSpeedCommand(-.1))));
+        OIConstants.Arm.INTAKE.whileTrue(ManipulatorCommands.intakeGround(intake, arm));
 
         OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_FRONT, false)
-                        .alongWith(shooter.shootCommand()));
-
+                ManipulatorCommands.shootAngle(
+                        Constants.Arm.Positions.SPEAKER_SUB_FRONT, shooter, arm));
         OIConstants.Arm.SPEAKER_SUB_SIDE.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_SUB_SIDE, false)
-                        .alongWith(shooter.shootCommand()));
-
+                ManipulatorCommands.shootAngle(
+                        Constants.Arm.Positions.SPEAKER_SUB_SIDE, shooter, arm));
         OIConstants.Arm.SPEAKER_PODIUM.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SPEAKER_PODIUM, false)
-                        .alongWith(shooter.shootCommand()));
+                ManipulatorCommands.shootAngle(
+                        Constants.Arm.Positions.SPEAKER_PODIUM, shooter, arm));
 
-        OIConstants.Arm.SCORE_AMP.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.SCORE_AMP, false));
+        OIConstants.Arm.AIM_AMP.whileTrue(
+                arm.rotateToCommand(Constants.Arm.Positions.AMP, false));
 
         OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(buildAutoShootCommand());
 
         // CLIMBER COMMANDS
-
         OIConstants.Climber.UP_BOTH.whileTrue(
                 climber.goUp()
                         .beforeStarting(() -> Leds.getInstance().climbing = true)
@@ -344,6 +337,8 @@ public class RobotContainer {
 
     private void configureAutoCommands() {
 
+        // This is the worst, no need to mess with it too much until we get choreo set up, but
+        // seriously we need to fix this.
         InternalButton readyShoot = new InternalButton();
         InternalButton shoot = new InternalButton();
         InternalButton qShoot = new InternalButton();

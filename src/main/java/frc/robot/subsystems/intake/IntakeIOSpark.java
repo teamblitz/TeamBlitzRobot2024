@@ -21,7 +21,8 @@ public class IntakeIOSpark implements IntakeIO {
 
         motor.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
-        motor.setOpenLoopRampRate(0); // TODO: This may have caused the issue of the note going past the sensor
+        motor.setOpenLoopRampRate(
+                0); // TODO: This may have caused the issue of the note going past the sensor
     }
 
     @Override

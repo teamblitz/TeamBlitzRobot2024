@@ -48,7 +48,6 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
-
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -417,12 +416,14 @@ public class Drive extends BlitzSubsystem {
 
         ///////////////////////////////////////////////////////////////
 
-        // TODO: Whenever this PR gets merged, replace this with it https://github.com/wpilibsuite/allwpilib/pull/6426
-        Optional<Pose2d> poseTest = ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp() - 1);
+        // TODO: Whenever this PR gets merged, replace this with it
+        // https://github.com/wpilibsuite/allwpilib/pull/6426
+        Optional<Pose2d> poseTest =
+                ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp() - 1);
 
         poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest", pose2d));
         Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
-        
+
         ///////////////////////////////////////////////////////////////
 
         /* Vision stuff no touchy*/
