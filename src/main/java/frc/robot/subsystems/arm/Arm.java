@@ -1,9 +1,12 @@
 package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.Arm.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
@@ -14,13 +17,17 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
-import frc.lib.MutableReference;
+import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.FeedForwardConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.leds.Leds;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.Function;
+import lombok.*;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends BlitzSubsystem {
@@ -40,10 +47,70 @@ public class Arm extends BlitzSubsystem {
     private final LoggedTunableNumber kG =
             new LoggedTunableNumber("Arm/kG", Constants.Arm.FeedForwardConstants.KG);
 
+    private static final LoggedTunableNumber transitStage =
+            new LoggedTunableNumber("Arm/TransitStage", Positions.TRANSIT_STAGE);
+    private static final LoggedTunableNumber transitNormal =
+            new LoggedTunableNumber("Arm/TransitNormal", Positions.TRANSIT_NORMAL);
+
+    @NoArgsConstructor(force = true)
+    @RequiredArgsConstructor
+    public enum Goal {
+        INTAKE(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE), true),
+        CLIMB(new LoggedTunableNumber("Arm/ClimbDegrees", Positions.TRANSIT_STAGE), true),
+        AMP(new LoggedTunableNumber("Arm/AmpDegrees", Positions.AMP)),
+        SUBWOOFER(new LoggedTunableNumber("Arm/SubwooferDegrees", Positions.SPEAKER_SUB_FRONT)),
+        PODIUM(new LoggedTunableNumber("Arm/PodiumDegrees", Positions.SPEAKER_PODIUM)),
+        // Used for tuning/debugging, should be unused on field
+        CUSTOM(new LoggedTunableNumber("Arm/CustomDegrees", 45)),
+
+        // Non static external state
+        TRANSIT(
+                arm ->
+                        arm.isTransitStage.getAsBoolean()
+                                ? transitStage.get()
+                                : transitNormal.get()),
+        AIM(arm -> Math.toDegrees(arm.aimAngleSupplier.getAsDouble())),
+
+        // Special Cases, must be handled individually by subsystem periodic
+        CHARACTERIZING,
+        MANUAL;
+
+        private final Function<Arm, Double> armSetpoint;
+        private final boolean letRest;
+
+        // Some states require member fields of the subsystem, which do not exist at enum creation.
+        private double getRads(Arm arm) {
+            return Math.toRadians(armSetpoint != null ? armSetpoint.apply(arm) : Double.NaN);
+        }
+
+        // Only a few of our states require member variables of the static, the rest don't need it
+        // and are defined as simple double suppliers.
+        Goal(DoubleSupplier setpointSupplier) {
+            this(setpointSupplier, false);
+        }
+
+        Goal(Function<Arm, Double> armSetpoint) {
+            this(armSetpoint, false);
+        }
+
+        Goal(DoubleSupplier setpointSupplier, boolean letRest) {
+            this(x -> setpointSupplier.getAsDouble(), letRest);
+        }
+    }
+
+    @AutoLogOutput @Getter Goal goal = Goal.TRANSIT;
+
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-    private boolean atGoal;
+    private final TrapezoidProfile profile =
+            new TrapezoidProfile(
+                    new TrapezoidProfile.Constraints(
+                            Constants.Arm.MAX_VELOCITY, Constants.Arm.MAX_ACCELERATION));
+    private TrapezoidProfile.State setpointState = new TrapezoidProfile.State();
+
+    private final DoubleSupplier aimAngleSupplier = () -> 0;
+    private final BooleanSupplier isTransitStage = () -> false;
 
     private ArmFeedforward feedforward;
 
@@ -52,6 +119,8 @@ public class Arm extends BlitzSubsystem {
     public Arm(ArmIO io) {
         super("arm");
         this.io = io;
+
+        setDefaultCommand(setGoal(Goal.TRANSIT));
 
         feedforward =
                 new ArmFeedforward(
@@ -105,9 +174,10 @@ public class Arm extends BlitzSubsystem {
         ShuffleboardTab autoShootTab = Shuffleboard.getTab("AutoShoot");
         @SuppressWarnings("resource")
         GenericEntry testArm = autoShootTab.add("testArm", 0).getEntry();
-        autoShootTab.add(
-                "testArmCmd",
-                this.rotateToCommand(() -> Math.toRadians(testArm.getDouble(0)), false));
+        //        autoShootTab.add(
+        //                "testArmCmd",
+        //                this.rotateToCommand(() -> Math.toRadians(testArm.getDouble(0)), false));
+        // TODO, should be replaced by custom
     }
 
     @Override
@@ -128,6 +198,29 @@ public class Arm extends BlitzSubsystem {
                 kA);
 
         io.seedArmPosition(false); // TODO, try removing this.
+
+        if (DriverStation.isDisabled()) {
+            // Reset profile when disabled
+            setpointState = new TrapezoidProfile.State(inputs.rotation, 0);
+        }
+
+        if (goal != Goal.MANUAL && goal != Goal.CHARACTERIZING) {
+            setpointState =
+                    profile.calculate(
+                            Robot.defaultPeriodSecs,
+                            setpointState,
+                            new TrapezoidProfile.State(
+                                    MathUtil.clamp(
+                                            goal.getRads(this),
+                                            Units.degreesToRadians(MIN_ROT),
+                                            Units.degreesToRadians(MAX_ROT)),
+                                    0));
+
+            if (goal.letRest && EqualsUtil.epsilonEquals(goal.getRads(this), MIN_ROT) && atGoal())
+                io.setArmSpeed(0);
+            else updateRotation(setpointState.position, setpointState.velocity);
+        }
+        // TODO, characterization should just work, but manual override still needs implementing
     }
 
     public void updateRotation(double degrees, double velocity) {
@@ -140,79 +233,25 @@ public class Arm extends BlitzSubsystem {
         return inputs.rotation;
     }
 
-    public double getRotationSpeed() {
-        return inputs.armRotationSpeed;
-    }
-
     public void setArmRotationSpeed(double percent) {
         io.setArmSpeed(percent);
     }
 
-    public Command rotateToCommand(
-            DoubleSupplier goal, boolean endAutomatically, boolean restOnEnd) {
-        TrapezoidProfile profile =
-                new TrapezoidProfile(
-                        new TrapezoidProfile.Constraints(
-                                Constants.Arm.MAX_VELOCITY, Constants.Arm.MAX_ACCELERATION));
-
-        MutableReference<TrapezoidProfile.State> lastState = new MutableReference<>();
-
-        TrapezoidProfile.State goalState = new TrapezoidProfile.State(goal.getAsDouble(), 0);
-
-        return runOnce(
-                        () -> {
-                            lastState.set(
-                                    new TrapezoidProfile.State(
-                                            inputs.rotation, inputs.armRotationSpeed));
-
-                            profile.calculate(Robot.defaultPeriodSecs, lastState.get(), goalState);
-                        })
-                .andThen(
-                        run(() -> {
-                                    TrapezoidProfile.State setpoint =
-                                            profile.calculate(
-                                                    Robot.defaultPeriodSecs,
-                                                    lastState.get(),
-                                                    new TrapezoidProfile.State(
-                                                            goal.getAsDouble(), 0));
-                                    lastState.set(setpoint);
-                                    updateRotation(setpoint.position, setpoint.velocity);
-                                    atGoal = profile.timeLeftUntil(goal.getAsDouble()) == 0;
-                                })
-                                .until(
-                                        () ->
-                                                profile.timeLeftUntil(goal.getAsDouble()) == 0
-                                                        && endAutomatically))
-                .finallyDo(
-                        (interrupted) -> {
-                            if (!interrupted) updateRotation(goal.getAsDouble(), 0);
-                            else if (interrupted) updateRotation(lastState.get().position, 0);
-                        })
-                .andThen(startEnd(io::stop, io::stop).onlyIf(() -> restOnEnd))
-                .until(DriverStation::isDisabled)
-                .withName(logKey + "/rotateTo"); // cancel on disable
+    public Command setGoal(@NonNull Goal goal) {
+        return runEnd(() -> this.goal = goal, () -> this.goal = Goal.TRANSIT)
+                .withName("Arm " + goal.toString().toLowerCase());
     }
 
-    public Command rotateToCommand(double goal, boolean endAutomatically, boolean restOnEnd) {
-        return rotateToCommand(() -> goal, endAutomatically, restOnEnd);
-    }
-
-    public Command rotateToCommand(DoubleSupplier goal, boolean endAutomatically) {
-        return rotateToCommand(goal, endAutomatically, false);
-    }
-
-    public Command rotateToCommand(double goal, boolean endAutomatically) {
-        return rotateToCommand(goal, endAutomatically, false);
-    }
-
+    @AutoLogOutput
     public boolean atGoal() {
-        return atGoal;
+        return EqualsUtil.epsilonEquals(setpointState.position, goal.getRads(this), 1e-3);
     }
 
     /* SYSID STUFF */
     // Creates a SysIdRoutine
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction)
+                .deadlineWith(setGoal(Goal.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/quasistatic"
@@ -221,6 +260,7 @@ public class Arm extends BlitzSubsystem {
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction)
+                .deadlineWith(setGoal(Goal.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/dynamic"

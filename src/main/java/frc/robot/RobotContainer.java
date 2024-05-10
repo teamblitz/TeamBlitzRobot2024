@@ -9,12 +9,10 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -125,14 +123,15 @@ public class RobotContainer {
                                                 : Double.NaN)
                         .withName("TeleopSwerve"));
 
-        arm.setDefaultCommand(
-                arm.rotateToCommand(
-                                () ->
-                                        (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
-                                                ? Constants.Arm.Positions.TRANSIT_STAGE
-                                                : Constants.Arm.Positions.TRANSIT_NORMAL),
-                                false)
-                        .withName("arm/transitPosition"));
+        // TODO, delete at a future date, likely unnecessary.
+        //        arm.setDefaultCommand(
+        //                arm.rotateToCommand(
+        //                                () ->
+        //                                        (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
+        //                                                ? Constants.Arm.Positions.TRANSIT_STAGE
+        //                                                : Constants.Arm.Positions.TRANSIT_NORMAL),
+        //                                false)
+        //                        .withName("arm/transitPosition"));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
@@ -270,19 +269,13 @@ public class RobotContainer {
         OIConstants.Arm.INTAKE.whileTrue(ManipulatorCommands.intakeGround(intake, arm));
 
         OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
-                ManipulatorCommands.shootAngle(
-                        Constants.Arm.Positions.SPEAKER_SUB_FRONT, shooter, arm));
-        OIConstants.Arm.SPEAKER_SUB_SIDE.whileTrue(
-                ManipulatorCommands.shootAngle(
-                        Constants.Arm.Positions.SPEAKER_SUB_SIDE, shooter, arm));
-        OIConstants.Arm.SPEAKER_PODIUM.whileTrue(
-                ManipulatorCommands.shootAngle(
-                        Constants.Arm.Positions.SPEAKER_PODIUM, shooter, arm));
+                ManipulatorCommands.shootSubwoofer(shooter, arm));
+        OIConstants.Arm.SPEAKER_PODIUM.whileTrue(ManipulatorCommands.shootPodium(shooter, arm));
 
-        OIConstants.Arm.AIM_AMP.whileTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.AMP, false));
+        OIConstants.Arm.AIM_AMP.whileTrue(arm.setGoal(Arm.Goal.AMP));
 
-        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(buildAutoShootCommand());
+        OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(
+                ManipulatorCommands.shootAim(shooter, arm, drive::getEstimatedPose));
 
         // CLIMBER COMMANDS
         OIConstants.Climber.UP_BOTH.whileTrue(
@@ -299,10 +292,8 @@ public class RobotContainer {
                         .finallyDo(() -> Leds.getInstance().climbing = false));
 
         // Lower the arm when climbing
-        OIConstants.Climber.DOWN_BOTH.onTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly());
-        OIConstants.Climber.UP_BOTH.onTrue(
-                arm.rotateToCommand(Constants.Arm.Positions.TRANSIT_STAGE, false).repeatedly());
+        OIConstants.Climber.DOWN_BOTH.onTrue(arm.setGoal(Arm.Goal.CLIMB));
+        OIConstants.Climber.UP_BOTH.onTrue(arm.setGoal(Arm.Goal.CLIMB));
 
         // TEST STUFF
         OIConstants.TestMode.ZERO_ABS_ENCODERS.onTrue(drive.zeroAbsEncoders());
@@ -344,10 +335,7 @@ public class RobotContainer {
         InternalButton qShoot = new InternalButton();
 
         shoot.whileTrue(
-                arm.rotateToCommand(
-                                Constants.Arm.Positions.SPEAKER_SUB_FRONT
-                                        + Units.degreesToRadians(2),
-                                false)
+                arm.setGoal(Arm.Goal.SUBWOOFER)
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand())
@@ -355,10 +343,7 @@ public class RobotContainer {
                         .withName("auto/shoot"));
 
         qShoot.whileTrue(
-                arm.rotateToCommand(
-                                Constants.Arm.Positions.SPEAKER_SUB_FRONT
-                                        + Units.degreesToRadians(2),
-                                false)
+                arm.setGoal(Arm.Goal.SUBWOOFER)
                         .alongWith(intake.feedShooter(.7).asProxy())
                         .raceWith(shooter.shootCommand())
                         .asProxy()
@@ -366,10 +351,7 @@ public class RobotContainer {
                         .withName("auto/qShoot"));
 
         readyShoot.whileTrue(
-                arm.rotateToCommand(
-                                Constants.Arm.Positions.SPEAKER_SUB_FRONT
-                                        + Units.degreesToRadians(2),
-                                false)
+                arm.setGoal(Arm.Goal.SUBWOOFER)
                         .asProxy()
                         .alongWith(shooter.shootCommand().asProxy())
                         .asProxy()
@@ -398,7 +380,7 @@ public class RobotContainer {
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.rotateToCommand(Constants.Arm.Positions.INTAKE, true, true)
+                arm.setGoal(Arm.Goal.INTAKE)
                         .asProxy()
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
                         .alongWith(shooter.setSpeedCommand(-.1).asProxy()));
@@ -420,21 +402,24 @@ public class RobotContainer {
                 .andThen(autoChooser.get().asProxy());
     }
 
-    public Command buildAutoShootCommand() { // TODO, this should not be here
-        return arm.rotateToCommand(
-                        () ->
-                                MathUtil.clamp(
-                                        AutoAimCalculator.calculateArmAngleInterpolation(
-                                                AutoAimCalculator.calculateDistanceToGoal(
-                                                        new Pose3d(drive.getEstimatedPose()))),
-                                        0,
-                                        Math.PI / 2),
-                        false)
-                .alongWith(
-                        shooter.shootClosedLoopCommand(
-                                () ->
-                                        AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                                AutoAimCalculator.calculateDistanceToGoal(
-                                                        new Pose3d(drive.getLimelightPose())))));
-    }
+    //    public Command buildAutoShootCommand() { // TODO, this should not be here
+    //        // TODO, also I borked this, sigh.
+    //        return arm.rotateToCommand(
+    //                        () ->
+    //                                MathUtil.clamp(
+    //                                        AutoAimCalculator.calculateArmAngleInterpolation(
+    //                                                AutoAimCalculator.calculateDistanceToGoal(
+    //                                                        new
+    // Pose3d(drive.getEstimatedPose()))),
+    //                                        0,
+    //                                        Math.PI / 2),
+    //                        false)
+    //                .alongWith(
+    //                        shooter.shootClosedLoopCommand(
+    //                                () ->
+    //                                        AutoAimCalculator.calculateShooterSpeedInterpolation(
+    //                                                AutoAimCalculator.calculateDistanceToGoal(
+    //                                                        new
+    // Pose3d(drive.getEstimatedPose())))));
+    //    }
 }
