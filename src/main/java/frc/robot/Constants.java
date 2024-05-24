@@ -237,7 +237,8 @@ public final class Constants {
 
     public static final class Arm {
         public static final double MIN_ROT = Units.degreesToRadians(-10); // TODO, TUNE THIS
-        public static final double MAX_ROT = Units.degreesToRadians(103); // TODO, tune this
+        public static final double MAX_ROT = Units.degreesToRadians(103);
+        public static final double MAX_STAGE = Units.degreesToRadians(10); // TODO, tune this
 
         public static final double STARTING_POS =
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
@@ -282,7 +283,7 @@ public final class Constants {
                     compBot()
                             ? Units.degreesToRadians(-2)
                             : STARTING_POS + Units.degreesToRadians(-5);
-            public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
+            public static final double CLIMB = MAX_STAGE;
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
             public static final double AMP = Units.degreesToRadians(103);
 

@@ -123,16 +123,6 @@ public class RobotContainer {
                                                 : Double.NaN)
                         .withName("TeleopSwerve"));
 
-        // TODO, delete at a future date, likely unnecessary.
-        //        arm.setDefaultCommand(
-        //                arm.rotateToCommand(
-        //                                () ->
-        //                                        (OIConstants.Arm.TRANSIT_STAGE.getAsBoolean()
-        //                                                ? Constants.Arm.Positions.TRANSIT_STAGE
-        //                                                : Constants.Arm.Positions.TRANSIT_NORMAL),
-        //                                false)
-        //                        .withName("arm/transitPosition"));
-
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
                         Commands.run(
@@ -196,6 +186,13 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
         shooter = new Shooter(new ShooterIOSpark());
         arm = new Arm(new ArmIOSpark(true));
+
+        arm.setAimGoal(
+                () ->
+                        AutoAimCalculator.calculateArmAngleInterpolation(
+                                AutoAimCalculator.calculateDistanceToGoal(
+                                        new Pose3d(drive.getEstimatedPose()))));
+
         climber = new Climber(Constants.compBot() ? new ClimberIOKraken() {} : new ClimberIO() {});
 
         autoShootSpeed =
@@ -272,7 +269,7 @@ public class RobotContainer {
                 ManipulatorCommands.shootSubwoofer(shooter, arm));
         OIConstants.Arm.SPEAKER_PODIUM.whileTrue(ManipulatorCommands.shootPodium(shooter, arm));
 
-        OIConstants.Arm.AIM_AMP.whileTrue(arm.setGoal(Arm.Goal.AMP));
+        OIConstants.Arm.AIM_AMP.whileTrue(arm.setGoal(Arm.State.AMP));
 
         OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(
                 ManipulatorCommands.shootAim(shooter, arm, drive::getEstimatedPose));
@@ -292,8 +289,11 @@ public class RobotContainer {
                         .finallyDo(() -> Leds.getInstance().climbing = false));
 
         // Lower the arm when climbing
-        OIConstants.Climber.DOWN_BOTH.onTrue(arm.setGoal(Arm.Goal.CLIMB));
-        OIConstants.Climber.UP_BOTH.onTrue(arm.setGoal(Arm.Goal.CLIMB));
+        OIConstants.Climber.DOWN_BOTH.onTrue(arm.setGoal(Arm.State.CLIMB));
+        OIConstants.Climber.UP_BOTH.onTrue(arm.setGoal(Arm.State.CLIMB));
+
+        // Stage avoidance
+        arm.setStageSafety(OIConstants.Arm.TRANSIT_STAGE);
 
         // TEST STUFF
         OIConstants.TestMode.ZERO_ABS_ENCODERS.onTrue(drive.zeroAbsEncoders());
@@ -335,7 +335,7 @@ public class RobotContainer {
         InternalButton qShoot = new InternalButton();
 
         shoot.whileTrue(
-                arm.setGoal(Arm.Goal.SUBWOOFER)
+                arm.setGoal(Arm.State.SUBWOOFER)
                         .raceWith(Commands.waitSeconds(1))
                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
                         .raceWith(shooter.shootCommand())
@@ -343,7 +343,7 @@ public class RobotContainer {
                         .withName("auto/shoot"));
 
         qShoot.whileTrue(
-                arm.setGoal(Arm.Goal.SUBWOOFER)
+                arm.setGoal(Arm.State.SUBWOOFER)
                         .alongWith(intake.feedShooter(.7).asProxy())
                         .raceWith(shooter.shootCommand())
                         .asProxy()
@@ -351,7 +351,7 @@ public class RobotContainer {
                         .withName("auto/qShoot"));
 
         readyShoot.whileTrue(
-                arm.setGoal(Arm.Goal.SUBWOOFER)
+                arm.setGoal(Arm.State.SUBWOOFER)
                         .asProxy()
                         .alongWith(shooter.shootCommand().asProxy())
                         .asProxy()
@@ -380,7 +380,7 @@ public class RobotContainer {
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.setGoal(Arm.Goal.INTAKE)
+                arm.setGoal(Arm.State.INTAKE)
                         .asProxy()
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
                         .alongWith(shooter.setSpeedCommand(-.1).asProxy()));
@@ -401,25 +401,4 @@ public class RobotContainer {
         return Commands.runOnce(() -> drive.setGyro(startingPositionChooser.get().angle))
                 .andThen(autoChooser.get().asProxy());
     }
-
-    //    public Command buildAutoShootCommand() { // TODO, this should not be here
-    //        // TODO, also I borked this, sigh.
-    //        return arm.rotateToCommand(
-    //                        () ->
-    //                                MathUtil.clamp(
-    //                                        AutoAimCalculator.calculateArmAngleInterpolation(
-    //                                                AutoAimCalculator.calculateDistanceToGoal(
-    //                                                        new
-    // Pose3d(drive.getEstimatedPose()))),
-    //                                        0,
-    //                                        Math.PI / 2),
-    //                        false)
-    //                .alongWith(
-    //                        shooter.shootClosedLoopCommand(
-    //                                () ->
-    //                                        AutoAimCalculator.calculateShooterSpeedInterpolation(
-    //                                                AutoAimCalculator.calculateDistanceToGoal(
-    //                                                        new
-    // Pose3d(drive.getEstimatedPose())))));
-    //    }
 }
