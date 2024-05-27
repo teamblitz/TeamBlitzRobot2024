@@ -288,7 +288,6 @@ public final class Constants {
             public static final double AMP_FRONT = Units.degreesToRadians(103);
             public static final double AMP_BACK = Units.degreesToRadians(60);
 
-
             public static final double SPEAKER_SUB_FRONT =
                     Units.degreesToRadians(30 + (compBot() ? 2 : 20));
             public static final double SPEAKER_SUB_SIDE =

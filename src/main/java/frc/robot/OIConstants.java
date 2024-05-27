@@ -83,7 +83,6 @@ public class OIConstants {
         public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
         public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
 
-
         public static final Trigger SCORE = DRIVE_CONTROLLER.button(3);
     }
 
@@ -110,10 +109,8 @@ public class OIConstants {
 
         public static final Trigger SPEAKER_SUB_FRONT =
                 TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
-        public static final Trigger SPEAKER_SUB_SIDE =
-                UNBOUND;
-        public static final Trigger SPEAKER_PODIUM =
-                UNBOUND;
+        public static final Trigger SPEAKER_SUB_SIDE = UNBOUND;
+        public static final Trigger SPEAKER_PODIUM = UNBOUND;
 
         public static final Trigger AMP_FRONT = TELEOP.and(OPERATOR_CONTROLLER.b());
         public static final Trigger AMP_BACK = TELEOP.and(OPERATOR_CONTROLLER.x());

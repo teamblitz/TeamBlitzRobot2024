@@ -91,20 +91,20 @@ public class RobotContainer {
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
 
-//        Shuffleboard.getTab("AutoShoot")
-//                .addDouble(
-//                        "distance",
-//                        () ->
-//                                AutoAimCalculator.calculateDistanceToGoal(
-//                                        new Pose3d(drive.getEstimatedPose())));
-//
-//        Shuffleboard.getTab("AutoShoot")
-//                .addDouble(
-//                        "speed",
-//                        () ->
-//                                AutoAimCalculator.calculateShooterSpeedInterpolation(
-//                                        AutoAimCalculator.calculateDistanceToGoal(
-//                                                new Pose3d(drive.getEstimatedPose()))));
+        //        Shuffleboard.getTab("AutoShoot")
+        //                .addDouble(
+        //                        "distance",
+        //                        () ->
+        //                                AutoAimCalculator.calculateDistanceToGoal(
+        //                                        new Pose3d(drive.getEstimatedPose())));
+        //
+        //        Shuffleboard.getTab("AutoShoot")
+        //                .addDouble(
+        //                        "speed",
+        //                        () ->
+        //                                AutoAimCalculator.calculateShooterSpeedInterpolation(
+        //                                        AutoAimCalculator.calculateDistanceToGoal(
+        //                                                new Pose3d(drive.getEstimatedPose()))));
     }
 
     private void setDefaultCommands() {
@@ -204,7 +204,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-
         OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(drive::zeroGyro));
         OIConstants.Drive.X_BREAK.onTrue(drive.buildParkCommand());
 
@@ -263,21 +262,13 @@ public class RobotContainer {
         OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
         OIConstants.Shooter.SPEED_AUTO.whileTrue(autoShootSpeed);
 
+        OIConstants.Intake.SCORE
+                .and(OIConstants.Arm.AMP_BACK)
+                .whileTrue(ManipulatorCommands.scoreAmpBack(shooter, intake));
 
-        OIConstants.Intake.SCORE.and(OIConstants.Arm.AMP_BACK).whileTrue(
-                Commands.parallel(
-                        intake.feedShooter(),
-                        shooter.shootCommand()
-                ).withTimeout(.25).andThen(Commands.waitSeconds(.25)).repeatedly()
-        );
-
-        OIConstants.Intake.SCORE.and(OIConstants.Arm.AMP_FRONT).whileTrue(
-                Commands.parallel(
-                        intake.ejectCommand(-.8),
-                        shooter.reverseCommand()
-                ).withTimeout(.2).andThen(Commands.waitSeconds(.1)).repeatedly()
-        );
-
+        OIConstants.Intake.SCORE
+                .and(OIConstants.Arm.AMP_FRONT)
+                .whileTrue(ManipulatorCommands.scoreAmpFront(shooter, intake));
 
         OIConstants.Arm.INTAKE.whileTrue(ManipulatorCommands.intakeGround(intake, arm));
 

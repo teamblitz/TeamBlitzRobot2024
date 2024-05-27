@@ -55,12 +55,20 @@ public class Arm extends BlitzSubsystem {
     @NoArgsConstructor(force = true)
     @RequiredArgsConstructor
     public enum State {
-        INTAKE(new LoggedTunableNumber("Arm/IntakeDegrees", Math.toDegrees(Positions.INTAKE)), true),
+        INTAKE(
+                new LoggedTunableNumber("Arm/IntakeDegrees", Math.toDegrees(Positions.INTAKE)),
+                true),
         CLIMB(new LoggedTunableNumber("Arm/ClimbDegrees", Math.toDegrees(Positions.CLIMB)), true),
-        AMP_BACK(new LoggedTunableNumber("Arm/AmpBackDegrees", Math.toDegrees(Positions.AMP_FRONT))),
-        AMP_FRONT(new LoggedTunableNumber("Arm/AmpFrontDegrees", Math.toDegrees(Positions.AMP_BACK))),
-        SUBWOOFER(new LoggedTunableNumber("Arm/SubwooferDegrees", Math.toDegrees(Positions.SPEAKER_SUB_FRONT))),
-        PODIUM(new LoggedTunableNumber("Arm/PodiumDegrees", Math.toDegrees(Positions.SPEAKER_PODIUM))),
+        AMP_BACK(
+                new LoggedTunableNumber("Arm/AmpBackDegrees", Math.toDegrees(Positions.AMP_FRONT))),
+        AMP_FRONT(
+                new LoggedTunableNumber("Arm/AmpFrontDegrees", Math.toDegrees(Positions.AMP_BACK))),
+        SUBWOOFER(
+                new LoggedTunableNumber(
+                        "Arm/SubwooferDegrees", Math.toDegrees(Positions.SPEAKER_SUB_FRONT))),
+        PODIUM(
+                new LoggedTunableNumber(
+                        "Arm/PodiumDegrees", Math.toDegrees(Positions.SPEAKER_PODIUM))),
         // Used for tuning/debugging, should be unused on field
         CUSTOM(new LoggedTunableNumber("Arm/CustomDegrees", 45)),
 
@@ -119,7 +127,7 @@ public class Arm extends BlitzSubsystem {
         }
     }
 
-//    private final Map<S/tate, ArmState> stateMap;
+    //    private final Map<S/tate, ArmState> stateMap;
 
     @AutoLogOutput @Getter State goal = State.TRANSIT;
 
@@ -146,10 +154,12 @@ public class Arm extends BlitzSubsystem {
         super("arm");
         this.io = io;
 
-//        stateMap = Map.ofEntries(
-//                State.INTAKE.asEntry(ArmState.of(toRadians(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE)))),
-//                State.CLIMB.asEntry(ArmState.of(toRadians(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE))))
-//        );
+        //        stateMap = Map.ofEntries(
+        //                State.INTAKE.asEntry(ArmState.of(toRadians(new
+        // LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE)))),
+        //                State.CLIMB.asEntry(ArmState.of(toRadians(new
+        // LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE))))
+        //        );
 
         //        INTAKE(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE), true),
         //                CLIMB(new LoggedTunableNumber("Arm/ClimbDegrees", Positions.CLIMB), true),
@@ -251,10 +261,7 @@ public class Arm extends BlitzSubsystem {
                                     MathUtil.clamp(
                                             goal.getRads(this),
                                             MIN_ROT,
-
-                                                    stageSafety.getAsBoolean()
-                                                            ? MAX_STAGE
-                                                            : MAX_ROT),
+                                            stageSafety.getAsBoolean() ? MAX_STAGE : MAX_ROT),
                                     0));
 
             if (goal.letRest
@@ -292,7 +299,7 @@ public class Arm extends BlitzSubsystem {
     // Creates a SysIdRoutine
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction)
-//                .deadlineWith(setGoal(State.CHARACTERIZING))
+                //                .deadlineWith(setGoal(State.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/quasistatic"
@@ -301,7 +308,7 @@ public class Arm extends BlitzSubsystem {
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction)
-//                .deadlineWith(setGoal(State.CHARACTERIZING))
+                //                .deadlineWith(setGoal(State.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/dynamic"
