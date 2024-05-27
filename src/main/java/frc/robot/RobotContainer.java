@@ -91,20 +91,20 @@ public class RobotContainer {
         startingPositionChooser.addOption("Left", StartingPosition.LEFT);
         startingPositionChooser.addOption("Right", StartingPosition.RIGHT);
 
-        Shuffleboard.getTab("AutoShoot")
-                .addDouble(
-                        "distance",
-                        () ->
-                                AutoAimCalculator.calculateDistanceToGoal(
-                                        new Pose3d(drive.getEstimatedPose())));
-
-        Shuffleboard.getTab("AutoShoot")
-                .addDouble(
-                        "speed",
-                        () ->
-                                AutoAimCalculator.calculateShooterSpeedInterpolation(
-                                        AutoAimCalculator.calculateDistanceToGoal(
-                                                new Pose3d(drive.getEstimatedPose()))));
+//        Shuffleboard.getTab("AutoShoot")
+//                .addDouble(
+//                        "distance",
+//                        () ->
+//                                AutoAimCalculator.calculateDistanceToGoal(
+//                                        new Pose3d(drive.getEstimatedPose())));
+//
+//        Shuffleboard.getTab("AutoShoot")
+//                .addDouble(
+//                        "speed",
+//                        () ->
+//                                AutoAimCalculator.calculateShooterSpeedInterpolation(
+//                                        AutoAimCalculator.calculateDistanceToGoal(
+//                                                new Pose3d(drive.getEstimatedPose()))));
     }
 
     private void setDefaultCommands() {
@@ -263,13 +263,30 @@ public class RobotContainer {
         OIConstants.Shooter.EJECT.whileTrue(shooter.reverseCommand());
         OIConstants.Shooter.SPEED_AUTO.whileTrue(autoShootSpeed);
 
+
+        OIConstants.Intake.SCORE.and(OIConstants.Arm.AMP_BACK).whileTrue(
+                Commands.parallel(
+                        intake.feedShooter(),
+                        shooter.shootCommand()
+                ).withTimeout(.25).andThen(Commands.waitSeconds(.25)).repeatedly()
+        );
+
+        OIConstants.Intake.SCORE.and(OIConstants.Arm.AMP_FRONT).whileTrue(
+                Commands.parallel(
+                        intake.ejectCommand(-.8),
+                        shooter.reverseCommand()
+                ).withTimeout(.2).andThen(Commands.waitSeconds(.1)).repeatedly()
+        );
+
+
         OIConstants.Arm.INTAKE.whileTrue(ManipulatorCommands.intakeGround(intake, arm));
 
         OIConstants.Arm.SPEAKER_SUB_FRONT.whileTrue(
                 ManipulatorCommands.shootSubwoofer(shooter, arm));
         OIConstants.Arm.SPEAKER_PODIUM.whileTrue(ManipulatorCommands.shootPodium(shooter, arm));
 
-        OIConstants.Arm.AIM_AMP.whileTrue(arm.setGoal(Arm.State.AMP));
+        OIConstants.Arm.AMP_BACK.whileTrue(arm.setGoal(Arm.State.AMP_BACK));
+        OIConstants.Arm.AMP_FRONT.whileTrue(arm.setGoal(Arm.State.AMP_FRONT));
 
         OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(
                 ManipulatorCommands.shootAim(shooter, arm, drive::getEstimatedPose));

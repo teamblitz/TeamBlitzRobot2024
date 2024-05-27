@@ -1,13 +1,11 @@
 package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.lib.util.SupplierUtils.toRadians;
 import static frc.robot.Constants.Arm.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Voltage;
@@ -57,16 +55,17 @@ public class Arm extends BlitzSubsystem {
     @NoArgsConstructor(force = true)
     @RequiredArgsConstructor
     public enum State {
-        INTAKE(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE), true),
-        CLIMB(new LoggedTunableNumber("Arm/ClimbDegrees", Positions.CLIMB), true),
-        AMP(new LoggedTunableNumber("Arm/AmpDegrees", Positions.AMP)),
-        SUBWOOFER(new LoggedTunableNumber("Arm/SubwooferDegrees", Positions.SPEAKER_SUB_FRONT)),
-        PODIUM(new LoggedTunableNumber("Arm/PodiumDegrees", Positions.SPEAKER_PODIUM)),
+        INTAKE(new LoggedTunableNumber("Arm/IntakeDegrees", Math.toDegrees(Positions.INTAKE)), true),
+        CLIMB(new LoggedTunableNumber("Arm/ClimbDegrees", Math.toDegrees(Positions.CLIMB)), true),
+        AMP_BACK(new LoggedTunableNumber("Arm/AmpBackDegrees", Math.toDegrees(Positions.AMP_FRONT))),
+        AMP_FRONT(new LoggedTunableNumber("Arm/AmpFrontDegrees", Math.toDegrees(Positions.AMP_BACK))),
+        SUBWOOFER(new LoggedTunableNumber("Arm/SubwooferDegrees", Math.toDegrees(Positions.SPEAKER_SUB_FRONT))),
+        PODIUM(new LoggedTunableNumber("Arm/PodiumDegrees", Math.toDegrees(Positions.SPEAKER_PODIUM))),
         // Used for tuning/debugging, should be unused on field
         CUSTOM(new LoggedTunableNumber("Arm/CustomDegrees", 45)),
 
         // Non static external state
-        TRANSIT(new LoggedTunableNumber("Arm/Transit", Positions.TRANSIT_NORMAL)),
+        TRANSIT(new LoggedTunableNumber("Arm/Transit", Math.toDegrees(Positions.TRANSIT_NORMAL))),
         AIM(arm -> Math.toDegrees(arm.aimGoal.getAsDouble())),
 
         // Special Cases, must be handled individually by subsystem periodic
@@ -120,7 +119,7 @@ public class Arm extends BlitzSubsystem {
         }
     }
 
-    private final Map<State, ArmState> stateMap;
+//    private final Map<S/tate, ArmState> stateMap;
 
     @AutoLogOutput @Getter State goal = State.TRANSIT;
 
@@ -147,10 +146,10 @@ public class Arm extends BlitzSubsystem {
         super("arm");
         this.io = io;
 
-        stateMap = Map.ofEntries(
-                State.INTAKE.asEntry(ArmState.of(toRadians(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE)))),
-                State.CLIMB.asEntry(ArmState.of(toRadians(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE))))
-        );
+//        stateMap = Map.ofEntries(
+//                State.INTAKE.asEntry(ArmState.of(toRadians(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE)))),
+//                State.CLIMB.asEntry(ArmState.of(toRadians(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE))))
+//        );
 
         //        INTAKE(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE), true),
         //                CLIMB(new LoggedTunableNumber("Arm/ClimbDegrees", Positions.CLIMB), true),
@@ -243,7 +242,7 @@ public class Arm extends BlitzSubsystem {
             return;
         }
 
-        if (stateMap.get(goal).isClosedLoop() || true) {
+        if (true) {
             setpointState =
                     profile.calculate(
                             Robot.defaultPeriodSecs,
@@ -251,11 +250,11 @@ public class Arm extends BlitzSubsystem {
                             new TrapezoidProfile.State(
                                     MathUtil.clamp(
                                             goal.getRads(this),
-                                            Units.degreesToRadians(MIN_ROT),
-                                            Units.degreesToRadians(
+                                            MIN_ROT,
+
                                                     stageSafety.getAsBoolean()
                                                             ? MAX_STAGE
-                                                            : MAX_ROT)),
+                                                            : MAX_ROT),
                                     0));
 
             if (goal.letRest
@@ -293,7 +292,7 @@ public class Arm extends BlitzSubsystem {
     // Creates a SysIdRoutine
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction)
-                .deadlineWith(setGoal(State.CHARACTERIZING))
+//                .deadlineWith(setGoal(State.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/quasistatic"
@@ -302,7 +301,7 @@ public class Arm extends BlitzSubsystem {
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction)
-                .deadlineWith(setGoal(State.CHARACTERIZING))
+//                .deadlineWith(setGoal(State.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/dynamic"

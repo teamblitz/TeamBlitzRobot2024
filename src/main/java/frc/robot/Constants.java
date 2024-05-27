@@ -35,7 +35,7 @@ public final class Constants {
 
     public static final Mode SIM_MODE = Mode.SIM;
 
-    public static final boolean TUNING_MODE = false;
+    public static final boolean TUNING_MODE = true;
     public static boolean DISABLE_HAL = false; // IDK What this does
 
     public enum Mode {
@@ -285,7 +285,9 @@ public final class Constants {
                             : STARTING_POS + Units.degreesToRadians(-5);
             public static final double CLIMB = MAX_STAGE;
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
-            public static final double AMP = Units.degreesToRadians(103);
+            public static final double AMP_FRONT = Units.degreesToRadians(103);
+            public static final double AMP_BACK = Units.degreesToRadians(60);
+
 
             public static final double SPEAKER_SUB_FRONT =
                     Units.degreesToRadians(30 + (compBot() ? 2 : 20));

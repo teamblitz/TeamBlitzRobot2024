@@ -82,6 +82,9 @@ public class OIConstants {
     public static final class Intake {
         public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
         public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
+
+
+        public static final Trigger SCORE = DRIVE_CONTROLLER.button(3);
     }
 
     public static final class Shooter {
@@ -108,11 +111,12 @@ public class OIConstants {
         public static final Trigger SPEAKER_SUB_FRONT =
                 TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
         public static final Trigger SPEAKER_SUB_SIDE =
-                TELEOP.and(OPERATOR_CONTROLLER.b().and(OPERATOR_CONTROLLER.y().negate()));
+                UNBOUND;
         public static final Trigger SPEAKER_PODIUM =
-                TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b()));
+                UNBOUND;
 
-        public static final Trigger AIM_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
+        public static final Trigger AMP_FRONT = TELEOP.and(OPERATOR_CONTROLLER.b());
+        public static final Trigger AMP_BACK = TELEOP.and(OPERATOR_CONTROLLER.x());
 
         public static final Trigger AUTO_AIM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());
     }

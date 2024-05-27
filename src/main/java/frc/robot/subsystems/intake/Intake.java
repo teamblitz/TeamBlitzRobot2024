@@ -120,8 +120,12 @@ public class Intake extends BlitzSubsystem {
     }
 
     public Command ejectCommand() {
+        return ejectCommand(-.3);
+    }
+
+    public Command ejectCommand(double speed) {
         return Commands.parallel(
-                        setSpeedCommand(-.3),
+                        setSpeedCommand(-Math.abs(speed)),
                         Commands.startEnd(
                                 () -> intakeState = IntakeState.Ejecting,
                                 () -> intakeState = IntakeState.Idle))
