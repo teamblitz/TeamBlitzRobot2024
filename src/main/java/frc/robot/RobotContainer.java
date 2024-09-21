@@ -129,9 +129,8 @@ public class RobotContainer {
                                         () -> {
                                             arm.setArmRotationSpeed(
                                                     OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
-                                        },
-                                        arm)
-                                .finallyDo(() -> arm.setArmRotationSpeed(0))
+                                        })
+                                .finallyDo(() -> arm.setArmRotationSpeed(0)).raceWith(arm.setGoal(Arm.State.MANUAL))
                                 .withName("arm/manual"));
     }
 

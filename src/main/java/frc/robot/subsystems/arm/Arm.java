@@ -252,7 +252,7 @@ public class Arm extends BlitzSubsystem {
             return;
         }
 
-        if (true) {
+        if (goal != State.MANUAL) {
             setpointState =
                     profile.calculate(
                             Robot.defaultPeriodSecs,
