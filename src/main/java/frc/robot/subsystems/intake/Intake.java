@@ -100,7 +100,7 @@ public class Intake extends BlitzSubsystem {
 
         return setSpeedCommand(-.15)
                 .raceWith(
-                        Commands.waitSeconds(.2)
+                        Commands.waitSeconds(0)
                                 .andThen(Commands.waitUntil(() -> inputs.breakBeam)))
                 //                .onlyIf(() -> !inputs.breakBeam)
                 .beforeStarting(() -> intakeState = IntakeState.Indexing)
