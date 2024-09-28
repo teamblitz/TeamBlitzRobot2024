@@ -33,6 +33,8 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.RangeSensorIO;
+import frc.robot.subsystems.drive.RangeSensorIOFusion;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
@@ -130,7 +132,8 @@ public class RobotContainer {
                                             arm.setArmRotationSpeed(
                                                     OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
                                         })
-                                .finallyDo(() -> arm.setArmRotationSpeed(0)).raceWith(arm.setGoal(Arm.State.MANUAL))
+                                .finallyDo(() -> arm.setArmRotationSpeed(0))
+                                .raceWith(arm.setGoal(Arm.State.MANUAL))
                                 .withName("arm/manual"));
     }
 
@@ -146,7 +149,8 @@ public class RobotContainer {
                             Constants.Drive.Mod1.CONSTANTS,
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
-                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
+                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
+                            new RangeSensorIOFusion());
 
                     case DevBot -> new Drive(
                             new SwerveModuleConfiguration(
@@ -157,29 +161,35 @@ public class RobotContainer {
                             Constants.Drive.Mod1.CONSTANTS,
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
-                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx());
+                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(), new RangeSensorIO() {});
                     case SimBot -> new Drive(
                             new SwerveModule(
                                     Constants.Drive.FL,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
+                                    new EncoderIO() {
+                                    }),
                             new SwerveModule(
                                     Constants.Drive.FR,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
+                                    new EncoderIO() {
+                                    }),
                             new SwerveModule(
                                     Constants.Drive.BL,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
+                                    new EncoderIO() {
+                                    }),
                             new SwerveModule(
                                     Constants.Drive.BR,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new GyroIO() {});
+                                    new EncoderIO() {
+                                    }),
+                            new GyroIO() {
+                            },
+                            new RangeSensorIO() {});
                 };
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);

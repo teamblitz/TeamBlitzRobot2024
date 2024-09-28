@@ -64,6 +64,8 @@ public class Drive extends BlitzSubsystem {
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+    private final RangeSensorIO rangeIO;
+    private final RangeSensorIOInputsAutoLogged rangeInputs = new RangeSensorIOInputsAutoLogged();
     private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drive");
     private final ShuffleboardTab tuningTab = Shuffleboard.getTab("DriveTuning");
     private final ShuffleboardLayout anglePidLayout =
@@ -114,7 +116,8 @@ public class Drive extends BlitzSubsystem {
             SwerveModuleConstants frConstants,
             SwerveModuleConstants blConstants,
             SwerveModuleConstants brConstants,
-            GyroIO gyroIO) {
+            GyroIO gyroIO,
+            RangeSensorIO rangeIO) {
         this(
                 new SwerveModule(
                         FL,
@@ -152,7 +155,7 @@ public class Drive extends BlitzSubsystem {
                         configuration.encoder == SwerveModuleConfiguration.EncoderType.CANCODER
                                 ? new EncoderIOCanCoder(brConstants.cancoderID, CAN_CODER_INVERT)
                                 : new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
-                gyroIO);
+                gyroIO, rangeIO);
     }
 
     public Drive(
@@ -160,7 +163,8 @@ public class Drive extends BlitzSubsystem {
             SwerveModule frontRight,
             SwerveModule backLeft,
             SwerveModule backRight,
-            GyroIO gyroIO) {
+            GyroIO gyroIO,
+            RangeSensorIO rangeIO) {
         super("drive");
 
         swerveModules =
@@ -174,6 +178,7 @@ public class Drive extends BlitzSubsystem {
                         KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
 
         this.gyroIO = gyroIO;
+        this.rangeIO = rangeIO;
 
         keepHeadingPid = new PIDController(.15, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
@@ -185,6 +190,8 @@ public class Drive extends BlitzSubsystem {
         initTelemetry();
 
         zeroGyro();
+
+        new RangeSensorIOFusion();
 
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
@@ -409,7 +416,9 @@ public class Drive extends BlitzSubsystem {
             mod.periodic();
         }
         gyroIO.updateInputs(gyroInputs);
+        rangeIO.updateInputs(rangeInputs);
         Logger.processInputs("gyro", gyroInputs);
+        Logger.processInputs("drive/range", rangeInputs);
 
         swerveOdometry.update(getYaw(), getModulePositions());
         poseEstimator.update(getYaw(), getModulePositions());

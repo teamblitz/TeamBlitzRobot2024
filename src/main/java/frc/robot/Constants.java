@@ -62,6 +62,7 @@ public final class Constants {
 
     public static final class Drive {
         public static final int PIGEON_ID = 14;
+        public static final int FUSION_TIME_OF_FLIGHT_ID = 0;
         public static final boolean USE_PIGEON = true;
 
         public static final COTSSwerveConstants CHOSEN_MODULE =
