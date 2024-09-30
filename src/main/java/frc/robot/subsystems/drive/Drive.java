@@ -21,13 +21,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.util.LimelightHelpers;
+import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
@@ -68,33 +66,16 @@ public class Drive extends BlitzSubsystem {
     private final RangeSensorIOInputsAutoLogged rangeInputs = new RangeSensorIOInputsAutoLogged();
     private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drive");
     private final ShuffleboardTab tuningTab = Shuffleboard.getTab("DriveTuning");
-    private final ShuffleboardLayout anglePidLayout =
-            tuningTab.getLayout("AnglePid", BuiltInLayouts.kList);
-    private final ShuffleboardLayout drivePidLayout =
-            tuningTab.getLayout("DrivePid", BuiltInLayouts.kList);
+
     private final Field2d field = new Field2d();
 
-    private final GenericEntry anglePEntry =
-            anglePidLayout.add("angleP", ANGLE_KP).getEntry("double");
-    private final GenericEntry angleIEntry =
-            anglePidLayout.add("angleI", ANGLE_KI).getEntry("double");
-    private final GenericEntry angleDEntry =
-            anglePidLayout.add("angleD", ANGLE_KD).getEntry("double");
+    private final LoggedTunableNumber angleP = new LoggedTunableNumber("drive/angle/kP", ANGLE_KP);
+    private final LoggedTunableNumber angleI = new LoggedTunableNumber("drive/angle/kI", ANGLE_KI);
+    private final LoggedTunableNumber angleD = new LoggedTunableNumber("drive/angle/kD", ANGLE_KD);
 
-    private final GenericEntry drivePEntry =
-            drivePidLayout.add("driveP", DRIVE_KP).getEntry("double");
-    private final GenericEntry driveIEntry =
-            drivePidLayout.add("driveI", DRIVE_KI).getEntry("double");
-    private final GenericEntry driveDEntry =
-            drivePidLayout.add("driveD", DRIVE_KD).getEntry("double");
-
-    private double angleP = ANGLE_KP;
-    private double angleI = ANGLE_KI;
-    private double angleD = ANGLE_KD;
-
-    private double driveP = DRIVE_KP;
-    private double driveI = DRIVE_KI;
-    private double driveD = DRIVE_KD;
+    private final LoggedTunableNumber driveP = new LoggedTunableNumber("drive/drive/kP", ANGLE_KP);
+    private final LoggedTunableNumber driveI = new LoggedTunableNumber("drive/drive/kI", ANGLE_KI);
+    private final LoggedTunableNumber driveD = new LoggedTunableNumber("drive/drive/kD", ANGLE_KD);
 
     private double lastTurnCommandSeconds;
     private boolean keepHeadingSetpointSet;
@@ -155,7 +136,8 @@ public class Drive extends BlitzSubsystem {
                         configuration.encoder == SwerveModuleConfiguration.EncoderType.CANCODER
                                 ? new EncoderIOCanCoder(brConstants.cancoderID, CAN_CODER_INVERT)
                                 : new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
-                gyroIO, rangeIO);
+                gyroIO,
+                rangeIO);
     }
 
     public Drive(
@@ -446,7 +428,7 @@ public class Drive extends BlitzSubsystem {
                     VecBuilder.fill(
                             .7, .7,
                             9999999)); // Standard deviations, basically vision measurements very up
-            // to .7m, and just don't trust the vision angle at all
+            // to .7m, and just don't trust the vision angle at all (not how std devs work noah)
             poseEstimator.addVisionMeasurement(
                     limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
         }
@@ -458,47 +440,25 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput(logKey + "/Vision", getLimelightPose());
         Logger.recordOutput(logKey + "/modules", getModuleStates());
 
-        boolean anglePIDChanged = false;
-        boolean drivePIDChanged = false;
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                (pid) -> {
+                    for (SwerveModule module : swerveModules)
+                        module.configAnglePid(pid[0], pid[1], pid[2]);
+                },
+                angleP,
+                angleI,
+                angleD);
 
-        if (anglePEntry.getDouble(angleP) != angleP) {
-            anglePIDChanged = true;
-            angleP = anglePEntry.getDouble(angleP);
-        }
-        if (angleIEntry.getDouble(angleI) != angleI) {
-            anglePIDChanged = true;
-            angleI = angleIEntry.getDouble(angleI);
-        }
-        if (angleDEntry.getDouble(angleD) != angleD) {
-            anglePIDChanged = true;
-            angleD = angleDEntry.getDouble(angleD);
-        }
-
-        if (drivePEntry.getDouble(driveP) != driveP) {
-            drivePIDChanged = true;
-            driveP = drivePEntry.getDouble(driveP);
-        }
-        if (driveIEntry.getDouble(driveI) != driveI) {
-            drivePIDChanged = true;
-            driveI = driveIEntry.getDouble(driveI);
-        }
-        if (driveDEntry.getDouble(driveD) != driveD) {
-            drivePIDChanged = true;
-            driveD = driveDEntry.getDouble(driveD);
-        }
-        //        anglePIDChanged = false;
-        //        drivePIDChanged = false;
-
-        if (drivePIDChanged) {
-            for (SwerveModule module : swerveModules) {
-                module.configDrivePid(driveP, driveI, driveD);
-            }
-        }
-        if (anglePIDChanged) {
-            for (SwerveModule module : swerveModules) {
-                module.configAnglePid(angleP, angleI, angleD);
-            }
-        }
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                (pid) -> {
+                    for (SwerveModule module : swerveModules)
+                        module.configDrivePid(pid[0], pid[1], pid[2]);
+                },
+                driveP,
+                driveI,
+                driveD);
     }
 
     @Override

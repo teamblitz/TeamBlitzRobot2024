@@ -1,7 +1,8 @@
 package frc.robot.subsystems.drive;
 
-import com.playingwithfusion.TimeOfFlight;
 import static frc.robot.Constants.Drive.*;
+
+import com.playingwithfusion.TimeOfFlight;
 
 public class RangeSensorIOFusion implements RangeSensorIO {
 
@@ -9,7 +10,7 @@ public class RangeSensorIOFusion implements RangeSensorIO {
 
     public RangeSensorIOFusion() {
         rangeSensor = new TimeOfFlight(FUSION_TIME_OF_FLIGHT_ID);
-        //rangeSensor.setRangingMode(TimeOfFlight.RangingMode.Short, 50);
+        // rangeSensor.setRangingMode(TimeOfFlight.RangingMode.Short, 50);
     }
 
     @Override

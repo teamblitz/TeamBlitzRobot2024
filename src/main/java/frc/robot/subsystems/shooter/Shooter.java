@@ -17,32 +17,32 @@ import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends BlitzSubsystem {
     private final LoggedTunableNumber topKP =
-            new LoggedTunableNumber("Shooter/top/kP", Constants.Shooter.Spark.PID_TOP_P);
+            new LoggedTunableNumber("shooter/top/kP", Constants.Shooter.Spark.PID_TOP_P);
     private final LoggedTunableNumber topKI =
-            new LoggedTunableNumber("Shooter/top/kI", Constants.Shooter.Spark.PID_TOP_I);
+            new LoggedTunableNumber("shooter/top/kI", Constants.Shooter.Spark.PID_TOP_I);
     private final LoggedTunableNumber topKD =
-            new LoggedTunableNumber("Shooter/top/kD", Constants.Shooter.Spark.PID_TOP_D);
+            new LoggedTunableNumber("shooter/top/kD", Constants.Shooter.Spark.PID_TOP_D);
 
     private final LoggedTunableNumber bottomKP =
-            new LoggedTunableNumber("Shooter/bottom/kP", Constants.Shooter.Spark.PID_BOTTOM_P);
+            new LoggedTunableNumber("shooter/bottom/kP", Constants.Shooter.Spark.PID_BOTTOM_P);
     private final LoggedTunableNumber bottomKI =
-            new LoggedTunableNumber("Shooter/bottom/kI", Constants.Shooter.Spark.PID_BOTTOM_I);
+            new LoggedTunableNumber("shooter/bottom/kI", Constants.Shooter.Spark.PID_BOTTOM_I);
     private final LoggedTunableNumber bottomKD =
-            new LoggedTunableNumber("Shooter/bottom/kD", Constants.Shooter.Spark.PID_BOTTOM_D);
+            new LoggedTunableNumber("shooter/bottom/kD", Constants.Shooter.Spark.PID_BOTTOM_D);
 
     private final LoggedTunableNumber topKS =
-            new LoggedTunableNumber("Shooter/top/kS", Constants.Shooter.Spark.FF_TOP_KS);
+            new LoggedTunableNumber("shooter/top/kS", Constants.Shooter.Spark.FF_TOP_KS);
     private final LoggedTunableNumber topKV =
-            new LoggedTunableNumber("Shooter/top/kV", Constants.Shooter.Spark.FF_TOP_KV);
+            new LoggedTunableNumber("shooter/top/kV", Constants.Shooter.Spark.FF_TOP_KV);
     private final LoggedTunableNumber topKA =
-            new LoggedTunableNumber("Shooter/top/kA", Constants.Shooter.Spark.FF_TOP_KA);
+            new LoggedTunableNumber("shooter/top/kA", Constants.Shooter.Spark.FF_TOP_KA);
 
     private final LoggedTunableNumber bottomKS =
-            new LoggedTunableNumber("Shooter/bottom/kS", Constants.Shooter.Spark.FF_BOTTOM_KS);
+            new LoggedTunableNumber("shooter/bottom/kS", Constants.Shooter.Spark.FF_BOTTOM_KS);
     private final LoggedTunableNumber bottomKV =
-            new LoggedTunableNumber("Shooter/bottom/kV", Constants.Shooter.Spark.FF_BOTTOM_KV);
+            new LoggedTunableNumber("shooter/bottom/kV", Constants.Shooter.Spark.FF_BOTTOM_KV);
     private final LoggedTunableNumber bottomKA =
-            new LoggedTunableNumber("Shooter/bottom/kA", Constants.Shooter.Spark.FF_BOTTOM_KA);
+            new LoggedTunableNumber("shooter/bottom/kA", Constants.Shooter.Spark.FF_BOTTOM_KA);
 
     private final ShooterIO io;
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();

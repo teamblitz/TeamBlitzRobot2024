@@ -117,7 +117,8 @@ public class RobotContainer {
                                 OIConstants.Drive.Y_TRANSLATION,
                                 OIConstants.Drive.ROTATION_SPEED,
                                 () -> false,
-                                () ->
+                                () -> // TODO: THis should be declarative, when button do xyz, not
+                                        // imperative as it is currently
                                         OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
                                                 ? AutoAimCalculator.calculateSpeakerHeading(
                                                                 drive.getEstimatedPose())
@@ -161,34 +162,30 @@ public class RobotContainer {
                             Constants.Drive.Mod1.CONSTANTS,
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
-                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(), new RangeSensorIO() {});
+                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
+                            new RangeSensorIO() {});
                     case SimBot -> new Drive(
                             new SwerveModule(
                                     Constants.Drive.FL,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {
-                                    }),
+                                    new EncoderIO() {}),
                             new SwerveModule(
                                     Constants.Drive.FR,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {
-                                    }),
+                                    new EncoderIO() {}),
                             new SwerveModule(
                                     Constants.Drive.BL,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {
-                                    }),
+                                    new EncoderIO() {}),
                             new SwerveModule(
                                     Constants.Drive.BR,
                                     new AngleMotorIOSim(),
                                     new DriveMotorIOSim(),
-                                    new EncoderIO() {
-                                    }),
-                            new GyroIO() {
-                            },
+                                    new EncoderIO() {}),
+                            new GyroIO() {},
                             new RangeSensorIO() {});
                 };
 

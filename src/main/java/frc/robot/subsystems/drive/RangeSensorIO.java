@@ -11,8 +11,6 @@ public interface RangeSensorIO {
         public boolean valid;
         public String status;
 
-
-
         public String mode;
         public double sampleTime;
     }
