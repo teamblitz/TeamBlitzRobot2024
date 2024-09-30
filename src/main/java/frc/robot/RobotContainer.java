@@ -211,7 +211,7 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         OIConstants.Drive.RESET_GYRO.onTrue(Commands.runOnce(drive::zeroGyro));
-        OIConstants.Drive.X_BREAK.onTrue(drive.buildParkCommand());
+        OIConstants.Drive.X_BREAK.onTrue(drive.park());
 
         OIConstants.Drive.BRAKE.onTrue(Commands.runOnce(() -> drive.setBrakeMode(true)));
         OIConstants.Drive.COAST.onTrue(Commands.runOnce(() -> drive.setBrakeMode(false)));

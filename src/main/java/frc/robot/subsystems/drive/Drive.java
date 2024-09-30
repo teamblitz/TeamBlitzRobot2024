@@ -305,15 +305,17 @@ public class Drive extends BlitzSubsystem {
         }
     }
 
-    public void park() {
+    public Command park() {
         SwerveModuleState[] desiredStates = {
-            (new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
-            (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
-            (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
-            (new SwerveModuleState(0, Rotation2d.fromDegrees(45)))
+                (new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
+                (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
+                (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
+                (new SwerveModuleState(0, Rotation2d.fromDegrees(45)))
         };
 
-        setModuleStates(desiredStates, true, false, true);
+        return runOnce(
+                () -> setModuleStates(desiredStates, true, false, true)
+        ).withName(logKey + "/park");
     }
 
     public void setBrakeMode(boolean enabled) {
@@ -388,6 +390,101 @@ public class Drive extends BlitzSubsystem {
 
     public double getRoll() {
         return gyroInputs.roll;
+    }
+
+
+    public Command driveSpeedTestCommand(double speed, double duration) {
+        SlewRateLimiter filter = new SlewRateLimiter(1);
+        return Commands.run(
+                        () ->
+                                drive(
+                                        new Translation2d(filter.calculate(speed), 0),
+                                        0,
+                                        false,
+                                        false,
+                                        false))
+                .withTimeout(duration)
+                .andThen(
+                        Commands.run(
+                                () ->
+                                        drive(
+                                                new Translation2d(filter.calculate(0), 0),
+                                                0,
+                                                false,
+                                                false,
+                                                false)));
+    }
+
+    /**
+     * Chase a field relative vector
+     *
+     * @param vector robot relative unit vector to move in the direction of
+     * @param angle angle error
+     * @param velocity goal velocity m/s
+     * @param acceleration max acceleration m/s^2
+     * @return Chase Vector Command.
+     */
+    public Command chaseVector(
+            Supplier<Translation2d> vector,
+            DoubleSupplier angle,
+            double velocity,
+            double acceleration) {
+        SlewRateLimiter xLimiter = new SlewRateLimiter(acceleration);
+        SlewRateLimiter yLimiter = new SlewRateLimiter(acceleration);
+
+        return Commands.runOnce(
+                        () -> {
+                            xLimiter.reset(getFieldRelativeSpeeds().vxMetersPerSecond);
+                            yLimiter.reset(getFieldRelativeSpeeds().vyMetersPerSecond);
+                        })
+                .andThen(
+                        run(
+                                () -> {
+                                    Translation2d unitVec =
+                                            vector.get().div(vector.get().getNorm());
+                                    Translation2d goalSpeeds = unitVec.times(velocity);
+
+                                    angleDrive(
+                                            new Translation2d(
+                                                    xLimiter.calculate(goalSpeeds.getX()),
+                                                    yLimiter.calculate(goalSpeeds.getY())),
+                                            angle.getAsDouble() * .0 * MAX_ANGULAR_VELOCITY,
+                                            0,
+                                            true,
+                                            true,
+                                            true,
+                                            false);
+                                }))
+                .withName(logKey + "/chaseVector");
+    }
+
+    public Command zeroAbsEncoders() {
+        return runOnce(
+                        () -> {
+                            swerveModules[0].zeroAbsEncoders();
+                            swerveModules[1].zeroAbsEncoders();
+                            swerveModules[2].zeroAbsEncoders();
+                            swerveModules[3].zeroAbsEncoders();
+                        })
+                .ignoringDisable(true)
+                .withName(logKey + "/zeroAbsEncoders");
+    }
+
+    // Something something super class???
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction)
+                .withName(
+                        logKey
+                                + "/quasistatic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction)
+                .withName(
+                        logKey
+                                + "/dynamic"
+                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 
     @Override
@@ -506,103 +603,5 @@ public class Drive extends BlitzSubsystem {
                                         new Transform2d(
                                                 CENTER_TO_MODULE.get(BR),
                                                 swerveModuleStates[BR].angle)));
-    }
-
-    public Command buildParkCommand() {
-        return Commands.runOnce(this::park, this).withName(logKey + "/park");
-    }
-
-    public Command driveSpeedTestCommand(double speed, double duration) {
-        SlewRateLimiter filter = new SlewRateLimiter(1);
-        return Commands.run(
-                        () ->
-                                drive(
-                                        new Translation2d(filter.calculate(speed), 0),
-                                        0,
-                                        false,
-                                        false,
-                                        false))
-                .withTimeout(duration)
-                .andThen(
-                        Commands.run(
-                                () ->
-                                        drive(
-                                                new Translation2d(filter.calculate(0), 0),
-                                                0,
-                                                false,
-                                                false,
-                                                false)));
-    }
-
-    /**
-     * Chase a field relative vector
-     *
-     * @param vector robot relative unit vector to move in the direction of
-     * @param angle angle error
-     * @param velocity goal velocity m/s
-     * @param acceleration max acceleration m/s^2
-     * @return Chase Vector Command.
-     */
-    public Command chaseVector(
-            Supplier<Translation2d> vector,
-            DoubleSupplier angle,
-            double velocity,
-            double acceleration) {
-        SlewRateLimiter xLimiter = new SlewRateLimiter(acceleration);
-        SlewRateLimiter yLimiter = new SlewRateLimiter(acceleration);
-
-        return Commands.runOnce(
-                        () -> {
-                            xLimiter.reset(getFieldRelativeSpeeds().vxMetersPerSecond);
-                            yLimiter.reset(getFieldRelativeSpeeds().vyMetersPerSecond);
-                        })
-                .andThen(
-                        run(
-                                () -> {
-                                    Translation2d unitVec =
-                                            vector.get().div(vector.get().getNorm());
-                                    Translation2d goalSpeeds = unitVec.times(velocity);
-
-                                    angleDrive(
-                                            new Translation2d(
-                                                    xLimiter.calculate(goalSpeeds.getX()),
-                                                    yLimiter.calculate(goalSpeeds.getY())),
-                                            angle.getAsDouble() * .0 * MAX_ANGULAR_VELOCITY,
-                                            0,
-                                            true,
-                                            true,
-                                            true,
-                                            false);
-                                }))
-                .withName(logKey + "/chaseVector");
-    }
-
-    public Command zeroAbsEncoders() {
-        return runOnce(
-                        () -> {
-                            swerveModules[0].zeroAbsEncoders();
-                            swerveModules[1].zeroAbsEncoders();
-                            swerveModules[2].zeroAbsEncoders();
-                            swerveModules[3].zeroAbsEncoders();
-                        })
-                .ignoringDisable(true)
-                .withName(logKey + "/zeroAbsEncoders");
-    }
-
-    // Something something super class???
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction)
-                .withName(
-                        logKey
-                                + "/quasistatic"
-                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
-    }
-
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction)
-                .withName(
-                        logKey
-                                + "/dynamic"
-                                + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
     }
 }
