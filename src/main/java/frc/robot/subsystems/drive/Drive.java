@@ -70,8 +70,6 @@ public class Drive extends BlitzSubsystem {
     private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drive");
     private final ShuffleboardTab tuningTab = Shuffleboard.getTab("DriveTuning");
 
-    private final Field2d field = new Field2d();
-
     private final LoggedTunableNumber angleP = new LoggedTunableNumber("drive/angle/kP", ANGLE_KP);
     private final LoggedTunableNumber angleI = new LoggedTunableNumber("drive/angle/kI", ANGLE_KI);
     private final LoggedTunableNumber angleD = new LoggedTunableNumber("drive/angle/kD", ANGLE_KD);
@@ -657,50 +655,8 @@ public class Drive extends BlitzSubsystem {
                 driveD);
     }
 
-    @Override
-    public void simulationPeriodic() {
-        drawRobotOnField(field);
-    }
-
     public void initTelemetry() {
-        shuffleboardTab.add(field);
         tuningTab.add("KeepHeadingPid", keepHeadingPid);
         // tuningTab.add("Tuning Command", new SwerveTuning(this));
-    }
-
-    public void drawRobotOnField(Field2d field) {
-        field.setRobotPose(getPose());
-        // Draw a pose that is based on the robot pose, but shifted by the translation of the module
-        // relative to robot center,
-        // then rotated around its own center by the angle of the module.
-        SwerveModuleState[] swerveModuleStates = getModuleStates();
-        field.getObject("frontLeft")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(FL),
-                                                swerveModuleStates[FL].angle)));
-        field.getObject("frontRight")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(FR),
-                                                swerveModuleStates[FR].angle)));
-        field.getObject("backLeft")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(BL),
-                                                swerveModuleStates[BL].angle)));
-        field.getObject("backRight")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(BR),
-                                                swerveModuleStates[BR].angle)));
     }
 }
