@@ -128,7 +128,9 @@ public class RobotContainer {
                                 OIConstants.DRIVE_CONTROLLER.button(12))
                         .withName("TeleopSwerve"));
 
-        OIConstants.DRIVE_CONTROLLER.button(12).onTrue(new InstantCommand(drive.ampAssistFilter::reset));
+        OIConstants.DRIVE_CONTROLLER
+                .button(12)
+                .onTrue(new InstantCommand(drive.ampAssistFilter::reset));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(

@@ -13,7 +13,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -27,7 +26,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -39,6 +37,8 @@ import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.drive.filter.AmpAssistFilter;
+import frc.robot.subsystems.drive.filter.ChassisSpeedsFilter;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
@@ -50,7 +50,6 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -92,18 +91,20 @@ public class Drive extends BlitzSubsystem {
     private final NetworkTableEntry limelightPose =
             LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
 
-
-    public interface ChassisSpeedController extends Supplier<ChassisSpeeds> {
+    // Move
+    interface ChassisSpeedController extends Supplier<ChassisSpeeds> {
         default boolean isFieldRelative() {
             return false;
         }
-        default boolean isOpenLoop() {return false;}
+
+        default boolean isOpenLoop() {
+            return false;
+        }
 
         static ChassisSpeedController from(
                 Supplier<ChassisSpeeds> speeds,
                 Supplier<Boolean> fieldRelative,
-                Supplier<Boolean> openLoop
-        ) {
+                Supplier<Boolean> openLoop) {
             return new ChassisSpeedController() {
                 @Override
                 public ChassisSpeeds get() {
@@ -123,59 +124,8 @@ public class Drive extends BlitzSubsystem {
         }
     }
 
-    public class ChassisSpeedsFilter implements Function<ChassisSpeeds, ChassisSpeeds> {
-        private final boolean fieldRelative;
 
-        public ChassisSpeedsFilter(boolean fieldRelative) {
-            this.fieldRelative = fieldRelative;
-        }
-
-        public ChassisSpeeds apply(ChassisSpeeds chassisSpeeds) {
-            return null;
-        }
-
-        public ChassisSpeeds filterSpeeds(ChassisSpeeds speeds, boolean inputFieldRelative) {
-            if (fieldRelative == inputFieldRelative)
-                return apply(speeds); // We are happy, no need to do anything
-            else if (inputFieldRelative) {// Our function must want robot relative
-                return apply(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()));
-            } else {
-                return apply(ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getYaw()));
-            }
-        }
-    }
-
-    public AmpAssistFilter ampAssistFilter = new AmpAssistFilter();
-
-    public class AmpAssistFilter extends ChassisSpeedsFilter {
-        private final TrapezoidProfile motionProfile = new TrapezoidProfile(new Constraints(1, 2));
-
-        private final static LoggedTunableNumber p = new LoggedTunableNumber("drive/amp-assist/kP", .5);
-
-        private TrapezoidProfile.State state = new TrapezoidProfile.State();
-        private TrapezoidProfile.State goal = new TrapezoidProfile.State(.3, 0);
-
-        public AmpAssistFilter() {
-            super(true);
-        }
-
-        @Override
-        public ChassisSpeeds apply(ChassisSpeeds initialSpeeds) {
-            state = motionProfile.calculate(Robot.defaultPeriodSecs, state, goal);
-
-            return new ChassisSpeeds(
-                    initialSpeeds.vxMetersPerSecond,
-                    (state.position - rangeInputs.range) * p.get() + state.velocity,
-                    initialSpeeds.omegaRadiansPerSecond
-                );
-        }
-
-        public void reset() {
-            state = new TrapezoidProfile.State(rangeInputs.range, getFieldRelativeSpeeds().vyMetersPerSecond);
-        }
-    }
-
-
+    public AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
 
 
     public Drive(
@@ -329,7 +279,8 @@ public class Drive extends BlitzSubsystem {
             boolean isOpenLoop,
             boolean maintainHeading) {
 
-        angleDrive(translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false, null);
+        angleDrive(
+                translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false, null);
     }
 
     public void angleDrive(
@@ -366,20 +317,17 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
+        ChassisSpeeds robotRel =
+                fieldRelative
+                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                translation.getX(), translation.getY(), rotation, getYaw())
+                        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
-
-
-        ChassisSpeeds robotRel = fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                translation.getX(), translation.getY(), rotation, getYaw())
-                : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
-//
-//        robotRel = ChassisSpeeds.fromFieldRelativeSpeeds(
-//                jerald.apply(ChassisSpeeds.fromRobotRelativeSpeeds(robotRel, getYaw())), getYaw()
-//        );
 
         drive(
-                chassisSpeedsFilter != null ? chassisSpeedsFilter.filterSpeeds(robotRel, false) : robotRel,
+                chassisSpeedsFilter != null
+                        ? chassisSpeedsFilter.filterSpeeds(robotRel, false)
+                        : robotRel,
                 isOpenLoop);
     }
 
@@ -404,15 +352,14 @@ public class Drive extends BlitzSubsystem {
 
     public Command park() {
         SwerveModuleState[] desiredStates = {
-                (new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
-                (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
-                (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
-                (new SwerveModuleState(0, Rotation2d.fromDegrees(45)))
+            (new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
+            (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
+            (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
+            (new SwerveModuleState(0, Rotation2d.fromDegrees(45)))
         };
 
-        return runOnce(
-                () -> setModuleStates(desiredStates, true, false, true)
-        ).withName(logKey + "/park");
+        return runOnce(() -> setModuleStates(desiredStates, true, false, true))
+                .withName(logKey + "/park");
     }
 
     public void setBrakeMode(boolean enabled) {
@@ -489,6 +436,9 @@ public class Drive extends BlitzSubsystem {
         return gyroInputs.roll;
     }
 
+    public double getRange() {
+        return rangeInputs.range;
+    }
 
     public Command driveSpeedTestCommand(double speed, double duration) {
         SlewRateLimiter filter = new SlewRateLimiter(1);
@@ -550,7 +500,8 @@ public class Drive extends BlitzSubsystem {
                                             true,
                                             true,
                                             true,
-                                            false, null);
+                                            false,
+                                            null);
                                 }))
                 .withName(logKey + "/chaseVector");
     }
