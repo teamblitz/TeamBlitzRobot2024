@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -123,8 +124,11 @@ public class RobotContainer {
                                                 ? AutoAimCalculator.calculateSpeakerHeading(
                                                                 drive.getEstimatedPose())
                                                         .getDegrees()
-                                                : Double.NaN)
+                                                : Double.NaN,
+                                OIConstants.DRIVE_CONTROLLER.button(12))
                         .withName("TeleopSwerve"));
+
+        OIConstants.DRIVE_CONTROLLER.button(12).onTrue(new InstantCommand(drive.ampAssistFilter::reset));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(

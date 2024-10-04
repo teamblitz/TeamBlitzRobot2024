@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -37,6 +38,7 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
@@ -48,6 +50,7 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -90,6 +93,92 @@ public class Drive extends BlitzSubsystem {
     private Rotation2d gyroOffset = new Rotation2d();
     private final NetworkTableEntry limelightPose =
             LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
+
+
+    public interface ChassisSpeedController extends Supplier<ChassisSpeeds> {
+        default boolean isFieldRelative() {
+            return false;
+        }
+        default boolean isOpenLoop() {return false;}
+
+        static ChassisSpeedController from(
+                Supplier<ChassisSpeeds> speeds,
+                Supplier<Boolean> fieldRelative,
+                Supplier<Boolean> openLoop
+        ) {
+            return new ChassisSpeedController() {
+                @Override
+                public ChassisSpeeds get() {
+                    return speeds.get();
+                }
+
+                @Override
+                public boolean isFieldRelative() {
+                    return fieldRelative.get();
+                }
+
+                @Override
+                public boolean isOpenLoop() {
+                    return openLoop.get();
+                }
+            };
+        }
+    }
+
+    public class ChassisSpeedsFilter implements Function<ChassisSpeeds, ChassisSpeeds> {
+        private final boolean fieldRelative;
+
+        public ChassisSpeedsFilter(boolean fieldRelative) {
+            this.fieldRelative = fieldRelative;
+        }
+
+        public ChassisSpeeds apply(ChassisSpeeds chassisSpeeds) {
+            return null;
+        }
+
+        public ChassisSpeeds filterSpeeds(ChassisSpeeds speeds, boolean inputFieldRelative) {
+            if (fieldRelative == inputFieldRelative)
+                return apply(speeds); // We are happy, no need to do anything
+            else if (inputFieldRelative) {// Our function must want robot relative
+                return apply(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getYaw()));
+            } else {
+                return apply(ChassisSpeeds.fromRobotRelativeSpeeds(speeds, getYaw()));
+            }
+        }
+    }
+
+    public AmpAssistFilter ampAssistFilter = new AmpAssistFilter();
+
+    public class AmpAssistFilter extends ChassisSpeedsFilter {
+        private final TrapezoidProfile motionProfile = new TrapezoidProfile(new Constraints(1, 2));
+
+        private final static LoggedTunableNumber p = new LoggedTunableNumber("drive/amp-assist/kP", .5);
+
+        private TrapezoidProfile.State state = new TrapezoidProfile.State();
+        private TrapezoidProfile.State goal = new TrapezoidProfile.State(.3, 0);
+
+        public AmpAssistFilter() {
+            super(true);
+        }
+
+        @Override
+        public ChassisSpeeds apply(ChassisSpeeds initialSpeeds) {
+            state = motionProfile.calculate(Robot.defaultPeriodSecs, state, goal);
+
+            return new ChassisSpeeds(
+                    initialSpeeds.vxMetersPerSecond,
+                    (state.position - rangeInputs.range) * p.get() + state.velocity,
+                    initialSpeeds.omegaRadiansPerSecond
+                );
+        }
+
+        public void reset() {
+            state = new TrapezoidProfile.State(rangeInputs.range, getFieldRelativeSpeeds().vyMetersPerSecond);
+        }
+    }
+
+
+
 
     public Drive(
             SwerveModuleConfiguration configuration,
@@ -242,7 +331,7 @@ public class Drive extends BlitzSubsystem {
             boolean isOpenLoop,
             boolean maintainHeading) {
 
-        angleDrive(translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false);
+        angleDrive(translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false, null);
     }
 
     public void angleDrive(
@@ -252,7 +341,8 @@ public class Drive extends BlitzSubsystem {
             boolean fieldRelative,
             boolean isOpenLoop,
             boolean maintainHeading,
-            boolean doRotationPid) {
+            boolean doRotationPid,
+            ChassisSpeedsFilter chassisSpeedsFilter) {
         if (doRotationPid) {
             keepHeadingSetpointSet = false;
 
@@ -278,11 +368,20 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
+
+
+
+        ChassisSpeeds robotRel = fieldRelative
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                translation.getX(), translation.getY(), rotation, getYaw())
+                : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+//
+//        robotRel = ChassisSpeeds.fromFieldRelativeSpeeds(
+//                jerald.apply(ChassisSpeeds.fromRobotRelativeSpeeds(robotRel, getYaw())), getYaw()
+//        );
+
         drive(
-                fieldRelative
-                        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                translation.getX(), translation.getY(), rotation, getYaw())
-                        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation),
+                chassisSpeedsFilter != null ? chassisSpeedsFilter.filterSpeeds(robotRel, false) : robotRel,
                 isOpenLoop);
     }
 
@@ -453,7 +552,7 @@ public class Drive extends BlitzSubsystem {
                                             true,
                                             true,
                                             true,
-                                            false);
+                                            false, null);
                                 }))
                 .withName(logKey + "/chaseVector");
     }
