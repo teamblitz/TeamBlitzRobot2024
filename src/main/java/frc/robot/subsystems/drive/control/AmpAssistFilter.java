@@ -1,4 +1,4 @@
-package frc.robot.subsystems.drive.filter;
+package frc.robot.subsystems.drive.control;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -6,7 +6,7 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
 
-public class AmpAssistFilter extends ChassisSpeedsFilter {
+public class AmpAssistFilter extends ChassisSpeedFilter {
     private final TrapezoidProfile motionProfile =
             new TrapezoidProfile(new TrapezoidProfile.Constraints(1, 2));
 

@@ -1,13 +1,13 @@
-package frc.robot.subsystems.drive.filter;
+package frc.robot.subsystems.drive.control;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drive.Drive;
 
-public abstract class ChassisSpeedsFilter {
+public abstract class ChassisSpeedFilter {
     protected final Drive drive;
     private final boolean functionFieldRelative;
 
-    public ChassisSpeedsFilter(Drive drive, boolean fieldRelative) {
+    public ChassisSpeedFilter(Drive drive, boolean fieldRelative) {
         this.drive = drive;
         this.functionFieldRelative = fieldRelative;
     }

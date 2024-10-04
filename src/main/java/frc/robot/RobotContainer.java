@@ -124,13 +124,9 @@ public class RobotContainer {
                                                 ? AutoAimCalculator.calculateSpeakerHeading(
                                                                 drive.getEstimatedPose())
                                                         .getDegrees()
-                                                : Double.NaN,
-                                OIConstants.DRIVE_CONTROLLER.button(12))
+                                                : Double.NaN)
                         .withName("TeleopSwerve"));
 
-        OIConstants.DRIVE_CONTROLLER
-                .button(12)
-                .onTrue(new InstantCommand(drive.ampAssistFilter::reset));
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
@@ -266,6 +262,10 @@ public class RobotContainer {
                                         () -> Leds.getInstance().autoPickupReady = true,
                                         () -> Leds.getInstance().autoPickupReady = false)
                                 .ignoringDisable(true));
+
+        OIConstants.Drive.AMP_ASSIST.onTrue(drive.useVelocityFilter(drive.ampAssistFilter));
+
+
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
         OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());

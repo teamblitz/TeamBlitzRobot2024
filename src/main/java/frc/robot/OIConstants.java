@@ -77,6 +77,7 @@ public class OIConstants {
         public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(2);
 
         public static final Trigger AIM_SPEAKER = Arm.AUTO_AIM_SPEAKER;
+        public static final Trigger AMP_ASSIST = DRIVE_CONTROLLER.button(12);
     }
 
     public static final class Intake {

@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
@@ -35,8 +37,10 @@ import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.filter.AmpAssistFilter;
-import frc.robot.subsystems.drive.filter.ChassisSpeedsFilter;
+import frc.robot.subsystems.drive.control.AmpAssistFilter;
+import frc.robot.subsystems.drive.control.ChassisSpeedController;
+import frc.robot.subsystems.drive.control.ChassisSpeedFilter;
+import frc.robot.subsystems.drive.control.HeadingController;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.range.RangeSensorIO;
@@ -92,41 +96,44 @@ public class Drive extends BlitzSubsystem {
     private final NetworkTableEntry limelightPose =
             LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
 
-    // Move
-    interface ChassisSpeedController extends Supplier<ChassisSpeeds> {
-        default boolean isFieldRelative() {
-            return false;
-        }
 
-        default boolean isOpenLoop() {
-            return false;
-        }
 
-        static ChassisSpeedController from(
-                Supplier<ChassisSpeeds> speeds,
-                Supplier<Boolean> fieldRelative,
-                Supplier<Boolean> openLoop) {
-            return new ChassisSpeedController() {
-                @Override
-                public ChassisSpeeds get() {
-                    return speeds.get();
-                }
+    // Control/State Based control
+    private final Subsystem velocityControlMutex = new Subsystem() {};
+    private final Subsystem velocityFilteringMutex = new Subsystem() {};
+    private final Subsystem headingControlMutex = new Subsystem() {};
 
-                @Override
-                public boolean isFieldRelative() {
-                    return fieldRelative.get();
-                }
+    private ChassisSpeedController velocityController = null;
+    private ChassisSpeedFilter velocityFilter = null;
+    private HeadingController headingController = null;
 
-                @Override
-                public boolean isOpenLoop() {
-                    return openLoop.get();
-                }
-            };
-        }
+
+    public final AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
+
+
+    public Command setControl(ChassisSpeedController velocityController) {
+        return Commands.startEnd(
+                () -> this.velocityController = velocityController,
+                () -> this.velocityController = null,
+                velocityControlMutex);
     }
 
+    public Command setHeadingControl(HeadingController headingController) {
+        return Commands.startEnd(
+                () -> this.headingController = headingController,
+                () -> this.headingController = null,
+                headingControlMutex);
+    }
 
-    public AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
+    public Command useVelocityFilter(ChassisSpeedFilter velocityFilter) {
+        return Commands.startEnd(
+                () -> {
+                    this.velocityFilter = velocityFilter;
+                    this.velocityFilter.reset();
+                },
+                () -> this.velocityFilter = null,
+                velocityFilteringMutex);
+    }
 
 
     public Drive(
@@ -281,7 +288,7 @@ public class Drive extends BlitzSubsystem {
             boolean maintainHeading) {
 
         angleDrive(
-                translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false, null);
+                translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false);
     }
 
     public void angleDrive(
@@ -291,8 +298,7 @@ public class Drive extends BlitzSubsystem {
             boolean fieldRelative,
             boolean isOpenLoop,
             boolean maintainHeading,
-            boolean doRotationPid,
-            ChassisSpeedsFilter chassisSpeedsFilter) {
+            boolean doRotationPid) {
         if (doRotationPid) {
             keepHeadingSetpointSet = false;
 
@@ -326,8 +332,8 @@ public class Drive extends BlitzSubsystem {
 
 
         drive(
-                chassisSpeedsFilter != null
-                        ? chassisSpeedsFilter.filterSpeeds(robotRel, false)
+                velocityFilter != null
+                        ? velocityFilter.filterSpeeds(robotRel, false)
                         : robotRel,
                 isOpenLoop);
     }
@@ -501,8 +507,7 @@ public class Drive extends BlitzSubsystem {
                                             true,
                                             true,
                                             true,
-                                            false,
-                                            null);
+                                            false);
                                 }))
                 .withName(logKey + "/chaseVector");
     }
