@@ -1,8 +1,6 @@
 package frc.robot.subsystems.drive.control;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.subsystems.drive.Drive;
-
 import java.util.function.Supplier;
 
 public interface ChassisSpeedController extends Supplier<ChassisSpeeds> {

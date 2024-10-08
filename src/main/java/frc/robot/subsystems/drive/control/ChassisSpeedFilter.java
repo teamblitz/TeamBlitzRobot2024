@@ -16,8 +16,7 @@ public abstract class ChassisSpeedFilter {
 
     public abstract void reset();
 
-    public ChassisSpeeds filterSpeeds(
-            ChassisSpeeds speeds, boolean inputFieldRelative) {
+    public ChassisSpeeds filterSpeeds(ChassisSpeeds speeds, boolean inputFieldRelative) {
         // If the input and function are both either field-relative or both robot-relative
         if (functionFieldRelative == inputFieldRelative) {
             // No transformation needed, simply apply the function
@@ -29,7 +28,8 @@ public abstract class ChassisSpeedFilter {
             // Convert the input from field-relative to robot-relative,
             // apply the function, then convert it back to field-relative
             return ChassisSpeeds.fromRobotRelativeSpeeds(
-                    apply(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getYaw())), drive.getYaw());
+                    apply(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getYaw())),
+                    drive.getYaw());
         }
 
         // If the input is robot-relative but the function expects field-relative
@@ -37,7 +37,8 @@ public abstract class ChassisSpeedFilter {
             // Convert the input from robot-relative to field-relative,
             // apply the function, then convert it back to robot-relative
             return ChassisSpeeds.fromFieldRelativeSpeeds(
-                    apply(ChassisSpeeds.fromRobotRelativeSpeeds(speeds, drive.getYaw())), drive.getYaw());
+                    apply(ChassisSpeeds.fromRobotRelativeSpeeds(speeds, drive.getYaw())),
+                    drive.getYaw());
         }
     }
 }

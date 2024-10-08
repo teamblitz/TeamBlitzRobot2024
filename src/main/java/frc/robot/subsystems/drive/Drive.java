@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -56,6 +55,8 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -96,8 +97,6 @@ public class Drive extends BlitzSubsystem {
     private final NetworkTableEntry limelightPose =
             LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
 
-
-
     // Control/State Based control
     private final Subsystem velocityControlMutex = new Subsystem() {};
     private final Subsystem velocityFilteringMutex = new Subsystem() {};
@@ -107,9 +106,7 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
 
-
     public final AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
-
 
     public Command setControl(ChassisSpeedController velocityController) {
         return Commands.startEnd(
@@ -134,7 +131,6 @@ public class Drive extends BlitzSubsystem {
                 () -> this.velocityFilter = null,
                 velocityFilteringMutex);
     }
-
 
     public Drive(
             SwerveModuleConfiguration configuration,
@@ -287,8 +283,7 @@ public class Drive extends BlitzSubsystem {
             boolean isOpenLoop,
             boolean maintainHeading) {
 
-        angleDrive(
-                translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false);
+        angleDrive(translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false);
     }
 
     public void angleDrive(
@@ -330,11 +325,8 @@ public class Drive extends BlitzSubsystem {
                                 translation.getX(), translation.getY(), rotation, getYaw())
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
-
         drive(
-                velocityFilter != null
-                        ? velocityFilter.filterSpeeds(robotRel, false)
-                        : robotRel,
+                velocityFilter != null ? velocityFilter.filterSpeeds(robotRel, false) : robotRel,
                 isOpenLoop);
     }
 
@@ -431,6 +423,7 @@ public class Drive extends BlitzSubsystem {
         lastTurnCommandSeconds = Timer.getFPGATimestamp();
     }
 
+    @AutoLogOutput(key="gyro/getyaw")
     public Rotation2d getYaw() {
         return Rotation2d.fromDegrees(gyroInputs.yaw).plus(gyroOffset);
     }

@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -34,11 +33,11 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.range.RangeSensorIO;
-import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
+import frc.robot.subsystems.drive.range.RangeSensorIO;
+import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSim;
@@ -120,13 +119,10 @@ public class RobotContainer {
                                 () -> false,
                                 () -> // TODO: THis should be declarative, when button do xyz, not
                                         // imperative as it is currently
-                                        OIConstants.Drive.AIM_SPEAKER.getAsBoolean()
-                                                ? AutoAimCalculator.calculateSpeakerHeading(
-                                                                drive.getEstimatedPose())
-                                                        .getDegrees()
+                                        OIConstants.Drive.AMP_ASSIST.getAsBoolean()
+                                                ? -90
                                                 : Double.NaN)
                         .withName("TeleopSwerve"));
-
 
         new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
                 .whileTrue(
@@ -263,9 +259,7 @@ public class RobotContainer {
                                         () -> Leds.getInstance().autoPickupReady = false)
                                 .ignoringDisable(true));
 
-        OIConstants.Drive.AMP_ASSIST.onTrue(drive.useVelocityFilter(drive.ampAssistFilter));
-
-
+        OIConstants.Drive.AMP_ASSIST.whileTrue(drive.useVelocityFilter(drive.ampAssistFilter));
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
         OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());
