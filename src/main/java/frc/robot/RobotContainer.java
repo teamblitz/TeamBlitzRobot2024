@@ -223,7 +223,7 @@ public class RobotContainer {
         MutableReference<Double> txCache = new MutableReference<>(0.);
         MutableReference<Boolean> tvCache = new MutableReference<>(false);
 
-        OIConstants.Drive.AUTO_PICKUP.whileTrue(
+        OIConstants.UNBOUND.whileTrue(
                 drive.chaseVector(
                                 () ->
                                         new Translation2d(
@@ -260,6 +260,7 @@ public class RobotContainer {
                                 .ignoringDisable(true));
 
         OIConstants.Drive.AMP_ASSIST.whileTrue(drive.useVelocityFilter(drive.ampAssistFilter));
+        OIConstants.Drive.AUTO_PICKUP.whileTrue(drive.useVelocityFilter(drive.noteAssistFilter));
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
         OIConstants.Intake.EJECT.whileTrue(intake.ejectCommand());

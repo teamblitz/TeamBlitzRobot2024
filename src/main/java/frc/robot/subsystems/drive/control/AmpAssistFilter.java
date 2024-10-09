@@ -48,7 +48,8 @@ public class AmpAssistFilter extends ChassisSpeedFilter {
 
         return new ChassisSpeeds(
                 initialSpeeds.vxMetersPerSecond,
-                profiledPIDController.calculate(drive.getRange()) + profiledPIDController.getSetpoint().velocity,
+                profiledPIDController.calculate(drive.getRange())
+                        + profiledPIDController.getSetpoint().velocity,
                 initialSpeeds.omegaRadiansPerSecond);
     }
 

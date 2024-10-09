@@ -20,6 +20,7 @@ import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -61,6 +62,14 @@ public final class Constants {
     public static final double LOOP_PERIOD_SEC = frc.robot.Robot.defaultPeriodSecs;
 
     public static final class Drive {
+        public static final class NoteAssist {
+            public static double ACTIVATION_RANGE = Units.degreesToRadians(30);
+            public static DoubleUnaryOperator ACTIVATION_FUNCTION = (x) ->
+                    Units.degreesToRadians(
+                            Math.exp(-Math.pow(Units.radiansToDegrees(x)/18, 4))
+                    ); // Output a value between 0 and 1, 0 means no assist, 1 means full assist
+        }
+
         public static final int PIGEON_ID = 14;
         public static final int FUSION_TIME_OF_FLIGHT_ID = 0;
         public static final boolean USE_PIGEON = true;

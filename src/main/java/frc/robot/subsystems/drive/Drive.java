@@ -10,6 +10,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,15 +32,13 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
+import frc.lib.MutableReference;
 import frc.lib.util.LimelightHelpers;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.subsystems.drive.control.AmpAssistFilter;
-import frc.robot.subsystems.drive.control.ChassisSpeedController;
-import frc.robot.subsystems.drive.control.ChassisSpeedFilter;
-import frc.robot.subsystems.drive.control.HeadingController;
+import frc.robot.subsystems.drive.control.*;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
 import frc.robot.subsystems.drive.range.RangeSensorIO;
@@ -55,7 +54,6 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -106,7 +104,28 @@ public class Drive extends BlitzSubsystem {
     private ChassisSpeedFilter velocityFilter = null;
     private HeadingController headingController = null;
 
+    NetworkTableEntry intakeTx =
+            LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
+    NetworkTableEntry intakeTv =
+            LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
+
+    Debouncer tvBouncer = new Debouncer(2. / 30., Debouncer.DebounceType.kBoth);
+    MutableReference<Double> txCache = new MutableReference<>(0.);
+    MutableReference<Boolean> tvCache = new MutableReference<>(false);
+
+
     public final AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
+    public final NoteAssistFilter noteAssistFilter = new NoteAssistFilter(this,
+            () ->
+                    new Translation2d(
+                            Math.cos(
+                                    Math.toRadians(
+                                            -txCache.get() * 1.7)),
+                            Math.sin(
+                                    Math.toRadians(
+                                            -txCache.get() * 1.7)))
+                            .rotateBy(getYaw())
+            );
 
     public Command setControl(ChassisSpeedController velocityController) {
         return Commands.startEnd(
@@ -423,7 +442,7 @@ public class Drive extends BlitzSubsystem {
         lastTurnCommandSeconds = Timer.getFPGATimestamp();
     }
 
-    @AutoLogOutput(key="gyro/getyaw")
+    @AutoLogOutput(key = "gyro/getyaw")
     public Rotation2d getYaw() {
         return Rotation2d.fromDegrees(gyroInputs.yaw).plus(gyroOffset);
     }

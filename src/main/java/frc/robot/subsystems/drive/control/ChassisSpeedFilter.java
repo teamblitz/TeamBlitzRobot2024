@@ -14,7 +14,7 @@ public abstract class ChassisSpeedFilter {
 
     protected abstract ChassisSpeeds apply(ChassisSpeeds chassisSpeeds);
 
-    public abstract void reset();
+    public void reset() {}
 
     public ChassisSpeeds filterSpeeds(ChassisSpeeds speeds, boolean inputFieldRelative) {
         // If the input and function are both either field-relative or both robot-relative
