@@ -5,9 +5,12 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import java.util.Optional;
@@ -55,33 +58,27 @@ public class NoteAssistFilter extends ChassisSpeedFilter {
             return initialSpeeds;
         }
 
+        Logger.recordOutput("vision/note/oldPoseSample", oldPoseSample.get());
+
+
         double botSpaceXLatent = noteVisionInputs.botSpaceX;
         double botSpaceYLatent = noteVisionInputs.botSpaceY;
 
-        Pose2d notePoseField =
-                oldPoseSample
-                        .get()
-                        .transformBy(
-                                new Transform2d(
-                                        botSpaceXLatent, botSpaceYLatent, new Rotation2d()));
+
+        Translation2d notePoseField =
+                        oldPoseSample
+                                .get()
+                                .transformBy(
+                                        new Transform2d(
+                                                botSpaceXLatent, botSpaceYLatent, new Rotation2d())).getTranslation();
 
         Logger.recordOutput("vision/note/notePoseField", notePoseField);
 
-        // Object's pose in the field coordinate system (Pose2d objectPoseInField)
-        // Robot's pose in the field coordinate system (Pose2d robotPoseInField)
+        Translation2d fieldRelativeNoteBotSpace = notePoseField.minus(drive.getEstimatedPose().getTranslation());
 
-        // Step 1: Compute the relative translation by "subtracting" the robot's position
-        Transform2d fieldToRobotSpace =
-                new Transform2d(
-                        drive.getEstimatedPose().getTranslation().unaryMinus(),
-                        drive.getEstimatedPose().getRotation().unaryMinus());
+        Logger.recordOutput("vision/note/fieldRelativeNoteBotSpace", fieldRelativeNoteBotSpace);
 
-        // Step 2: Apply this inverse transform to the object's pose
-        Pose2d notePoseBotSpace = notePoseField.transformBy(fieldToRobotSpace);
-
-        Logger.recordOutput("vision/note/notePoseBot", notePoseBotSpace);
-
-        Vector2D notePosition = new Vector2D(notePoseBotSpace.getX(), notePoseBotSpace.getY());
+        Vector2D notePosition = new Vector2D(fieldRelativeNoteBotSpace.getX(), fieldRelativeNoteBotSpace.getY());
 
         if (notePosition.getNorm() == 0) return initialSpeeds;
 
@@ -91,29 +88,51 @@ public class NoteAssistFilter extends ChassisSpeedFilter {
                 new Vector2D(initialSpeeds.vxMetersPerSecond, initialSpeeds.vyMetersPerSecond);
         //        Vector2D driverDirection = driverVelocity.normalize();
 
-        Logger.recordOutput("noteAssist/driver/x", driverVelocity.getX());
-        Logger.recordOutput("noteAssist/driver/y", driverVelocity.getY());
+        Logger.recordOutput("vision/note/driver/x", driverVelocity.getX());
+        Logger.recordOutput("vision/note/driver/y", driverVelocity.getY());
 
-        //        double adjustedAngle =
-        // Constants.Drive.NoteAssist.ACTIVATION_FUNCTION.applyAsDouble(Vector2D.angle(noteDirection, driverDirection));
+        Rotation2d noteAngle = new Rotation2d(noteDirection.getX(), noteDirection.getY());
+        Rotation2d driverAngle = new Rotation2d(driverVelocity.getX(), driverVelocity.getY());
 
-        //        Vector2D adjustedDirection = new Vector2D()
+
+
+        Rotation2d adjustedAngle = driverAngle.plus(
+                noteAngle.minus(driverAngle)
+                        .times(Constants.Drive.NoteAssist.ACTIVATION_FUNCTION.applyAsDouble(
+                                noteAngle.minus(driverAngle).getRadians()
+                        )));
+
+        Vector2D adjustedDirection = new Vector2D(adjustedAngle.getCos(), adjustedAngle.getSin());
 
         Vector2D adjustedVelocity =
-                noteDirection.scalarMultiply(driverVelocity.dotProduct(noteDirection));
+                adjustedDirection.scalarMultiply(driverVelocity.dotProduct(adjustedDirection));
 
-        Logger.recordOutput("noteAssist/adjusted/x", adjustedVelocity.getX());
-        Logger.recordOutput("noteAssist/adjusted/y", adjustedVelocity.getY());
-        Logger.recordOutput("noteAssist/botpos/angle", notePoseBotSpace.getTranslation().getAngle().getDegrees());
+        Logger.recordOutput("noteAssist/noteAngle", noteAngle.getDegrees());
+        Logger.recordOutput("noteAssist/driverAngle", driverAngle.getDegrees());
+        Logger.recordOutput("noteAssist/adjustedAngle", adjustedAngle.getDegrees());
+        Logger.recordOutput("vision/note/botpos/angle", fieldRelativeNoteBotSpace.getAngle().getDegrees());
+
+        double omegaHeading = rotateToHeadingPid.calculate(
+                drive.getYaw().getDegrees(),
+                new TrapezoidProfile.State(
+                        fieldRelativeNoteBotSpace.getAngle().getDegrees(), 0));
+
+
+        if (Math.abs(noteAngle.minus(driverAngle).getRadians()) > Constants.Drive.NoteAssist.ACTIVATION_RANGE) {
+            if (Math.abs(drive.getYaw().minus(noteAngle).getRadians()) < Constants.Drive.NoteAssist.ACTIVATION_RANGE) {
+                return new ChassisSpeeds(
+                        initialSpeeds.vxMetersPerSecond,
+                        initialSpeeds.vyMetersPerSecond,
+                        omegaHeading
+                );
+            } else return initialSpeeds;
+        }
 
 
         return new ChassisSpeeds(
                 adjustedVelocity.getX(),
                 adjustedVelocity.getY(),
-                rotateToHeadingPid.calculate(
-                        drive.getYaw().getDegrees(),
-                        new TrapezoidProfile.State(
-                                -5 + drive.getYaw().getDegrees() - notePoseBotSpace.getTranslation().getAngle().getDegrees(), 0)));
+                omegaHeading);
     }
 
     @Override

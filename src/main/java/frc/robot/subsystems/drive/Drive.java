@@ -624,7 +624,8 @@ public class Drive extends BlitzSubsystem {
                 driveI,
                 driveD);
 
-        //        noteAssistFilter.apply(new ChassisSpeeds());
+//                noteAssistFilter.apply(new ChassisSpeeds());
+//                noteAssistFilter.apply(new ChassisSpeeds());
     }
 
     public void initTelemetry() {

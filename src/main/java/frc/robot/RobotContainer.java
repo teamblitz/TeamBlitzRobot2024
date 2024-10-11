@@ -234,10 +234,10 @@ public class RobotContainer {
                                         new Translation2d(
                                                         Math.cos(
                                                                 Math.toRadians(
-                                                                        -txCache.get() * 1.7)),
+                                                                        txCache.get() * 1.7)),
                                                         Math.sin(
                                                                 Math.toRadians(
-                                                                        -txCache.get() * 1.7)))
+                                                                        txCache.get() * 1.7)))
                                                 .rotateBy(drive.getYaw()),
                                 () -> -txCache.get(),
                                 2,
