@@ -48,6 +48,8 @@ import frc.robot.subsystems.intake.IntakeIOSpark;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterIOSpark;
+import frc.robot.subsystems.vision.notes.NoteVisionIO;
+import frc.robot.subsystems.vision.notes.NoteVisionIOLimelight;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -149,7 +151,8 @@ public class RobotContainer {
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
                             Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
-                            new RangeSensorIOFusion());
+                            new RangeSensorIOFusion(),
+                            new NoteVisionIOLimelight("limelight-intake"));
 
                     case DevBot -> new Drive(
                             new SwerveModuleConfiguration(
@@ -161,7 +164,8 @@ public class RobotContainer {
                             Constants.Drive.Mod2.CONSTANTS,
                             Constants.Drive.Mod3.CONSTANTS,
                             Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
-                            new RangeSensorIO() {});
+                            new RangeSensorIO() {},
+                            new NoteVisionIO() {});
                     case SimBot -> new Drive(
                             new SwerveModule(
                                     Constants.Drive.FL,
@@ -184,7 +188,8 @@ public class RobotContainer {
                                     new DriveMotorIOSim(),
                                     new EncoderIO() {}),
                             new GyroIO() {},
-                            new RangeSensorIO() {});
+                            new RangeSensorIO() {},
+                            new NoteVisionIO() {});
                 };
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);

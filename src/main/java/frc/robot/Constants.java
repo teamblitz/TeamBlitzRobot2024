@@ -64,10 +64,14 @@ public final class Constants {
     public static final class Drive {
         public static final class NoteAssist {
             public static double ACTIVATION_RANGE = Units.degreesToRadians(30);
-            public static DoubleUnaryOperator ACTIVATION_FUNCTION = (x) ->
-                    Units.degreesToRadians(
-                            Math.exp(-Math.pow(Units.radiansToDegrees(x)/18, 4))
-                    ); // Output a value between 0 and 1, 0 means no assist, 1 means full assist
+            public static DoubleUnaryOperator ACTIVATION_FUNCTION =
+                    (x) ->
+                            Units.degreesToRadians(
+                                    Math.exp(
+                                            -Math.pow(
+                                                    Units.radiansToDegrees(x) / 18,
+                                                    4))); // Output a value between 0 and 1, 0 means
+            // no assist, 1 means full assist
         }
 
         public static final int PIGEON_ID = 14;
