@@ -290,6 +290,8 @@ public class Drive extends BlitzSubsystem {
                                         .get()
                                         .equals(DriverStation.Alliance.Red),
                 this);
+
+//        new Trigger(() -> noteVisionInputs.valid).debounce(5.0/30.0, Debouncer.DebounceType.kFalling).onTrue(Commands.runOnce(noteAssistFilter::reset));
     }
 
     public void drive(
@@ -315,7 +317,7 @@ public class Drive extends BlitzSubsystem {
 
             rotation = rotateToHeadingPid.calculate(getYaw().getDegrees(), rotationSetpoint);
         } else {
-            if (rotation != 0) {
+            if (rotation != 0 || velocityFilter == noteAssistFilter) {
                 lastTurnCommandSeconds = Timer.getFPGATimestamp();
                 keepHeadingSetpointSet = false;
                 Logger.recordOutput("Drive/Turning", true);
@@ -327,7 +329,7 @@ public class Drive extends BlitzSubsystem {
                 Logger.recordOutput("Drive/Turning", false);
             }
 
-            if (keepHeadingSetpointSet && maintainHeading) {
+            if (keepHeadingSetpointSet && maintainHeading && velocityFilter != noteAssistFilter) {
                 rotation = keepHeadingPid.calculate(getYaw().getDegrees());
             }
         }
@@ -622,8 +624,7 @@ public class Drive extends BlitzSubsystem {
                 driveI,
                 driveD);
 
-
-        noteAssistFilter.apply(new ChassisSpeeds());
+        //        noteAssistFilter.apply(new ChassisSpeeds());
     }
 
     public void initTelemetry() {

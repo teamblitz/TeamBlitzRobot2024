@@ -1,14 +1,17 @@
 package frc.robot.subsystems.vision.notes;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayEntry;
-import edu.wpi.first.networktables.TimestampedDoubleArray;
 import frc.lib.util.LimelightHelpers;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
 public class NoteVisionIOLimelight implements NoteVisionIO {
-    static { System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
 
     private final String name;
     private final Mat homography =
@@ -32,14 +35,15 @@ public class NoteVisionIOLimelight implements NoteVisionIO {
     public void updateInputs(NoteVisionInputs inputs) {
         LimelightHelpers.LimelightResults results = LimelightHelpers.getLatestResults(name);
 
-        inputs.timestampCapture= 0;
+        inputs.timestampCapture = 0;
 
-        DoubleArrayEntry jsonEntity =
-                LimelightHelpers.getLimelightDoubleArrayEntry(name, "t2d");
+        DoubleArrayEntry jsonEntity = LimelightHelpers.getLimelightDoubleArrayEntry(name, "t2d");
 
         var tsValue = jsonEntity.getAtomic();
 
-        double adjustedTimestamp = (tsValue.timestamp / 1000000.0) - ((results.latency_capture + results.latency_pipeline) / 1000.0);
+        double adjustedTimestamp =
+                (tsValue.timestamp / 1000000.0)
+                        - ((results.latency_capture + results.latency_pipeline) / 1000.0);
 
         inputs.timestampCapture = adjustedTimestamp;
 
