@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -308,6 +309,8 @@ public class Drive extends BlitzSubsystem {
         angleDrive(translation, rotation, 0, fieldRelative, isOpenLoop, maintainHeading, false);
     }
 
+    double lastRotationSetpoint;
+
     public void angleDrive(
             Translation2d translation,
             double rotation,
@@ -318,6 +321,11 @@ public class Drive extends BlitzSubsystem {
             boolean doRotationPid) {
         if (doRotationPid) {
             keepHeadingSetpointSet = false;
+
+            if (lastRotationSetpoint != rotationSetpoint) {
+                rotateToHeadingPid.reset(new TrapezoidProfile.State(getYaw().getDegrees(), 0));
+                lastRotationSetpoint = rotationSetpoint;
+            }
 
             rotation = rotateToHeadingPid.calculate(getYaw().getDegrees(), rotationSetpoint);
         } else {

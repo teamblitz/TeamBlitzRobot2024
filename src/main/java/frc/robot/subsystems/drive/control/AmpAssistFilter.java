@@ -3,10 +3,13 @@ package frc.robot.subsystems.drive.control;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
+
+import java.util.Optional;
 
 public class AmpAssistFilter extends ChassisSpeedFilter {
     private final TrapezoidProfile motionProfile =
@@ -46,10 +49,19 @@ public class AmpAssistFilter extends ChassisSpeedFilter {
 
         profiledPIDController.calculate(drive.getRange());
 
+        Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+
+        if (alliance.isEmpty()) {
+            System.err.println("NO ALLIANCE, CANT AUTO AMP");
+            return initialSpeeds;
+        }
+
+
         return new ChassisSpeeds(
                 initialSpeeds.vxMetersPerSecond,
-                profiledPIDController.calculate(drive.getRange())
-                        + profiledPIDController.getSetpoint().velocity,
+                (alliance.get() == DriverStation.Alliance.Red ? 1 : -1) *
+                        (profiledPIDController.calculate(drive.getRange())
+                        + profiledPIDController.getSetpoint().velocity),
                 initialSpeeds.omegaRadiansPerSecond);
     }
 

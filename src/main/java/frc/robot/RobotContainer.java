@@ -122,7 +122,7 @@ public class RobotContainer {
                                 () -> // TODO: THis should be declarative, when button do xyz, not
                                         // imperative as it is currently
                                         OIConstants.Drive.AMP_ASSIST.getAsBoolean()
-                                                ? -90
+                                                ? (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red ? 90 : -90)
                                                 : Double.NaN)
                         .withName("TeleopSwerve"));
 
