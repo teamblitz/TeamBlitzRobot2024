@@ -264,7 +264,7 @@ public class RobotContainer {
                                         () -> Leds.getInstance().autoPickupReady = false)
                                 .ignoringDisable(true));
 
-        OIConstants.Drive.AMP_ASSIST.whileTrue(drive.useVelocityFilter(drive.ampAssistFilter));
+        OIConstants.Drive.AMP_ASSIST.whileTrue(drive.useVelocityFilter(drive.ampAssistFilter).alongWith(arm.setGoal(Arm.State.AMP_BACK)));
         OIConstants.Drive.AUTO_PICKUP.whileTrue(drive.useVelocityFilter(drive.noteAssistFilter));
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
@@ -316,32 +316,32 @@ public class RobotContainer {
         arm.setStageSafety(OIConstants.Arm.TRANSIT_STAGE);
 
         // TEST STUFF
-        OIConstants.TestMode.ZERO_ABS_ENCODERS.onTrue(drive.zeroAbsEncoders());
-        OIConstants.TestMode.SysId.Arm.QUASISTATIC_FWD.whileTrue(
-                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                        .beforeStarting(Commands.print("ArmQuasFwd")));
-        OIConstants.TestMode.SysId.Arm.QUASISTATIC_REV.whileTrue(
-                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                        .beforeStarting(Commands.print("ArmQuasRev")));
-        OIConstants.TestMode.SysId.Arm.DYNAMIC_FWD.whileTrue(
-                arm.sysIdDynamic(SysIdRoutine.Direction.kForward)
-                        .beforeStarting(Commands.print("ArmDynamicFwd")));
-        OIConstants.TestMode.SysId.Arm.DYNAMIC_REV.whileTrue(
-                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-                        .beforeStarting(Commands.print("ArmDynamicRev")));
-
-        OIConstants.TestMode.SysId.Drive.QUASISTATIC_FWD.whileTrue(
-                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-                        .beforeStarting(Commands.print("DriveQuasFwd")));
-        OIConstants.TestMode.SysId.Drive.QUASISTATIC_REV.whileTrue(
-                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-                        .beforeStarting(Commands.print("DriveQuasRev")));
-        OIConstants.TestMode.SysId.Drive.DYNAMIC_FWD.whileTrue(
-                drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
-                        .beforeStarting(Commands.print("DriveDynamicFwd")));
-        OIConstants.TestMode.SysId.Drive.DYNAMIC_REV.whileTrue(
-                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-                        .beforeStarting(Commands.print("DriveDynamicRev")));
+//        OIConstants.TestMode.ZERO_ABS_ENCODERS.onTrue(drive.zeroAbsEncoders());
+//        OIConstants.TestMode.SysId.Arm.QUASISTATIC_FWD.whileTrue(
+//                arm.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+//                        .beforeStarting(Commands.print("ArmQuasFwd")));
+//        OIConstants.TestMode.SysId.Arm.QUASISTATIC_REV.whileTrue(
+//                arm.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+//                        .beforeStarting(Commands.print("ArmQuasRev")));
+//        OIConstants.TestMode.SysId.Arm.DYNAMIC_FWD.whileTrue(
+//                arm.sysIdDynamic(SysIdRoutine.Direction.kForward)
+//                        .beforeStarting(Commands.print("ArmDynamicFwd")));
+//        OIConstants.TestMode.SysId.Arm.DYNAMIC_REV.whileTrue(
+//                arm.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+//                        .beforeStarting(Commands.print("ArmDynamicRev")));
+//
+//        OIConstants.TestMode.SysId.Drive.QUASISTATIC_FWD.whileTrue(
+//                drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+//                        .beforeStarting(Commands.print("DriveQuasFwd")));
+//        OIConstants.TestMode.SysId.Drive.QUASISTATIC_REV.whileTrue(
+//                drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+//                        .beforeStarting(Commands.print("DriveQuasRev")));
+//        OIConstants.TestMode.SysId.Drive.DYNAMIC_FWD.whileTrue(
+//                drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
+//                        .beforeStarting(Commands.print("DriveDynamicFwd")));
+//        OIConstants.TestMode.SysId.Drive.DYNAMIC_REV.whileTrue(
+//                drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+//                        .beforeStarting(Commands.print("DriveDynamicRev")));
 
         new Trigger(RobotController::getUserButton).toggleOnTrue(arm.coastCommand());
     }
