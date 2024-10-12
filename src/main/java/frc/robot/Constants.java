@@ -63,13 +63,13 @@ public final class Constants {
 
     public static final class Drive {
         public static final class NoteAssist {
-            public static double ACTIVATION_RANGE = Units.degreesToRadians(30);
+            public static double ACTIVATION_RANGE = Units.degreesToRadians(45);
             public static DoubleUnaryOperator ACTIVATION_FUNCTION =
                     (x) ->
                             Units.degreesToRadians(
                                     Math.exp(
                                             -Math.pow(
-                                                    Units.radiansToDegrees(x) / 18,
+                                                    Units.radiansToDegrees(x) / 40,
                                                     4))); // Output a value between 0 and 1, 0 means
             // no assist, 1 means full assist
         }

@@ -354,13 +354,21 @@ public class RobotContainer {
         InternalButton shoot = new InternalButton();
         InternalButton qShoot = new InternalButton();
 
+//        shoot.whileTrue(
+//                arm.setGoal(Arm.State.SUBWOOFER)
+//                        .raceWith(Commands.waitSeconds(1))
+//                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+//                        .raceWith(shooter.shootCommand())
+//                        .asProxy()
+//                        .withName("auto/shoot"));
+
         shoot.whileTrue(
-                arm.setGoal(Arm.State.SUBWOOFER)
-                        .raceWith(Commands.waitSeconds(1))
-                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
-                        .raceWith(shooter.shootCommand())
-                        .asProxy()
-                        .withName("auto/shoot"));
+                arm.setGoal(Arm.State.SUBWOOFER).raceWith(
+                                Commands.waitSeconds(1)
+                                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
+                                        .raceWith(shooter.shootCommand())
+                                        .asProxy()
+                        ).withName("auto/shoot"));
 
         qShoot.whileTrue(
                 arm.setGoal(Arm.State.SUBWOOFER)

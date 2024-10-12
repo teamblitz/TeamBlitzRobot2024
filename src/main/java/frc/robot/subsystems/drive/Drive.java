@@ -572,6 +572,7 @@ public class Drive extends BlitzSubsystem {
 
         swerveOdometry.update(getYaw(), getModulePositions());
         poseEstimator.update(getYaw(), getModulePositions());
+        odoBuffer.addSample(Timer.getFPGATimestamp(), swerveOdometry.getPoseMeters());
 
         ///////////////////////////////////////////////////////////////
 
@@ -590,7 +591,7 @@ public class Drive extends BlitzSubsystem {
         LimelightHelpers.PoseEstimate limelightMeasurement =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
-        if ((limelightMeasurement.tagCount >= 2)
+        if ((limelightMeasurement.tagCount >= 1)
                 && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
             poseEstimator.setVisionMeasurementStdDevs(
                     VecBuilder.fill(

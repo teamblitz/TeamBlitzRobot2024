@@ -38,6 +38,7 @@ public class NoteAssistFilter extends ChassisSpeedFilter {
 
     @Override
     public ChassisSpeeds apply(ChassisSpeeds initialSpeeds) {
+        Logger.recordOutput("vision/note/test1", true);
         if (!detectedNoteDebounce.calculate(noteVisionInputs.projectionValid &&noteVisionInputs.valid)) return initialSpeeds;
 
         double timestamp = noteVisionInputs.timestampCapture;
