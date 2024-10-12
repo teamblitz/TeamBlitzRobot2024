@@ -279,7 +279,7 @@ public class Drive extends BlitzSubsystem {
                                 this));
 
         AutoBuilder.configureHolonomic(
-                this::getEstimatedPose,
+                this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
                 (speeds) -> drive(speeds, false),
@@ -598,6 +598,8 @@ public class Drive extends BlitzSubsystem {
         }
 
         lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
+
+        Logger.recordOutput(logKey + "/vision/timestampSeconds", lastVisionTimeStamp);
 
         Logger.recordOutput(logKey + "/Odometry", swerveOdometry.getPoseMeters());
         Logger.recordOutput(logKey + "/Vision+Odometry", poseEstimator.getEstimatedPosition());
