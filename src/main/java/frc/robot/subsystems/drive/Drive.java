@@ -9,12 +9,15 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.Interpolatable;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -66,6 +69,7 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDrivePoseEstimator poseEstimator;
+    private final TimeInterpolatableBuffer<Pose2d> odoBuffer = TimeInterpolatableBuffer.createBuffer(1.5);
 
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
@@ -573,11 +577,11 @@ public class Drive extends BlitzSubsystem {
 
         // TODO: Whenever this PR gets merged, replace this with it
         // https://github.com/wpilibsuite/allwpilib/pull/6426
-        Optional<Pose2d> poseTest =
-                ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp() - 1);
-
-        poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest", pose2d));
-        Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
+//        Optional<Pose2d> poseTest =
+//                ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp() - 1);
+//
+//        poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest", pose2d));
+//        Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
 
         ///////////////////////////////////////////////////////////////
 
@@ -636,6 +640,6 @@ public class Drive extends BlitzSubsystem {
     }
 
     public Optional<Pose2d> samplePreviousPose(double timestamp) {
-        return ReflectionHell.samplePoseEstimator(poseEstimator, timestamp);
+        return odoBuffer.getSample(timestamp);
     }
 }

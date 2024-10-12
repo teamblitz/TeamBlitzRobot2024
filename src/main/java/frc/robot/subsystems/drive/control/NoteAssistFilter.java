@@ -74,7 +74,7 @@ public class NoteAssistFilter extends ChassisSpeedFilter {
 
         Logger.recordOutput("vision/note/notePoseField", notePoseField);
 
-        Translation2d fieldRelativeNoteBotSpace = notePoseField.minus(drive.getEstimatedPose().getTranslation());
+        Translation2d fieldRelativeNoteBotSpace = notePoseField.minus(drive.getPose().getTranslation());
 
         Logger.recordOutput("vision/note/fieldRelativeNoteBotSpace", fieldRelativeNoteBotSpace);
 
