@@ -20,6 +20,7 @@ import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -35,7 +36,8 @@ public final class Constants {
 
     public static final Mode SIM_MODE = Mode.SIM;
 
-    public static final boolean TUNING_MODE = false;
+    public static final boolean TUNING_MODE = true;
+    public static boolean DISABLE_HAL = false; // IDK What this does
 
     public enum Mode {
         /** Running a physics simulator. */
@@ -51,16 +53,25 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot robot = Robot.CompBot;
+    public static final Robot ROBOT = Robot.CompBot;
 
     public static boolean compBot() {
-        return robot == Robot.CompBot;
+        return ROBOT == Robot.CompBot;
     }
 
     public static final double LOOP_PERIOD_SEC = frc.robot.Robot.defaultPeriodSecs;
 
     public static final class Drive {
+        public static final class NoteAssist {
+            public static double ACTIVATION_RANGE = Units.degreesToRadians(30);
+            public static DoubleUnaryOperator ACTIVATION_FUNCTION = (x) ->
+                    Units.degreesToRadians(
+                            Math.exp(-Math.pow(Units.radiansToDegrees(x)/18, 4))
+                    ); // Output a value between 0 and 1, 0 means no assist, 1 means full assist
+        }
+
         public static final int PIGEON_ID = 14;
+        public static final int FUSION_TIME_OF_FLIGHT_ID = 0;
         public static final boolean USE_PIGEON = true;
 
         public static final COTSSwerveConstants CHOSEN_MODULE =
@@ -153,7 +164,6 @@ public final class Constants {
         public static final double DRIVE_KP = compBot() ? 3.8342 : 0.028215;
         public static final double DRIVE_KI = 0.0;
         public static final double DRIVE_KD = 0.0;
-        public static final double DRIVE_KF = 0.0; // Same here.
 
         /* Drive Motor Characterization Values in volts*/
         public static final double DRIVE_KS = compBot() ? 0.11193 : (0.19714);
@@ -181,7 +191,7 @@ public final class Constants {
         public static final double MAX_ANGULAR_VELOCITY =
                 10.0; // TODO: This must be tuned to specific robot
 
-        /* Neutral Modes */
+        /* Brake Modes */
         public static final boolean ANGLE_BRAKE_MODE = false;
         public static final boolean DRIVE_BRAKE_MODE = true;
 
@@ -192,7 +202,7 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 7;
             public static final int CAN_CODER_ID = 2;
             public static final Rotation2d ANGLE_OFFSET =
-                    Rotation2d.fromDegrees(robot == Robot.CompBot ? 103.711 : 359.077);
+                    Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? 103.711 : 359.077);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -204,7 +214,7 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 9;
             public static final int CAN_CODER_ID = 3;
             public static final Rotation2d ANGLE_OFFSET =
-                    Rotation2d.fromDegrees(robot == Robot.CompBot ? -37.617 : 269.736);
+                    Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? -37.617 : 269.736);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -216,7 +226,7 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 11;
             public static final int CAN_CODER_ID = 4;
             public static final Rotation2d ANGLE_OFFSET =
-                    Rotation2d.fromDegrees(robot == Robot.CompBot ? -71.895 : 1.582);
+                    Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? -71.895 : 1.582);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -228,7 +238,7 @@ public final class Constants {
             public static final int ANGLE_MOTOR_ID = 13;
             public static final int CAN_CODER_ID = 5;
             public static final Rotation2d ANGLE_OFFSET =
-                    Rotation2d.fromDegrees(robot == Robot.CompBot ? -105.117 : 89.253);
+                    Rotation2d.fromDegrees(ROBOT == Robot.CompBot ? -105.117 : 89.253);
             public static final SwerveModuleConstants CONSTANTS =
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
@@ -237,15 +247,15 @@ public final class Constants {
 
     public static final class Arm {
         public static final double MIN_ROT = Units.degreesToRadians(-10); // TODO, TUNE THIS
-        public static final double MAX_ROT = Units.degreesToRadians(103); // TODO, tune this
+        public static final double MAX_ROT = Units.degreesToRadians(103);
+        public static final double MAX_STAGE = Units.degreesToRadians(10); // TODO, tune this
 
         public static final double STARTING_POS =
                 Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
         public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(24.91 - 90);
 
-        public static final double ROTATION_VELOCITY =
-                Units.degreesToRadians(compBot() ? 120 : 150);
-        public static final double ROTATION_ACCELERATION =
+        public static final double MAX_VELOCITY = Units.degreesToRadians(compBot() ? 120 : 150);
+        public static final double MAX_ACCELERATION =
                 Units.degreesToRadians(compBot() ? 240 : 180); // prev 240
 
         public static final int ARM_ROT_LEADER = 16;
@@ -276,18 +286,17 @@ public final class Constants {
         }
 
         public static final double GEAR_RATIO =
-                robot == Robot.CompBot
-                        ? ((3 * 3 * 4) / 1.0) * (58.0 / 12.0)
-                        : ((3 * 3 * 4) / 1.0) * (64.0 / 12.0);
+                ROBOT == Robot.CompBot ? (3 * 3 * 4) * (58.0 / 12.0) : (3 * 3 * 4) * (64.0 / 12.0);
 
         public static final class Positions {
             public static final double INTAKE =
                     compBot()
                             ? Units.degreesToRadians(-2)
                             : STARTING_POS + Units.degreesToRadians(-5);
-            public static final double TRANSIT_STAGE = Units.degreesToRadians(10);
+            public static final double CLIMB = MAX_STAGE;
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);
-            public static final double SCORE_AMP = Units.degreesToRadians(103);
+            public static final double AMP_FRONT = Units.degreesToRadians(103);
+            public static final double AMP_BACK = Units.degreesToRadians(60);
 
             public static final double SPEAKER_SUB_FRONT =
                     Units.degreesToRadians(30 + (compBot() ? 2 : 20));
@@ -299,10 +308,7 @@ public final class Constants {
     }
 
     public static class Intake {
-        public static final int CURRENT_LIMIT =
-                50; // Todo, I don't want to bring this too low, but this should give us plenty of
-
-        // time to shut off the intake if the hex bends
+        public static final int CURRENT_LIMIT = 50;
 
         public static final class Spark {
             public static final int MOTOR_ID = 19;
@@ -349,33 +355,33 @@ public final class Constants {
         public static final int CURRENT_LIMIT = 60;
 
         public static class AutoShootConstants {
-            public static final Transform2d botToCenterOfRotation =
+            public static final Transform2d BOT_TO_CENTER_OF_ROTATION =
                     new Transform2d(
                             Units.inchesToMeters(-(15 - 4)),
                             Units.inchesToMeters(4),
                             Rotation2d.fromRadians(0));
-            public static final Transform2d centerOfRotationToShooter =
+            public static final Transform2d CENTER_OF_ROTATION_TO_SHOOTER =
                     new Transform2d(
                             Units.inchesToMeters(-27),
                             Units.inchesToMeters(4),
                             Rotation2d.fromRadians(0));
 
-            public static final double shootAngleOffset = Units.degreesToRadians(20);
+            public static final double SHOOT_ANGLE_OFFSET = Units.degreesToRadians(20);
 
-            public static final InterpolatingDoubleTreeMap angleTreeMap =
+            public static final InterpolatingDoubleTreeMap ANGLE_TREE_MAP =
                     new InterpolatingDoubleTreeMap();
 
             static {
-                angleTreeMap.put(1.19, Units.degreesToRadians(29));
-                angleTreeMap.put(1.365, Units.degreesToRadians(35));
-                angleTreeMap.put(1.7, Units.degreesToRadians(39));
-                angleTreeMap.put(2.03, Units.degreesToRadians(43));
-                angleTreeMap.put(2.225, Units.degreesToRadians(46));
-                angleTreeMap.put(2.48, Units.degreesToRadians(47));
-                angleTreeMap.put(2.66, Units.degreesToRadians(48.5));
-                angleTreeMap.put(2.90, Units.degreesToRadians(50.5));
-                angleTreeMap.put(3.0, Units.degreesToRadians(51));
-                angleTreeMap.put(2.314, Units.degreesToRadians(52.25));
+                ANGLE_TREE_MAP.put(1.19, Units.degreesToRadians(29));
+                ANGLE_TREE_MAP.put(1.365, Units.degreesToRadians(35));
+                ANGLE_TREE_MAP.put(1.7, Units.degreesToRadians(39));
+                ANGLE_TREE_MAP.put(2.03, Units.degreesToRadians(43));
+                ANGLE_TREE_MAP.put(2.225, Units.degreesToRadians(46));
+                ANGLE_TREE_MAP.put(2.48, Units.degreesToRadians(47));
+                ANGLE_TREE_MAP.put(2.66, Units.degreesToRadians(48.5));
+                ANGLE_TREE_MAP.put(2.90, Units.degreesToRadians(50.5));
+                ANGLE_TREE_MAP.put(3.0, Units.degreesToRadians(51));
+                ANGLE_TREE_MAP.put(2.314, Units.degreesToRadians(52.25));
 
                 //                angleTreeMap.put(1.45, Units.degreesToRadians(40));
                 //                angleTreeMap.put(1.77, Units.degreesToRadians(43));
@@ -385,21 +391,21 @@ public final class Constants {
                 //                angleTreeMap.put(2.67, Units.degreesToRadians(51.8));
             }
 
-            public static final InterpolatingDoubleTreeMap feedVelocityTreeMap =
+            public static final InterpolatingDoubleTreeMap SHOOT_VELOCITY_TREE_MAP =
                     new InterpolatingDoubleTreeMap();
 
             static {
-                feedVelocityTreeMap.put(10.0, MAX_VELOCITY * .8);
-                feedVelocityTreeMap.put(2.0, MAX_VELOCITY * .8);
-                feedVelocityTreeMap.put(0.0, MAX_VELOCITY * .6);
+                SHOOT_VELOCITY_TREE_MAP.put(10.0, MAX_VELOCITY * .8);
+                SHOOT_VELOCITY_TREE_MAP.put(2.0, MAX_VELOCITY * .8);
+                SHOOT_VELOCITY_TREE_MAP.put(0.0, MAX_VELOCITY * .6);
             }
 
-            public static final Pose3d goalPoseBlue =
+            public static final Pose3d GOAL_POSE_BLUE =
                     new Pose3d(0.2269, 5.5526, 2.0451, new Rotation3d());
-            public static final Pose3d goalPoseRed =
+            public static final Pose3d GOAL_POSE_RED =
                     new Pose3d(16.3062, 5.5556, 2.0446, new Rotation3d());
 
-            public static final double shootVelocity = 23.6 * .8;
+            public static final double SHOOT_VELOCITY = 23.6 * .8;
         }
     }
 
@@ -416,7 +422,7 @@ public final class Constants {
         public static final InvertedValue LEFT_INVERT = InvertedValue.Clockwise_Positive;
         public static final InvertedValue RIGHT_INVERT = InvertedValue.CounterClockwise_Positive;
 
-        public static final double kP = 180;
+        public static final double P = 180;
     }
 
     public static final class AutoConstants {
@@ -445,18 +451,19 @@ public final class Constants {
                         MAX_MODULE_SPEED,
                         Drive.CENTER_TO_MODULE
                                 .get(Drive.FL)
-                                .getNorm(), // Drive base radius (distance from center to furthest
+                                .getNorm(), // Drive base radius (distance from center to the
+                        // furthest
                         // module)
                         new ReplanningConfig());
 
-        public enum StartingPos {
+        public enum StartingPosition {
             LEFT(60),
             RIGHT(-60),
             CENTER(0);
 
             public final double angle;
 
-            private StartingPos(double angle) {
+            StartingPosition(double angle) {
                 this.angle = angle;
             }
         }

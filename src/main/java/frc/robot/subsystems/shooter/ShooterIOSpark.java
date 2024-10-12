@@ -82,17 +82,6 @@ public class ShooterIOSpark implements ShooterIO {
                 .setPositionConversionFactor(
                         Constants.Shooter.Spark.GEAR_RATIO
                                 * (Math.PI * 2 * Units.inchesToMeters(2)));
-
-        //        pidTop.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,
-        // 0);
-        //
-        // pidBottom.setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
-        //
-        //        pidTop.setSmartMotionMaxAccel(40, 0);
-        //        pidBottom.setSmartMotionMaxAccel(40, 0);
-        //
-        //        pidTop.setSmartMotionMaxAccel(40, 0);
-        //        pidBottom.setSmartMotionMaxAccel(40, 0);
     }
 
     @Override

@@ -77,11 +77,14 @@ public class OIConstants {
         public static final Trigger AUTO_PICKUP = DRIVE_CONTROLLER.button(2);
 
         public static final Trigger AIM_SPEAKER = Arm.AUTO_AIM_SPEAKER;
+        public static final Trigger AMP_ASSIST = DRIVE_CONTROLLER.button(12);
     }
 
     public static final class Intake {
         public static final Trigger FEED = OPERATOR_CONTROLLER.leftBumper();
         public static final Trigger EJECT = OPERATOR_CONTROLLER.povUp();
+
+        public static final Trigger SCORE = DRIVE_CONTROLLER.button(3);
     }
 
     public static final class Shooter {
@@ -95,7 +98,8 @@ public class OIConstants {
         public static final DoubleSupplier MANUAL_ARM_SPEED =
                 () -> -OPERATOR_CONTROLLER.getLeftY() * .2;
 
-        public static final Trigger INTAKE = TELEOP.and(OPERATOR_CONTROLLER.a()).or(Drive.AUTO_PICKUP);
+        public static final Trigger INTAKE =
+                TELEOP.and(OPERATOR_CONTROLLER.a()).or(Drive.AUTO_PICKUP);
 
         public static final Trigger TRANSIT_STAGE =
                 TELEOP.and(
@@ -106,32 +110,25 @@ public class OIConstants {
 
         public static final Trigger SPEAKER_SUB_FRONT =
                 TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b().negate()));
-        public static final Trigger SPEAKER_SUB_SIDE =
-                TELEOP.and(OPERATOR_CONTROLLER.b().and(OPERATOR_CONTROLLER.y().negate()));
-        public static final Trigger SPEAKER_PODIUM =
-                TELEOP.and(OPERATOR_CONTROLLER.y().and(OPERATOR_CONTROLLER.b()));
+        public static final Trigger SPEAKER_SUB_SIDE = UNBOUND;
+        public static final Trigger SPEAKER_PODIUM = UNBOUND;
 
-        public static final Trigger SCORE_AMP = TELEOP.and(OPERATOR_CONTROLLER.x());
+        public static final Trigger AMP_FRONT = TELEOP.and(OPERATOR_CONTROLLER.b());
+        public static final Trigger AMP_BACK = TELEOP.and(OPERATOR_CONTROLLER.x());
 
         public static final Trigger AUTO_AIM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());
     }
 
     public static final class Climber {
         public static final Trigger UP_BOTH = OPERATOR_CONTROLLER.leftTrigger();
-        public static final Trigger UP_LEFT = UNBOUND;
-        public static final Trigger UP_RIGHT = UNBOUND;
-
         public static final Trigger DOWN_BOTH = OPERATOR_CONTROLLER.rightTrigger();
-        public static final Trigger DOWN_MAN = OPERATOR_CONTROLLER.povRight();
-        // public static final Trigger DOWN_RIGHT = TEST_CONTROLLER.rightBumper();
-
+        public static final Trigger DOWN_MANUAL = OPERATOR_CONTROLLER.povRight();
     }
 
     public static final class Overrides {
         private static final ShuffleboardTab TAB = Shuffleboard.getTab("Overrides");
 
-        @SuppressWarnings("close")
-        // I hate java, why can't BooleanSupplier implement Supplier<Boolean>
+        @SuppressWarnings("resource")
         public static final BooleanSupplier INTAKE_OVERRIDE =
                 DashboardHelpers.genericEntrySupplier(
                                 TAB.add("Intake", false)
@@ -152,26 +149,27 @@ public class OIConstants {
     }
 
     public static final class TestMode {
-        public static final Trigger zeroAbsEncoders = UNBOUND;
+        public static final Trigger ZERO_ABS_ENCODERS = UNBOUND;
 
+        // TODO, Move these to shuffleboard buttons in their respective dashboards.
         public static final class SysId {
             public static final class Arm {
-                public static final Trigger armTest =
+                public static final Trigger ARM_TEST =
                         new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povLeft());
-                public static final Trigger quasistaticFwd = armTest.and(TEST_CONTROLLER.y());
-                public static final Trigger quasistaticRev = armTest.and(TEST_CONTROLLER.x());
-                public static final Trigger dynamicFwd = armTest.and(TEST_CONTROLLER.b());
-                public static final Trigger dynamicRev = armTest.and(TEST_CONTROLLER.a());
+                public static final Trigger QUASISTATIC_FWD = ARM_TEST.and(TEST_CONTROLLER.y());
+                public static final Trigger QUASISTATIC_REV = ARM_TEST.and(TEST_CONTROLLER.x());
+                public static final Trigger DYNAMIC_FWD = ARM_TEST.and(TEST_CONTROLLER.b());
+                public static final Trigger DYNAMIC_REV = ARM_TEST.and(TEST_CONTROLLER.a());
             }
 
             public static final class Drive {
-                public static final Trigger driveTest =
+                public static final Trigger DRIVE_TEST =
                         new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povDown());
-                public static final Trigger quasistaticFwd = driveTest.and(TEST_CONTROLLER.y());
-                public static final Trigger quasistaticRev = driveTest.and(TEST_CONTROLLER.x());
-                public static final Trigger dynamicFwd = driveTest.and(TEST_CONTROLLER.b());
-                public static final Trigger dynamicRev = driveTest.and(TEST_CONTROLLER.a());
+                public static final Trigger QUASISTATIC_FWD = DRIVE_TEST.and(TEST_CONTROLLER.y());
+                public static final Trigger QUASISTATIC_REV = DRIVE_TEST.and(TEST_CONTROLLER.x());
+                public static final Trigger DYNAMIC_FWD = DRIVE_TEST.and(TEST_CONTROLLER.b());
+                public static final Trigger DYNAMIC_REV = DRIVE_TEST.and(TEST_CONTROLLER.a());
             }
         }
-    } // TODO, i kinda forgot about shuffleboard commands
+    }
 }

@@ -23,8 +23,6 @@ public class Climber extends BlitzSubsystem {
     private ElevatorFeedforward ffUnLoadedLeft;
     private ElevatorFeedforward ffUnLoadedRight;
 
-    // private final SysIdRoutine routine;
-
     public Climber(ClimberIO io) {
         super("climber");
         this.io = io;

@@ -27,7 +27,7 @@ public class Leds extends SubsystemBase {
     public boolean requestAmp = false;
     public boolean intaking = false;
     public boolean hasNote = false;
-    public double lastPickupTime = 0.0; 
+    public double lastPickupTime = 0.0;
     public boolean indexing = false;
     public boolean autoPickupReady = false;
     public boolean autoPickupActive = false;
@@ -185,10 +185,6 @@ public class Leds extends SubsystemBase {
                 solid((Timer.getFPGATimestamp() - autoFinishedTime) / fullTime, Color.kGreen);
             }
         } else { // Enabled
-            //            if (requestAmp) {
-            //                strobe(Color.kWhite, strobeFastDuration);
-            //            } else if (trapping || climbing || autoDrive || autoShoot) {
-            //                rainbow(rainbowCycleLength, rainbowDuration);
             if (hasNote && lastPickupTime == -1.0) {
                 lastPickupTime = Timer.getFPGATimestamp();
             } else if (!hasNote) {
@@ -221,8 +217,7 @@ public class Leds extends SubsystemBase {
             solid(Color.kRed);
         }
 
-        //        solid(Color.kBlue);
-
+        // Deal with dumb andymark leds not following rgb conventions
         for (int i = 0; i < buffer.getLength(); i++) {
             buffer.setLED(i, toGRB(buffer.getLED(i)));
         }

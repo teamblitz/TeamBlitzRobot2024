@@ -66,7 +66,7 @@ public class Intake extends BlitzSubsystem {
         return Commands.race(
                         setSpeedCommand(speed)
                                 .until(() -> inputs.breakBeam)
-                                .andThen(() -> noteState = NoteState.Unindexed)
+                                // .andThen(() -> noteState = NoteState.Unindexed)
                                 .onlyIf(
                                         () ->
                                                 !inputs.breakBeam
@@ -100,8 +100,7 @@ public class Intake extends BlitzSubsystem {
 
         return setSpeedCommand(-.15)
                 .raceWith(
-                        Commands.waitSeconds(.2)
-                                .andThen(Commands.waitUntil(() -> inputs.breakBeam)))
+                        Commands.waitSeconds(0).andThen(Commands.waitUntil(() -> inputs.breakBeam)))
                 //                .onlyIf(() -> !inputs.breakBeam)
                 .beforeStarting(() -> intakeState = IntakeState.Indexing)
                 .finallyDo(
@@ -120,8 +119,12 @@ public class Intake extends BlitzSubsystem {
     }
 
     public Command ejectCommand() {
+        return ejectCommand(-.3);
+    }
+
+    public Command ejectCommand(double speed) {
         return Commands.parallel(
-                        setSpeedCommand(-.3),
+                        setSpeedCommand(-Math.abs(speed)),
                         Commands.startEnd(
                                 () -> intakeState = IntakeState.Ejecting,
                                 () -> intakeState = IntakeState.Idle))

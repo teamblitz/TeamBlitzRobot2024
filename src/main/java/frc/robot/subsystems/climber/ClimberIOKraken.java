@@ -28,12 +28,12 @@ public class ClimberIOKraken implements ClimberIO {
         config.CurrentLimits.withStatorCurrentLimit(Climber.CURRENT_LIMIT);
 
         config.Feedback
-                .withSensorToMechanismRatio( // how many sensor rotations per mechanisim rotation.
+                .withSensorToMechanismRatio( // how many sensor rotations per mechanism rotation.
                         Climber.GEAR_RATIO * (1 / (Math.PI * Climber.SPOOL_DIAMETER)));
 
         config.MotionMagic.withMotionMagicCruiseVelocity(.5).withMotionMagicAcceleration(1);
 
-        config.Slot0.withKP(Climber.kP);
+        config.Slot0.withKP(Climber.P);
 
         config.MotorOutput.withInverted(Climber.LEFT_INVERT);
         left.getConfigurator().apply(config);

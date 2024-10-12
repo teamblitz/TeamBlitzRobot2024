@@ -10,10 +10,10 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -21,25 +21,29 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
+import frc.lib.MutableReference;
 import frc.lib.util.LimelightHelpers;
+import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.control.*;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
+import frc.robot.subsystems.drive.range.RangeSensorIO;
+import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
+import frc.robot.subsystems.drive.range.RangeSensorIOInputsAutoLogged;
 import frc.robot.subsystems.drive.swerveModule.SwerveModule;
 import frc.robot.subsystems.drive.swerveModule.SwerveModuleConfiguration;
 import frc.robot.subsystems.drive.swerveModule.angle.AngleMotorIOSpark;
@@ -47,8 +51,10 @@ import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOKraken;
 import frc.robot.subsystems.drive.swerveModule.drive.DriveMotorIOSpark;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -58,38 +64,22 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDrivePoseEstimator poseEstimator;
+
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
     private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+    private final RangeSensorIO rangeIO;
+    private final RangeSensorIOInputsAutoLogged rangeInputs = new RangeSensorIOInputsAutoLogged();
     private final ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drive");
     private final ShuffleboardTab tuningTab = Shuffleboard.getTab("DriveTuning");
-    private final ShuffleboardLayout anglePidLayout =
-            tuningTab.getLayout("AnglePid", BuiltInLayouts.kList);
-    private final ShuffleboardLayout drivePidLayout =
-            tuningTab.getLayout("DrivePid", BuiltInLayouts.kList);
-    private final Field2d field = new Field2d();
 
-    private final GenericEntry anglePEntry =
-            anglePidLayout.add("angleP", ANGLE_KP).getEntry("double");
-    private final GenericEntry angleIEntry =
-            anglePidLayout.add("angleI", ANGLE_KI).getEntry("double");
-    private final GenericEntry angleDEntry =
-            anglePidLayout.add("angleD", ANGLE_KD).getEntry("double");
+    private final LoggedTunableNumber angleP = new LoggedTunableNumber("drive/angle/kP", ANGLE_KP);
+    private final LoggedTunableNumber angleI = new LoggedTunableNumber("drive/angle/kI", ANGLE_KI);
+    private final LoggedTunableNumber angleD = new LoggedTunableNumber("drive/angle/kD", ANGLE_KD);
 
-    private final GenericEntry drivePEntry =
-            drivePidLayout.add("driveP", DRIVE_KP).getEntry("double");
-    private final GenericEntry driveIEntry =
-            drivePidLayout.add("driveI", DRIVE_KI).getEntry("double");
-    private final GenericEntry driveDEntry =
-            drivePidLayout.add("driveD", DRIVE_KD).getEntry("double");
-
-    private double angleP = ANGLE_KP;
-    private double angleI = ANGLE_KI;
-    private double angleD = ANGLE_KD;
-
-    private double driveP = DRIVE_KP;
-    private double driveI = DRIVE_KI;
-    private double driveD = DRIVE_KD;
+    private final LoggedTunableNumber driveP = new LoggedTunableNumber("drive/drive/kP", ANGLE_KP);
+    private final LoggedTunableNumber driveI = new LoggedTunableNumber("drive/drive/kI", ANGLE_KI);
+    private final LoggedTunableNumber driveD = new LoggedTunableNumber("drive/drive/kD", ANGLE_KD);
 
     private double lastTurnCommandSeconds;
     private boolean keepHeadingSetpointSet;
@@ -105,13 +95,70 @@ public class Drive extends BlitzSubsystem {
     private final NetworkTableEntry limelightPose =
             LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
 
+    // Control/State Based control
+    private final Subsystem velocityControlMutex = new Subsystem() {};
+    private final Subsystem velocityFilteringMutex = new Subsystem() {};
+    private final Subsystem headingControlMutex = new Subsystem() {};
+
+    private ChassisSpeedController velocityController = null;
+    private ChassisSpeedFilter velocityFilter = null;
+    private HeadingController headingController = null;
+
+    NetworkTableEntry intakeTx =
+            LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tx");
+    NetworkTableEntry intakeTv =
+            LimelightHelpers.getLimelightNTTableEntry("limelight-intake", "tv");
+
+    Debouncer tvBouncer = new Debouncer(2. / 30., Debouncer.DebounceType.kBoth);
+    MutableReference<Double> txCache = new MutableReference<>(0.);
+    MutableReference<Boolean> tvCache = new MutableReference<>(false);
+
+
+    public final AmpAssistFilter ampAssistFilter = new AmpAssistFilter(this);
+    public final NoteAssistFilter noteAssistFilter = new NoteAssistFilter(this,
+            () ->
+                    new Translation2d(
+                            Math.cos(
+                                    Math.toRadians(
+                                            -txCache.get() * 1.7)),
+                            Math.sin(
+                                    Math.toRadians(
+                                            -txCache.get() * 1.7)))
+                            .rotateBy(getYaw())
+            );
+
+    public Command setControl(ChassisSpeedController velocityController) {
+        return Commands.startEnd(
+                () -> this.velocityController = velocityController,
+                () -> this.velocityController = null,
+                velocityControlMutex);
+    }
+
+    public Command setHeadingControl(HeadingController headingController) {
+        return Commands.startEnd(
+                () -> this.headingController = headingController,
+                () -> this.headingController = null,
+                headingControlMutex);
+    }
+
+    public Command useVelocityFilter(ChassisSpeedFilter velocityFilter) {
+        return Commands.startEnd(
+                () -> {
+                    this.velocityFilter = velocityFilter;
+                    this.velocityFilter.reset();
+                },
+                () -> this.velocityFilter = null,
+                velocityFilteringMutex);
+    }
+
     public Drive(
             SwerveModuleConfiguration configuration,
             SwerveModuleConstants flConstants,
             SwerveModuleConstants frConstants,
             SwerveModuleConstants blConstants,
             SwerveModuleConstants brConstants,
-            GyroIO gyroIO) {
+            GyroIO gyroIO,
+            RangeSensorIO rangeIO) {
         this(
                 new SwerveModule(
                         FL,
@@ -149,7 +196,8 @@ public class Drive extends BlitzSubsystem {
                         configuration.encoder == SwerveModuleConfiguration.EncoderType.CANCODER
                                 ? new EncoderIOCanCoder(brConstants.cancoderID, CAN_CODER_INVERT)
                                 : new EncoderIOHelium(brConstants.cancoderID, CAN_CODER_INVERT)),
-                gyroIO);
+                gyroIO,
+                rangeIO);
     }
 
     public Drive(
@@ -157,7 +205,8 @@ public class Drive extends BlitzSubsystem {
             SwerveModule frontRight,
             SwerveModule backLeft,
             SwerveModule backRight,
-            GyroIO gyroIO) {
+            GyroIO gyroIO,
+            RangeSensorIO rangeIO) {
         super("drive");
 
         swerveModules =
@@ -171,6 +220,7 @@ public class Drive extends BlitzSubsystem {
                         KINEMATICS, getYaw(), getModulePositions(), new Pose2d());
 
         this.gyroIO = gyroIO;
+        this.rangeIO = rangeIO;
 
         keepHeadingPid = new PIDController(.15, 0, 0);
         keepHeadingPid.enableContinuousInput(-180, 180);
@@ -182,6 +232,8 @@ public class Drive extends BlitzSubsystem {
         initTelemetry();
 
         zeroGyro();
+
+        new RangeSensorIOFusion();
 
         new Trigger(DriverStation::isEnabled)
                 .onTrue(Commands.runOnce(() -> keepHeadingSetpointSet = false));
@@ -286,11 +338,14 @@ public class Drive extends BlitzSubsystem {
         Logger.recordOutput("Drive/keepHeadingSetpointSet", keepHeadingSetpointSet);
         Logger.recordOutput("Drive/keepSetpoint", keepHeadingPid.getSetpoint());
 
-        drive(
+        ChassisSpeeds robotRel =
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                 translation.getX(), translation.getY(), rotation, getYaw())
-                        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation),
+                        : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
+
+        drive(
+                velocityFilter != null ? velocityFilter.filterSpeeds(robotRel, false) : robotRel,
                 isOpenLoop);
     }
 
@@ -313,7 +368,7 @@ public class Drive extends BlitzSubsystem {
         }
     }
 
-    public void park() {
+    public Command park() {
         SwerveModuleState[] desiredStates = {
             (new SwerveModuleState(0, Rotation2d.fromDegrees(45))),
             (new SwerveModuleState(0, Rotation2d.fromDegrees(-45))),
@@ -321,7 +376,8 @@ public class Drive extends BlitzSubsystem {
             (new SwerveModuleState(0, Rotation2d.fromDegrees(45)))
         };
 
-        setModuleStates(desiredStates, true, false, true);
+        return runOnce(() -> setModuleStates(desiredStates, true, false, true))
+                .withName(logKey + "/park");
     }
 
     public void setBrakeMode(boolean enabled) {
@@ -386,6 +442,7 @@ public class Drive extends BlitzSubsystem {
         lastTurnCommandSeconds = Timer.getFPGATimestamp();
     }
 
+    @AutoLogOutput(key = "gyro/getyaw")
     public Rotation2d getYaw() {
         return Rotation2d.fromDegrees(gyroInputs.yaw).plus(gyroOffset);
     }
@@ -398,134 +455,8 @@ public class Drive extends BlitzSubsystem {
         return gyroInputs.roll;
     }
 
-    @Override
-    public void periodic() {
-        super.periodic();
-
-        for (SwerveModule mod : swerveModules) {
-            mod.periodic();
-        }
-        gyroIO.updateInputs(gyroInputs);
-        Logger.processInputs("gyro", gyroInputs);
-
-        swerveOdometry.update(getYaw(), getModulePositions());
-        poseEstimator.update(getYaw(), getModulePositions());
-
-        /* Vision stuff no touchy*/
-
-        LimelightHelpers.PoseEstimate limelightMeasurement =
-                LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-
-        if ((limelightMeasurement.tagCount >= 2)
-                && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
-            poseEstimator.setVisionMeasurementStdDevs(
-                    VecBuilder.fill(
-                            .7, .7,
-                            9999999)); // Standard deviations, basically vision measurements very up
-            // to .7m, and just don't trust the vision angle at all
-            poseEstimator.addVisionMeasurement(
-                    limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
-        }
-
-        lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
-
-        Logger.recordOutput(logKey + "/Odometry", swerveOdometry.getPoseMeters());
-        Logger.recordOutput(logKey + "/Vision+Odometry", poseEstimator.getEstimatedPosition());
-        Logger.recordOutput(logKey + "/Vision", getLimelightPose());
-        Logger.recordOutput(logKey + "/modules", getModuleStates());
-
-        boolean anglePIDChanged = false;
-        boolean drivePIDChanged = false;
-
-        if (anglePEntry.getDouble(angleP) != angleP) {
-            anglePIDChanged = true;
-            angleP = anglePEntry.getDouble(angleP);
-        }
-        if (angleIEntry.getDouble(angleI) != angleI) {
-            anglePIDChanged = true;
-            angleI = angleIEntry.getDouble(angleI);
-        }
-        if (angleDEntry.getDouble(angleD) != angleD) {
-            anglePIDChanged = true;
-            angleD = angleDEntry.getDouble(angleD);
-        }
-
-        if (drivePEntry.getDouble(driveP) != driveP) {
-            drivePIDChanged = true;
-            driveP = drivePEntry.getDouble(driveP);
-        }
-        if (driveIEntry.getDouble(driveI) != driveI) {
-            drivePIDChanged = true;
-            driveI = driveIEntry.getDouble(driveI);
-        }
-        if (driveDEntry.getDouble(driveD) != driveD) {
-            drivePIDChanged = true;
-            driveD = driveDEntry.getDouble(driveD);
-        }
-        //        anglePIDChanged = false;
-        //        drivePIDChanged = false;
-
-        if (drivePIDChanged) {
-            for (SwerveModule module : swerveModules) {
-                module.configDrivePid(driveP, driveI, driveD);
-            }
-        }
-        if (anglePIDChanged) {
-            for (SwerveModule module : swerveModules) {
-                module.configAnglePid(angleP, angleI, angleD);
-            }
-        }
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        drawRobotOnField(field);
-    }
-
-    public void initTelemetry() {
-        shuffleboardTab.add(field);
-        tuningTab.add("KeepHeadingPid", keepHeadingPid);
-        // tuningTab.add("Tuning Command", new SwerveTuning(this));
-    }
-
-    public void drawRobotOnField(Field2d field) {
-        field.setRobotPose(getPose());
-        // Draw a pose that is based on the robot pose, but shifted by the translation of the module
-        // relative to robot center,
-        // then rotated around its own center by the angle of the module.
-        SwerveModuleState[] swerveModuleStates = getModuleStates();
-        field.getObject("frontLeft")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(FL),
-                                                swerveModuleStates[FL].angle)));
-        field.getObject("frontRight")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(FR),
-                                                swerveModuleStates[FR].angle)));
-        field.getObject("backLeft")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(BL),
-                                                swerveModuleStates[BL].angle)));
-        field.getObject("backRight")
-                .setPose(
-                        getPose()
-                                .transformBy(
-                                        new Transform2d(
-                                                CENTER_TO_MODULE.get(BR),
-                                                swerveModuleStates[BR].angle)));
-    }
-
-    public Command buildParkCommand() {
-        return Commands.runOnce(this::park, this).withName(logKey + "/park");
+    public double getRange() {
+        return rangeInputs.range;
     }
 
     public Command driveSpeedTestCommand(double speed, double duration) {
@@ -620,5 +551,81 @@ public class Drive extends BlitzSubsystem {
                         logKey
                                 + "/dynamic"
                                 + (direction == SysIdRoutine.Direction.kForward ? "Fwd" : "Rev"));
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+
+        for (SwerveModule mod : swerveModules) {
+            mod.periodic();
+        }
+        gyroIO.updateInputs(gyroInputs);
+        rangeIO.updateInputs(rangeInputs);
+        Logger.processInputs("gyro", gyroInputs);
+        Logger.processInputs("drive/range", rangeInputs);
+
+        swerveOdometry.update(getYaw(), getModulePositions());
+        poseEstimator.update(getYaw(), getModulePositions());
+
+        ///////////////////////////////////////////////////////////////
+
+        // TODO: Whenever this PR gets merged, replace this with it
+        // https://github.com/wpilibsuite/allwpilib/pull/6426
+        Optional<Pose2d> poseTest =
+                ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp() - 1);
+
+        poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest", pose2d));
+        Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
+
+        ///////////////////////////////////////////////////////////////
+
+        /* Vision stuff no touchy*/
+
+        LimelightHelpers.PoseEstimate limelightMeasurement =
+                LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
+        if ((limelightMeasurement.tagCount >= 2)
+                && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
+            poseEstimator.setVisionMeasurementStdDevs(
+                    VecBuilder.fill(
+                            .7, .7,
+                            9999999)); // Standard deviations, basically vision measurements very up
+            // to .7m, and just don't trust the vision angle at all (not how std devs work noah)
+            poseEstimator.addVisionMeasurement(
+                    limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+        }
+
+        lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
+
+        Logger.recordOutput(logKey + "/Odometry", swerveOdometry.getPoseMeters());
+        Logger.recordOutput(logKey + "/Vision+Odometry", poseEstimator.getEstimatedPosition());
+        Logger.recordOutput(logKey + "/Vision", getLimelightPose());
+        Logger.recordOutput(logKey + "/modules", getModuleStates());
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                (pid) -> {
+                    for (SwerveModule module : swerveModules)
+                        module.configAnglePid(pid[0], pid[1], pid[2]);
+                },
+                angleP,
+                angleI,
+                angleD);
+
+        LoggedTunableNumber.ifChanged(
+                hashCode(),
+                (pid) -> {
+                    for (SwerveModule module : swerveModules)
+                        module.configDrivePid(pid[0], pid[1], pid[2]);
+                },
+                driveP,
+                driveI,
+                driveD);
+    }
+
+    public void initTelemetry() {
+        tuningTab.add("KeepHeadingPid", keepHeadingPid);
+        // tuningTab.add("Tuning Command", new SwerveTuning(this));
     }
 }
