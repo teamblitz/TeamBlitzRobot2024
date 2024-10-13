@@ -599,18 +599,21 @@ public class Drive extends BlitzSubsystem {
         LimelightHelpers.PoseEstimate limelightMeasurement =
                 LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
-        if ((limelightMeasurement.tagCount >= 1)
-                && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
-            poseEstimator.setVisionMeasurementStdDevs(
-                    VecBuilder.fill(
-                            .7, .7,
-                            9999999)); // Standard deviations, basically vision measurements very up
-            // to .7m, and just don't trust the vision angle at all (not how std devs work noah)
-            poseEstimator.addVisionMeasurement(
-                    limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+        if (limelightMeasurement != null) {
+            if ((limelightMeasurement.tagCount >= 1)
+                    && limelightMeasurement.timestampSeconds > lastVisionTimeStamp) {
+                poseEstimator.setVisionMeasurementStdDevs(
+                        VecBuilder.fill(
+                                .7, .7,
+                                9999999)); // Standard deviations, basically vision measurements very up
+                // to .7m, and just don't trust the vision angle at all (not how std devs work noah)
+                poseEstimator.addVisionMeasurement(
+                        limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
+            }
+
+            lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
         }
 
-        lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
 
         Logger.recordOutput(logKey + "/vision/timestampSeconds", lastVisionTimeStamp);
 
