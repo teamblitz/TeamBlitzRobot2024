@@ -113,7 +113,7 @@ public class OIConstants {
         public static final Trigger SPEAKER_SUB_SIDE = UNBOUND;
         public static final Trigger SPEAKER_PODIUM = UNBOUND;
 
-        public static final Trigger AMP_FRONT = UNBOUND; //TELEOP.and(OPERATOR_CONTROLLER.b());
+        public static final Trigger AMP_FRONT = UNBOUND; // TELEOP.and(OPERATOR_CONTROLLER.b());
         public static final Trigger AMP_BACK = TELEOP.and(OPERATOR_CONTROLLER.x());
 
         public static final Trigger AUTO_AIM_SPEAKER = TELEOP.and(OPERATOR_CONTROLLER.start());
@@ -148,29 +148,35 @@ public class OIConstants {
                         ::get;
     }
 
-//    public static final class TestMode {
-//        public static final Trigger ZERO_ABS_ENCODERS = UNBOUND;
-//
-//        // TODO, Move these to shuffleboard buttons in their respective dashboards.
-//        public static final class SysId {
-//            public static final class Arm {
-////                public static final Trigger ARM_TEST =
-////                        new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povLeft());
-////                public static final Trigger QUASISTATIC_FWD = ARM_TEST.and(TEST_CONTROLLER.y());
-////                public static final Trigger QUASISTATIC_REV = ARM_TEST.and(TEST_CONTROLLER.x());
-////                public static final Trigger DYNAMIC_FWD = UNBOUND; //ARM_TEST.and(TEST_CONTROLLER.b());
-//////                public static final Trigger DYNAMIC_FWD = ARM_TEST.and(TEST_CONTROLLER.b());
-////                public static final Trigger DYNAMIC_REV = ARM_TEST.and(TEST_CONTROLLER.a());
-//            }
-//
-//            public static final class Drive {
-//                public static final Trigger DRIVE_TEST =
-//                        new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povDown());
-//                public static final Trigger QUASISTATIC_FWD = DRIVE_TEST.and(TEST_CONTROLLER.y());
-//                public static final Trigger QUASISTATIC_REV = DRIVE_TEST.and(TEST_CONTROLLER.x());
-//                public static final Trigger DYNAMIC_FWD = DRIVE_TEST.and(TEST_CONTROLLER.b());
-//                public static final Trigger DYNAMIC_REV = DRIVE_TEST.and(TEST_CONTROLLER.a());
-//            }
-//        }
-//    }
+    //    public static final class TestMode {
+    //        public static final Trigger ZERO_ABS_ENCODERS = UNBOUND;
+    //
+    //        // TODO, Move these to shuffleboard buttons in their respective dashboards.
+    //        public static final class SysId {
+    //            public static final class Arm {
+    ////                public static final Trigger ARM_TEST =
+    ////                        new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povLeft());
+    ////                public static final Trigger QUASISTATIC_FWD =
+    // ARM_TEST.and(TEST_CONTROLLER.y());
+    ////                public static final Trigger QUASISTATIC_REV =
+    // ARM_TEST.and(TEST_CONTROLLER.x());
+    ////                public static final Trigger DYNAMIC_FWD = UNBOUND;
+    // //ARM_TEST.and(TEST_CONTROLLER.b());
+    //////                public static final Trigger DYNAMIC_FWD =
+    // ARM_TEST.and(TEST_CONTROLLER.b());
+    ////                public static final Trigger DYNAMIC_REV = ARM_TEST.and(TEST_CONTROLLER.a());
+    //            }
+    //
+    //            public static final class Drive {
+    //                public static final Trigger DRIVE_TEST =
+    //                        new Trigger(DriverStation::isTest).and(TEST_CONTROLLER.povDown());
+    //                public static final Trigger QUASISTATIC_FWD =
+    // DRIVE_TEST.and(TEST_CONTROLLER.y());
+    //                public static final Trigger QUASISTATIC_REV =
+    // DRIVE_TEST.and(TEST_CONTROLLER.x());
+    //                public static final Trigger DYNAMIC_FWD = DRIVE_TEST.and(TEST_CONTROLLER.b());
+    //                public static final Trigger DYNAMIC_REV = DRIVE_TEST.and(TEST_CONTROLLER.a());
+    //            }
+    //        }
+    //    }
 }

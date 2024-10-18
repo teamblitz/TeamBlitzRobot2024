@@ -1,6 +1,5 @@
 package frc.robot.subsystems.vision.notes;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import frc.lib.util.LimelightHelpers;
@@ -11,7 +10,6 @@ public class NoteVisionIOLimelight implements NoteVisionIO {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
-
 
     private final String name;
     private final Mat homography =

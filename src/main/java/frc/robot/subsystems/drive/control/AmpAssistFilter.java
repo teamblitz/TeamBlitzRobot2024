@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.lib.util.LoggedTunableNumber;
 import frc.robot.Robot;
 import frc.robot.subsystems.drive.Drive;
-
 import java.util.Optional;
 
 public class AmpAssistFilter extends ChassisSpeedFilter {
@@ -56,12 +55,11 @@ public class AmpAssistFilter extends ChassisSpeedFilter {
             return initialSpeeds;
         }
 
-
         return new ChassisSpeeds(
                 initialSpeeds.vxMetersPerSecond,
-                (alliance.get() == DriverStation.Alliance.Red ? 1 : -1) *
-                        (profiledPIDController.calculate(drive.getRange())
-                        + profiledPIDController.getSetpoint().velocity),
+                (alliance.get() == DriverStation.Alliance.Red ? 1 : -1)
+                        * (profiledPIDController.calculate(drive.getRange())
+                                + profiledPIDController.getSetpoint().velocity),
                 initialSpeeds.omegaRadiansPerSecond);
     }
 

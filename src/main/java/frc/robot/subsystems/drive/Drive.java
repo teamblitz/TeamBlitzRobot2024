@@ -9,14 +9,12 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -39,7 +37,6 @@ import frc.lib.BlitzSubsystem;
 import frc.lib.MutableReference;
 import frc.lib.util.LimelightHelpers;
 import frc.lib.util.LoggedTunableNumber;
-import frc.lib.util.ReflectionHell;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.control.*;
@@ -70,7 +67,8 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends BlitzSubsystem {
     private final SwerveDriveOdometry swerveOdometry;
     private final SwerveDrivePoseEstimator poseEstimator;
-    private final TimeInterpolatableBuffer<Pose2d> odoBuffer = TimeInterpolatableBuffer.createBuffer(1.5);
+    private final TimeInterpolatableBuffer<Pose2d> odoBuffer =
+            TimeInterpolatableBuffer.createBuffer(1.5);
 
     private final SwerveModule[] swerveModules;
     private final GyroIO gyroIO;
@@ -296,7 +294,8 @@ public class Drive extends BlitzSubsystem {
                                         .equals(DriverStation.Alliance.Red),
                 this);
 
-//        new Trigger(() -> noteVisionInputs.valid).debounce(5.0/30.0, Debouncer.DebounceType.kFalling).onTrue(Commands.runOnce(noteAssistFilter::reset));
+        //        new Trigger(() -> noteVisionInputs.valid).debounce(5.0/30.0,
+        // Debouncer.DebounceType.kFalling).onTrue(Commands.runOnce(noteAssistFilter::reset));
     }
 
     public void drive(
@@ -586,11 +585,13 @@ public class Drive extends BlitzSubsystem {
 
         // TODO: Whenever this PR gets merged, replace this with it
         // https://github.com/wpilibsuite/allwpilib/pull/6426
-//        Optional<Pose2d> poseTest =
-//                ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp() - 1);
-//
-//        poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest", pose2d));
-//        Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
+        //        Optional<Pose2d> poseTest =
+        //                ReflectionHell.samplePoseEstimator(poseEstimator, Timer.getFPGATimestamp()
+        // - 1);
+        //
+        //        poseTest.ifPresent(pose2d -> Logger.recordOutput(logKey + "/poseBufferTest",
+        // pose2d));
+        //        Logger.recordOutput(logKey + "/poseBufferTestGood", poseTest.isPresent());
 
         ///////////////////////////////////////////////////////////////
 
@@ -605,7 +606,8 @@ public class Drive extends BlitzSubsystem {
                 poseEstimator.setVisionMeasurementStdDevs(
                         VecBuilder.fill(
                                 .7, .7,
-                                9999999)); // Standard deviations, basically vision measurements very up
+                                9999999)); // Standard deviations, basically vision measurements
+                // very up
                 // to .7m, and just don't trust the vision angle at all (not how std devs work noah)
                 poseEstimator.addVisionMeasurement(
                         limelightMeasurement.pose, limelightMeasurement.timestampSeconds);
@@ -613,7 +615,6 @@ public class Drive extends BlitzSubsystem {
 
             lastVisionTimeStamp = limelightMeasurement.timestampSeconds;
         }
-
 
         Logger.recordOutput(logKey + "/vision/timestampSeconds", lastVisionTimeStamp);
 
@@ -642,8 +643,8 @@ public class Drive extends BlitzSubsystem {
                 driveI,
                 driveD);
 
-//                noteAssistFilter.apply(new ChassisSpeeds());
-//                noteAssistFilter.apply(new ChassisSpeeds());
+        //                noteAssistFilter.apply(new ChassisSpeeds());
+        //                noteAssistFilter.apply(new ChassisSpeeds());
     }
 
     public void initTelemetry() {

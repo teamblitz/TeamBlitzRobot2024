@@ -66,7 +66,7 @@ public class Intake extends BlitzSubsystem {
         return Commands.race(
                         setSpeedCommand(speed)
                                 .until(() -> inputs.breakBeam)
-                                 .andThen(() -> noteState = NoteState.Indexed)
+                                .andThen(() -> noteState = NoteState.Indexed)
                                 .onlyIf(
                                         () ->
                                                 !inputs.breakBeam
