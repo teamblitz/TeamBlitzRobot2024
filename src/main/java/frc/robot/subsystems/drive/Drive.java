@@ -281,7 +281,7 @@ public class Drive extends BlitzSubsystem {
                                 },
                                 this));
 
-        AutoBuilder.configureHolonomic(
+        AutoBuilder.configureHolonmetric(
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),

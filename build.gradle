@@ -1,5 +1,7 @@
 plugins {
     id "java"
+    id 'com.diffplug.spotless' version '6.20.0'
+    id "com.peterabeles.gversion" version "1.10"
     id "edu.wpi.first.GradleRIO" version "2025.1.1-beta-1"
 }
 
@@ -53,6 +55,7 @@ repositories {
         credentials {
             username = "Mechanical-Advantage-Bot"
             password = "\u0067\u0068\u0070\u005F\u0044\u004E\u0073\u0068\u004B\u0031\u006B\u0041\u005A\u006A\u0075\u0052\u0074\u0070\u0063\u0064\u0071\u006D\u0035\u004C\u006C\u0064\u004D\u004F\u0045\u0041\u006B\u0033\u0068\u0050\u0033\u0035\u0042\u0063\u0057\u0056"
+        }
     }
     mavenLocal()
     mavenCentral()
