@@ -6,6 +6,9 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -101,6 +104,9 @@ public class Drive extends BlitzSubsystem {
     private Rotation2d gyroOffset = new Rotation2d();
     private final NetworkTableEntry limelightPose =
             LimelightHelpers.getLimelightNTTableEntry("limelight", "botpose_wpiblue");
+
+    private final SwerveSetpointGenerator setpointGenerator;
+    private SwerveSetpoint previousSetpoint;
 
     // Control/State Based control
     private final Subsystem velocityControlMutex = new Subsystem() {};
@@ -294,8 +300,16 @@ public class Drive extends BlitzSubsystem {
                                         .equals(DriverStation.Alliance.Red),
                 this);
 
-        //        new Trigger(() -> noteVisionInputs.valid).debounce(5.0/30.0,
-        // Debouncer.DebounceType.kFalling).onTrue(Commands.runOnce(noteAssistFilter::reset));
+        // https://pathplanner.dev/pplib-swerve-setpoint-generator.html
+        setpointGenerator = new SwerveSetpointGenerator(
+                PHYSICAL_CONSTANTS, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
+                MAX_MODULE_ANGULAR_VELOCITY // The max rotation velocity of a swerve module in radians per second.
+        );
+
+        // Initialize the previous setpoint to the robot's current speeds & module states
+        ChassisSpeeds currentSpeeds = getChassisSpeeds(); // Method to get current robot-relative chassis speeds
+        SwerveModuleState[] currentStates = getModuleStates(); // Method to get the current swerve module states
+        previousSetpoint = new SwerveSetpoint(currentSpeeds, currentStates, DriveFeedforwards.zeros(PHYSICAL_CONSTANTS.numModules));
     }
 
     public void drive(
@@ -364,7 +378,15 @@ public class Drive extends BlitzSubsystem {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
 
-        setModuleStates(swerveModuleStates, openLoop, false, false);
+        // Note: it is important to not discretize speeds before or after
+        // using the setpoint generator, as it will discretize them for you
+        previousSetpoint = setpointGenerator.generateSetpoint(
+                previousSetpoint, // The previous setpoint
+                speeds, // The desired target speeds
+                Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in seconds
+        );
+
+        setModuleStates(previousSetpoint.moduleStates(), openLoop, false, false);
     }
 
     /* Used by SwerveControllerCommand in Auto */

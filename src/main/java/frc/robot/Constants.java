@@ -8,12 +8,15 @@
 package frc.robot;
 
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
@@ -247,6 +250,26 @@ public final class Constants {
                     new SwerveModuleConstants(
                             DRIVE_MOTOR_ID, ANGLE_MOTOR_ID, CAN_CODER_ID, ANGLE_OFFSET);
         }
+
+        public static final double MASS = Units.lbsToKilograms(150);
+        public static final double MOI = 1/12. * MASS * (WHEEL_BASE*WHEEL_BASE + TRACK_WIDTH*TRACK_WIDTH); // TODO: EMPIRICALLY MEASURE MOI
+        public static final double MAX_MODULE_ANGULAR_VELOCITY = Units.rotationsToRadians(10.0); // CONFIG
+
+        public static final RobotConfig PHYSICAL_CONSTANTS = new RobotConfig(
+                MASS,
+                MOI,
+                new ModuleConfig(
+                        WHEEL_CIRCUMFERENCE / (2 * Math.PI),
+                        MAX_SPEED,
+                        1.0, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
+                        compBot() ? DCMotor.getKrakenX60Foc(1) : DCMotor.getNEO(1),
+                        CurrentLimits.Kraken.DRIVE_STATOR // TODO, WRONG PROBABLY, might be SUPPLY limit, which we don't actualy set.,
+                        1
+
+                ),
+                TRACK_WIDTH,
+                WHEEL_BASE
+        );
     }
 
     public static final class Arm {
