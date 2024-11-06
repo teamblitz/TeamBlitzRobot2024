@@ -8,7 +8,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Voltage;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -204,7 +204,7 @@ public class Arm extends BlitzSubsystem {
                                 null,
                                 (state) -> Logger.recordOutput("SysIdTestState", state.toString())),
                         new SysIdRoutine.Mechanism(
-                                (Measure<Voltage> volts) -> {
+                                (Voltage volts) -> {
                                     System.out.println(volts.baseUnitMagnitude());
                                     io.setArmVolts(volts.in(Volts));
                                 },

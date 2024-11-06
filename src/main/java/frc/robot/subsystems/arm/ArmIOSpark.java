@@ -2,6 +2,13 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -12,10 +19,10 @@ import frc.robot.Constants.Arm;
 
 public class ArmIOSpark implements ArmIO {
 
-    private final CANSparkMax armRotLeader;
-    private final CANSparkMax armRotFollower;
+    private final SparkMax armRotLeader;
+    private final SparkMax armRotFollower;
     private final RelativeEncoder angleEncoder;
-    private final SparkPIDController anglePid;
+    private final SparkClosedLoopController anglePid;
 
     private final DutyCycleEncoder absRotationEncoder;
     private final Encoder quadEncoder;
@@ -29,27 +36,32 @@ public class ArmIOSpark implements ArmIO {
 
     public ArmIOSpark(boolean useInternalEncoder) {
         /* Arm Rotation */
-        armRotLeader = new CANSparkMax(Arm.ARM_ROT_LEADER, CANSparkLowLevel.MotorType.kBrushless);
+        armRotLeader = new SparkMax(Arm.ARM_ROT_LEADER, MotorType.kBrushless);
         armRotFollower =
-                new CANSparkMax(Arm.ARM_ROT_FOLLOWER, CANSparkLowLevel.MotorType.kBrushless);
+                new SparkMax(Arm.ARM_ROT_FOLLOWER, MotorType.kBrushless);
 
         this.useInternalEncoder = useInternalEncoder;
 
-        armRotLeader.restoreFactoryDefaults();
-        armRotFollower.restoreFactoryDefaults();
 
-        armRotLeader.setIdleMode(IdleMode.kBrake);
-        armRotFollower.setIdleMode(IdleMode.kBrake);
+        SparkMaxConfig configLeader = new SparkMaxConfig();
+        SparkMaxConfig configFollower = new SparkMaxConfig();
 
-        armRotLeader.setOpenLoopRampRate(Arm.OPEN_LOOP_RAMP);
-        armRotFollower.setOpenLoopRampRate(Arm.OPEN_LOOP_RAMP);
+        configLeader.idleMode(com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake);
+        configFollower.idleMode(com.revrobotics.spark.config.SparkBaseConfig.IdleMode.kBrake);
 
-        armRotLeader.setSmartCurrentLimit(Arm.CURRENT_LIMIT);
-        armRotLeader.setSmartCurrentLimit(Arm.CURRENT_LIMIT);
+        configLeader.openLoopRampRate(Arm.OPEN_LOOP_RAMP);
+        configFollower.openLoopRampRate(Arm.OPEN_LOOP_RAMP);
 
-        armRotLeader.setInverted(false);
-        armRotFollower.follow(armRotLeader, true);
+        configLeader.smartCurrentLimit(Arm.CURRENT_LIMIT);
+        configFollower.smartCurrentLimit(Arm.CURRENT_LIMIT);
 
+        configLeader.inverted(false);
+        configFollower.follow(armRotLeader, true);
+
+        armRotLeader.configure(configLeader, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        armRotFollower.configure(configFollower, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        
         angleEncoder = armRotLeader.getEncoder();
 
         angleEncoder.setPositionConversionFactor(
