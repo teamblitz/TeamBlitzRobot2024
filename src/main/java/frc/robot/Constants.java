@@ -10,9 +10,6 @@ package frc.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -21,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
@@ -263,7 +261,7 @@ public final class Constants {
                         MAX_SPEED,
                         1.0, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
                         compBot() ? DCMotor.getKrakenX60Foc(1) : DCMotor.getNEO(1),
-                        CurrentLimits.Kraken.DRIVE_STATOR // TODO, WRONG PROBABLY, might be SUPPLY limit, which we don't actualy set.,
+                        CurrentLimits.Kraken.DRIVE_STATOR, // TODO, WRONG PROBABLY, might be SUPPLY limit, which we don't actualy set.,
                         1
 
                 ),
@@ -471,17 +469,8 @@ public final class Constants {
 
         public static final double MAX_MODULE_SPEED = 3; // M/S
 
-        public static final HolonomicPathFollowerConfig HOLONOMIC_PATH_FOLLOWER_CONFIG =
-                new HolonomicPathFollowerConfig(
-                        new PIDConstants(PX_CONTROLLER, 0, 0), // Translation constants
-                        new PIDConstants(P_THETA_CONTROLLER, 0, 0), // Rotation constants
-                        MAX_MODULE_SPEED,
-                        Drive.CENTER_TO_MODULE
-                                .get(Drive.FL)
-                                .getNorm(), // Drive base radius (distance from center to the
-                        // furthest
-                        // module)
-                        new ReplanningConfig());
+        public static final com.pathplanner.lib.config.PIDConstants TRANSLATION_PID = new com.pathplanner.lib.config.PIDConstants(5,0,0);
+        public static final com.pathplanner.lib.config.PIDConstants ROTATION_PID = new com.pathplanner.lib.config.PIDConstants(5,0,0);
 
         public enum StartingPosition {
             LEFT(60),

@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.Drive.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
@@ -42,6 +44,7 @@ import frc.lib.util.LimelightHelpers;
 import frc.lib.util.LoggedTunableNumber;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.drive.control.*;
 import frc.robot.subsystems.drive.gyro.GyroIO;
 import frc.robot.subsystems.drive.gyro.GyroIOInputsAutoLogged;
@@ -287,12 +290,16 @@ public class Drive extends BlitzSubsystem {
                                 },
                                 this));
 
-        AutoBuilder.configureHolonmetric(
+        AutoBuilder.configure(
                 this::getPose,
                 this::resetOdometry,
                 () -> KINEMATICS.toChassisSpeeds(getModuleStates()),
-                (speeds) -> drive(speeds, false),
-                Constants.AutoConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG,
+                (speeds, feedforwards) -> drive(speeds, false),
+                new PPHolonomicDriveController(
+                    AutoConstants.TRANSLATION_PID,
+                    AutoConstants.ROTATION_PID
+                ),
+                PHYSICAL_CONSTANTS,
                 () ->
                         DriverStation.getAlliance().isPresent()
                                 && DriverStation.getAlliance()
