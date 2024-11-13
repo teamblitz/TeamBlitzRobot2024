@@ -58,11 +58,20 @@ public class ArmIOSpark implements ArmIO {
         configLeader.inverted(false);
         configFollower.follow(armRotLeader, true);
 
+        configLeader.softLimit.forwardSoftLimitEnabled(true);
+        configLeader.softLimit.reverseSoftLimitEnabled(true);
+
+        configLeader.softLimit.forwardSoftLimit((float) Arm.MAX_ROT);
+        configLeader.softLimit.reverseSoftLimit((float) Arm.MIN_ROT);
+
+        configLeader.encoder.velocityConversionFactor()
+
         armRotLeader.configure(configLeader, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         armRotFollower.configure(configFollower, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         
         angleEncoder = armRotLeader.getEncoder();
+
 
         angleEncoder.setPositionConversionFactor(
                 (1 / Constants.Arm.GEAR_RATIO) // Rotations of motor shaft devided by
@@ -72,27 +81,14 @@ public class ArmIOSpark implements ArmIO {
         angleEncoder.setVelocityConversionFactor(
                 (1 / Constants.Arm.GEAR_RATIO) * (1.0 / 60.0) * (2 * Math.PI));
 
-        anglePid = armRotLeader.getPIDController();
+        anglePid = armRotLeader.getClosedLoopController();
 
         setPid(Arm.PidConstants.P, Arm.PidConstants.I, Arm.PidConstants.D);
-
-        armRotLeader.setSmartCurrentLimit(60);
-        armRotFollower.setSmartCurrentLimit(60);
 
         absRotationEncoder = new DutyCycleEncoder(Arm.ABS_ENCODER);
         quadEncoder = new Encoder(Arm.QUAD_A, Arm.QUAD_B, true);
 
         quadEncoder.setDistancePerPulse(1 / (2048 * 2 * Math.PI));
-
-        /* Limit Switches */
-        //        armTopLimitSwitch = new DigitalInput(Arm.TOP_LIMIT_SWITCH);
-        //        armBottomLimitSwitch = new DigitalInput(Arm.BOTTOM_LIMIT_SWITCH);
-
-        armRotLeader.enableSoftLimit(CANSparkBase.SoftLimitDirection.kForward, true);
-        armRotLeader.enableSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, true);
-
-        armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kForward, (float) Arm.MAX_ROT);
-        armRotLeader.setSoftLimit(CANSparkBase.SoftLimitDirection.kReverse, (float) Arm.MIN_ROT);
 
         seedArmPosition(true);
     }
@@ -121,10 +117,10 @@ public class ArmIOSpark implements ArmIO {
         if (useInternalEncoder) {
             anglePid.setReference(
                     rot,
-                    CANSparkMax.ControlType.kPosition,
+                    SparkMax.ControlType.kPosition,
                     0,
                     arbFFVolts,
-                    SparkPIDController.ArbFFUnits.kVoltage);
+                    SparkClosedLoopController.ArbFFUnits.kVoltage);
         } else {
             armRotLeader.setVoltage(pid.calculate(getPosition(), rot) + arbFFVolts);
         }
@@ -167,15 +163,20 @@ public class ArmIOSpark implements ArmIO {
 
     @Override
     public void setBrake(boolean brake) {
+        armRotLeader.
         armRotLeader.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
         armRotFollower.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     @Override
     public void setPid(double kP, double kI, double kD) {
-        anglePid.setP(kP);
-        anglePid.setI(kI);
-        anglePid.setD(kD);
+
+
+        SparkMaxConfig wastedMemory = new SparkMaxConfig();
+
+        // TODO: REV LIB 2025: IM QUIRKY AND NEED TO DO A CONFIGURE ROUTINE TO SET PID CONSTANTS.
+        wastedMemory.closedLoop.pid(kP, kI, kD);
+        armRotLeader.configure(wastedMemory, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         pid = new PIDController(kP, kI, kD);
     }
