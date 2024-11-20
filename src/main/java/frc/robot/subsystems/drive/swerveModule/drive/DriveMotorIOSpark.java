@@ -1,26 +1,27 @@
 package frc.robot.subsystems.drive.swerveModule.drive;
 
 import com.revrobotics.*;
+import com.revrobotics.spark.*;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.lib.util.SwerveModuleConstants;
 import frc.robot.Constants;
 
 public class DriveMotorIOSpark implements DriveMotorIO {
-    private final CANSparkMax motor;
+    private final SparkMax motor;
 
     private final RelativeEncoder encoder;
 
-    private final SparkPIDController pidController;
+    private final SparkClosedLoopController pidController;
 
     private boolean lastBrake = false;
 
     public DriveMotorIOSpark(SwerveModuleConstants moduleConstants) {
 
         /* Drive motor */
-        motor =
-                new CANSparkMax(
-                        moduleConstants.driveMotorID, CANSparkLowLevel.MotorType.kBrushless);
+        motor = new SparkMax(moduleConstants.driveMotorID, SparkLowLevel.MotorType.kBrushless);
         encoder = motor.getEncoder();
-        pidController = motor.getPIDController();
+        pidController = motor.getClosedLoopController();
         configDriveMotor();
     }
 
@@ -39,10 +40,10 @@ public class DriveMotorIOSpark implements DriveMotorIO {
     public void setSetpoint(double setpoint, double ffVolts) {
         pidController.setReference(
                 setpoint,
-                CANSparkBase.ControlType.kVelocity,
+                SparkBase.ControlType.kVelocity,
                 0,
                 ffVolts,
-                SparkPIDController.ArbFFUnits.kVoltage);
+                SparkClosedLoopController.ArbFFUnits.kVoltage);
     }
 
     @Override
@@ -53,40 +54,45 @@ public class DriveMotorIOSpark implements DriveMotorIO {
     }
 
     private void configDriveMotor() {
-        motor.restoreFactoryDefaults();
-        motor.setSmartCurrentLimit(Constants.Drive.CurrentLimits.Spark.DRIVE_SMART_CURRENT_LIMIT);
-        motor.setSecondaryCurrentLimit(
-                Constants.Drive.CurrentLimits.Spark.DRIVE_SECONDARY_CURRENT_LIMIT);
-        motor.setInverted(Constants.Drive.DRIVE_MOTOR_INVERT);
-        motor.setIdleMode(
-                Constants.Drive.DRIVE_BRAKE_MODE
-                        ? CANSparkBase.IdleMode.kBrake
-                        : CANSparkBase.IdleMode.kCoast);
-        motor.setOpenLoopRampRate(Constants.Drive.OPEN_LOOP_RAMP);
-        motor.setClosedLoopRampRate(Constants.Drive.CLOSED_LOOP_RAMP);
+        SparkMaxConfig config = new SparkMaxConfig();
 
-        encoder.setVelocityConversionFactor(
-                1
-                        / Constants.Drive
-                                .DRIVE_GEAR_RATIO // 1/gear ratio because the wheel spins slower
-                        // than
-                        // the motor.
-                        * Constants.Drive
-                                .WHEEL_CIRCUMFERENCE // Multiply by the circumference to get meters
-                        // per minute
-                        / 60); // Divide by 60 to get meters per second.
-        encoder.setPositionConversionFactor(
-                1 / Constants.Drive.DRIVE_GEAR_RATIO * Constants.Drive.WHEEL_CIRCUMFERENCE);
-        encoder.setPosition(0);
+        config.smartCurrentLimit(Constants.Drive.CurrentLimits.Spark.DRIVE_SMART_CURRENT_LIMIT)
+                .secondaryCurrentLimit(
+                        Constants.Drive.CurrentLimits.Spark.DRIVE_SECONDARY_CURRENT_LIMIT)
+                .inverted(Constants.Drive.DRIVE_MOTOR_INVERT)
+                .idleMode(
+                        Constants.Drive.DRIVE_BRAKE_MODE
+                                ? SparkBaseConfig.IdleMode.kBrake
+                                : SparkBaseConfig.IdleMode.kCoast)
+                .openLoopRampRate(Constants.Drive.OPEN_LOOP_RAMP)
+                .closedLoopRampRate(Constants.Drive.CLOSED_LOOP_RAMP);
+
+        config.encoder
+                .velocityConversionFactor(
+                        1
+                                / Constants.Drive
+                                        .DRIVE_GEAR_RATIO // 1/gear ratio because the wheel spins
+                                // slower
+                                // than
+                                // the motor.
+                                * Constants.Drive
+                                        .WHEEL_CIRCUMFERENCE // Multiply by the circumference to get
+                                // meters
+                                // per minute
+                                / 60)
+                .positionConversionFactor(
+                        1 / Constants.Drive.DRIVE_GEAR_RATIO * Constants.Drive.WHEEL_CIRCUMFERENCE);
 
         configurePID(Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);
+
+        encoder.setPosition(0);
     }
 
     @Override
     public void setBrakeMode(boolean enabled) {
         if (lastBrake != enabled) {
             motor.setIdleMode(
-                    enabled ? CANSparkBase.IdleMode.kBrake : CANSparkBase.IdleMode.kCoast);
+                    enabled ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
             lastBrake = enabled;
         }
     }

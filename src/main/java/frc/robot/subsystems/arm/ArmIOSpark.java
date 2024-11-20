@@ -1,14 +1,13 @@
 package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -37,11 +36,9 @@ public class ArmIOSpark implements ArmIO {
     public ArmIOSpark(boolean useInternalEncoder) {
         /* Arm Rotation */
         armRotLeader = new SparkMax(Arm.ARM_ROT_LEADER, MotorType.kBrushless);
-        armRotFollower =
-                new SparkMax(Arm.ARM_ROT_FOLLOWER, MotorType.kBrushless);
+        armRotFollower = new SparkMax(Arm.ARM_ROT_FOLLOWER, MotorType.kBrushless);
 
         this.useInternalEncoder = useInternalEncoder;
-
 
         SparkMaxConfig configLeader = new SparkMaxConfig();
         SparkMaxConfig configFollower = new SparkMaxConfig();
@@ -64,14 +61,14 @@ public class ArmIOSpark implements ArmIO {
         configLeader.softLimit.forwardSoftLimit((float) Arm.MAX_ROT);
         configLeader.softLimit.reverseSoftLimit((float) Arm.MIN_ROT);
 
-        configLeader.encoder.velocityConversionFactor()
+        //        configLeader.encoder.velocityConversionFactor()
 
-        armRotLeader.configure(configLeader, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        armRotFollower.configure(configFollower, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        armRotLeader.configure(
+                configLeader, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        armRotFollower.configure(
+                configFollower, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        
         angleEncoder = armRotLeader.getEncoder();
-
 
         angleEncoder.setPositionConversionFactor(
                 (1 / Constants.Arm.GEAR_RATIO) // Rotations of motor shaft devided by
@@ -163,20 +160,19 @@ public class ArmIOSpark implements ArmIO {
 
     @Override
     public void setBrake(boolean brake) {
-        armRotLeader.
-        armRotLeader.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+        armRotLeader.armRotLeader.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
         armRotFollower.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
     }
 
     @Override
     public void setPid(double kP, double kI, double kD) {
 
-
         SparkMaxConfig wastedMemory = new SparkMaxConfig();
 
         // TODO: REV LIB 2025: IM QUIRKY AND NEED TO DO A CONFIGURE ROUTINE TO SET PID CONSTANTS.
         wastedMemory.closedLoop.pid(kP, kI, kD);
-        armRotLeader.configure(wastedMemory, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        armRotLeader.configure(
+                wastedMemory, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
 
         pid = new PIDController(kP, kI, kD);
     }
