@@ -1,9 +1,7 @@
 package frc.robot.subsystems.shooter;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkBase;
-import com.revrobotics.SparkClosedLoopController;
-import com.revrobotics.SparkMax;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

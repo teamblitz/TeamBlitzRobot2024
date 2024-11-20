@@ -1,6 +1,10 @@
 package frc.robot.subsystems.intake;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
@@ -11,16 +15,18 @@ public class IntakeIOSpark implements IntakeIO {
     private final DigitalInput breakBeamSensor;
 
     public IntakeIOSpark() {
-        motor = new SparkMax(Constants.Intake.Spark.MOTOR_ID, MotorType.kBrushless);
+        motor = new SparkMax(Constants.Intake.Spark.MOTOR_ID, SparkLowLevel.MotorType.kBrushless);
         breakBeamSensor = new DigitalInput(9);
 
-        motor.restoreFactoryDefaults();
-        motor.setSmartCurrentLimit(Constants.Intake.CURRENT_LIMIT);
+        SparkMaxConfig config = new SparkMaxConfig();
 
-        motor.setIdleMode(SparkBaseConfig.IdleMode.kCoast);
+        config.smartCurrentLimit(Constants.Intake.CURRENT_LIMIT)
+                .idleMode(SparkBaseConfig.IdleMode.kCoast);
 
-        motor.setOpenLoopRampRate(
-                0); // TODO: This may have caused the issue of the note going past the sensor
+        motor.configure(
+                config,
+                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.PersistMode.kPersistParameters);
     }
 
     @Override

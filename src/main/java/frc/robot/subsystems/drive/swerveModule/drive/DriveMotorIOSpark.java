@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive.swerveModule.drive;
 
 import com.revrobotics.*;
 import com.revrobotics.spark.*;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.lib.util.SwerveModuleConstants;
@@ -48,9 +49,10 @@ public class DriveMotorIOSpark implements DriveMotorIO {
 
     @Override
     public void configurePID(double p, double i, double d) {
-        pidController.setP(p);
-        pidController.setI(i);
-        pidController.setD(d);
+        motor.configure(
+                new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
     }
 
     private void configDriveMotor() {
@@ -83,16 +85,26 @@ public class DriveMotorIOSpark implements DriveMotorIO {
                 .positionConversionFactor(
                         1 / Constants.Drive.DRIVE_GEAR_RATIO * Constants.Drive.WHEEL_CIRCUMFERENCE);
 
-        configurePID(Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);
+        motor.configure(
+                config,
+                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
 
+        configurePID(Constants.Drive.DRIVE_KP, Constants.Drive.DRIVE_KI, Constants.Drive.DRIVE_KD);
         encoder.setPosition(0);
     }
 
     @Override
     public void setBrakeMode(boolean enabled) {
         if (lastBrake != enabled) {
-            motor.setIdleMode(
-                    enabled ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
+            motor.configure(
+                    new SparkMaxConfig()
+                            .idleMode(
+                                    enabled
+                                            ? SparkBaseConfig.IdleMode.kBrake
+                                            : SparkBaseConfig.IdleMode.kCoast),
+                    SparkBase.ResetMode.kNoResetSafeParameters,
+                    SparkBase.PersistMode.kNoPersistParameters);
             lastBrake = enabled;
         }
     }
