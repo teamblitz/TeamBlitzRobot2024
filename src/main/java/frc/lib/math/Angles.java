@@ -4,7 +4,8 @@ public class Angles {
     private Angles() {}
 
     /**
-     * @deprecated for removal, Use {@link edu.wpi.first.math.MathUtil#angleModulus(double)} instead.
+     * @deprecated for removal, Use {@link edu.wpi.first.math.MathUtil#angleModulus(double)}
+     *     instead.
      */
     @Deprecated(forRemoval = true)
     public static double wrapAnglePi(double degrees) {
@@ -12,7 +13,8 @@ public class Angles {
     }
 
     /**
-     * @deprecated for removal, Use {@link edu.wpi.first.math.MathUtil#inputModulus(double, double, double)} instead.
+     * @deprecated for removal, Use {@link edu.wpi.first.math.MathUtil#inputModulus(double, double,
+     *     double)} instead.
      */
     @Deprecated(forRemoval = true)
     public static double wrapAngle(double radians, double min, double max) {

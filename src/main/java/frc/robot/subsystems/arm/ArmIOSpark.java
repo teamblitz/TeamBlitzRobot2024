@@ -82,7 +82,8 @@ public class ArmIOSpark implements ArmIO {
         setPid(Arm.PidConstants.P, Arm.PidConstants.I, Arm.PidConstants.D);
 
         rawAbsoluteEncoder = new DutyCycle(new DigitalInput(Arm.ABS_ENCODER));
-        absoluteEncoder = new DutyCycleEncoder(rawAbsoluteEncoder, 2 * Math.PI, Arm.ABS_ENCODER_OFFSET);
+        absoluteEncoder =
+                new DutyCycleEncoder(rawAbsoluteEncoder, 2 * Math.PI, Arm.ABS_ENCODER_OFFSET);
         absoluteEncoder.setInverted(true);
         quadEncoder = new Encoder(Arm.QUAD_A, Arm.QUAD_B, true);
 
@@ -150,7 +151,8 @@ public class ArmIOSpark implements ArmIO {
         return MathUtil.angleModulus(absoluteEncoder.get());
     }
 
-    // TODO: Function incorrectly uses useInternalEncoder? Will not change to prevent possible conflict
+    // TODO: Function incorrectly uses useInternalEncoder? Will not change to prevent possible
+    // conflict
     private double getPosition() {
         return useInternalEncoder
                 ? MathUtil.angleModulus(quadEncoder.getDistance() + quadOffset)
@@ -162,8 +164,10 @@ public class ArmIOSpark implements ArmIO {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(brake ? SparkBaseConfig.IdleMode.kBrake : SparkBaseConfig.IdleMode.kCoast);
 
-        leader.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-        follower.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        leader.configure(
+                config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        follower.configure(
+                config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     @Override

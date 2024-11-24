@@ -1,9 +1,9 @@
 package frc.robot.subsystems.drive.gyro;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 import frc.robot.Constants;
-
-import static edu.wpi.first.units.Units.*;
 
 public class GyroIOPigeon implements GyroIO {
 
