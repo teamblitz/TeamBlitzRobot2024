@@ -3,6 +3,8 @@ package frc.robot.subsystems.drive.gyro;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import frc.robot.Constants;
 
+import static edu.wpi.first.units.Units.*;
+
 public class GyroIOPigeon implements GyroIO {
 
     /*
@@ -32,9 +34,9 @@ public class GyroIOPigeon implements GyroIO {
         inputs.yaw = gyro.getYaw().getValueAsDouble();
         inputs.pitch = gyro.getPitch().getValueAsDouble();
         inputs.roll = gyro.getRoll().getValueAsDouble();
-        inputs.yawRate = gyro.getAngularVelocityZDevice().getValue();
-        inputs.pitchRate = gyro.getAngularVelocityYDevice().getValue();
-        inputs.rollRate = gyro.getAngularVelocityXDevice().getValue();
+        inputs.yawRate = gyro.getAngularVelocityZDevice().getValueAsDouble();
+        inputs.pitchRate = gyro.getAngularVelocityYDevice().getValueAsDouble();
+        inputs.rollRate = gyro.getAngularVelocityXDevice().getValueAsDouble();
         inputs.connected = gyro.getUpTime().getValueAsDouble() > 0;
     }
 }

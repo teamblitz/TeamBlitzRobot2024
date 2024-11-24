@@ -8,11 +8,11 @@ public interface ArmIO {
     public class ArmIOInputs {
         public double rotation;
         public double rotationDeg;
-        public double armRotationSpeed;
-        public double absArmRot;
+        public double angularVelocity;
+        public double absRotation;
 
-        public double absArmEncoder;
-        public double absArmEncoderDeg;
+        public double rawAbsEncoder;
+        public double rawAbsEncoderDeg;
 
         public boolean topRotationLimit;
         public boolean bottomRotationLimit;
