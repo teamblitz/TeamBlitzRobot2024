@@ -1,15 +1,15 @@
 package frc.robot.subsystems.drive.swerveModule.encoder;
 
-import com.reduxrobotics.sensors.canandcoder.Canandcoder;
+import com.reduxrobotics.sensors.canandmag.Canandmag;
 
 public class EncoderIOHelium implements EncoderIO {
 
-    private final Canandcoder encoder;
+    private final Canandmag encoder;
 
     public EncoderIOHelium(int id, boolean invert) {
-        encoder = new Canandcoder(id);
+        encoder = new Canandmag(id);
 
-        Canandcoder.Settings settings = new Canandcoder.Settings();
+        Canandmag.Settings settings = new Canandmag.Settings();
         // For the ctre cancoder, the default input is ccw+ looking at the LED side. However, the
         // helium CANAndCoder is by default CCW+ looking from the face. So we invert the value here
         settings.setInvertDirection(!invert);
