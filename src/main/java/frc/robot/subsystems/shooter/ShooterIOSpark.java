@@ -37,13 +37,14 @@ public class ShooterIOSpark implements ShooterIO {
         pidTop = top.getClosedLoopController();
         pidBottom = bottom.getClosedLoopController();
 
-        pidTop.setP(Constants.Shooter.Spark.PID_TOP_P);
-        pidTop.setI(Constants.Shooter.Spark.PID_TOP_I);
-        pidTop.setD(Constants.Shooter.Spark.PID_TOP_D);
+        setTopPid(Constants.Shooter.Spark.PID_TOP_P,
+                Constants.Shooter.Spark.PID_TOP_I,
+                Constants.Shooter.Spark.PID_TOP_D);
 
-        pidBottom.setP(Constants.Shooter.Spark.PID_BOTTOM_P);
-        pidBottom.setI(Constants.Shooter.Spark.PID_BOTTOM_I);
-        pidBottom.setD(Constants.Shooter.Spark.PID_BOTTOM_D);
+        setBottomPid(Constants.Shooter.Spark.PID_BOTTOM_P,
+                Constants.Shooter.Spark.PID_BOTTOM_I,
+                Constants.Shooter.Spark.PID_BOTTOM_D);
+
 
         feedforwardTop =
                 new SimpleMotorFeedforward(
@@ -60,26 +61,6 @@ public class ShooterIOSpark implements ShooterIO {
         SmartDashboard.putNumber("MAX SHOOT Top", feedforwardTop.maxAchievableVelocity(12, 0));
         SmartDashboard.putNumber(
                 "MAX SHOOT Bottom", feedforwardBottom.maxAchievableVelocity(12, 0));
-
-        top.getEncoder()
-                .setVelocityConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (1.0 / 60.0)
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
-        bottom.getEncoder()
-                .setVelocityConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (1.0 / 60.0)
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
-
-        top.getEncoder()
-                .setPositionConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
-        bottom.getEncoder()
-                .setPositionConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
     }
 
     @Override
