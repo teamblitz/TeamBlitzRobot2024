@@ -110,7 +110,7 @@ public class Drive extends BlitzSubsystem {
     private final SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint;
 
-    // Control/State Based control
+    // Control/Goals Based control
     private final Subsystem velocityControlMutex = new Subsystem() {};
     private final Subsystem velocityFilteringMutex = new Subsystem() {};
     private final Subsystem headingControlMutex = new Subsystem() {};

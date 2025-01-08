@@ -1,11 +1,13 @@
 package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.lib.util.SupplierUtils.toRadians;
 import static frc.robot.Constants.Arm.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,10 +19,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.BlitzSubsystem;
 import frc.lib.math.EqualsUtil;
 import frc.lib.util.LoggedTunableNumber;
+import frc.lib.util.UnitDashboardNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Arm.FeedForwardConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.leds.Leds;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -51,9 +55,15 @@ public class Arm extends BlitzSubsystem {
     private static final LoggedTunableNumber transitNormal =
             new LoggedTunableNumber("Arm/MinRot", MIN_ROT);
 
+    public enum State {
+        CLOSED_LOOP,
+        MANUAL,
+        CHARACTERIZING
+    }
+
     @NoArgsConstructor(force = true)
     @RequiredArgsConstructor
-    public enum State {
+    public enum Goals {
         INTAKE(
                 new LoggedTunableNumber("Arm/IntakeDegrees", Math.toDegrees(Positions.INTAKE)),
                 true),
@@ -73,11 +83,7 @@ public class Arm extends BlitzSubsystem {
 
         // Non static external state
         TRANSIT(new LoggedTunableNumber("Arm/Transit", Math.toDegrees(Positions.TRANSIT_NORMAL))),
-        AIM(arm -> Math.toDegrees(arm.aimGoal.getAsDouble())),
-
-        // Special Cases, must be handled individually by subsystem periodic
-        CHARACTERIZING,
-        MANUAL;
+        AIM(arm -> Math.toDegrees(arm.aimGoal.getAsDouble()));
 
         private final Function<Arm, Double> armSetpoint;
         private final boolean letRest;
@@ -89,19 +95,19 @@ public class Arm extends BlitzSubsystem {
 
         // Only a few of our states require member variables of the static, the rest don't need it
         // and are defined as simple double suppliers.
-        State(DoubleSupplier setpointSupplier) {
+        Goals(DoubleSupplier setpointSupplier) {
             this(setpointSupplier, false);
         }
 
-        State(Function<Arm, Double> armSetpoint) {
+        Goals(Function<Arm, Double> armSetpoint) {
             this(armSetpoint, false);
         }
 
-        State(DoubleSupplier setpointSupplier, boolean letRest) {
+        Goals(DoubleSupplier setpointSupplier, boolean letRest) {
             this(x -> setpointSupplier.getAsDouble(), letRest);
         }
 
-        public <T> Map.Entry<State, T> asEntry(T value) {
+        public <T> Map.Entry<Goals, T> asEntry(T value) {
             return Map.entry(this, value);
         }
     }
@@ -126,9 +132,9 @@ public class Arm extends BlitzSubsystem {
         }
     }
 
-    //    private final Map<S/tate, ArmState> stateMap;
+    private Map<Goals, DoubleSupplier> goalMap;
 
-    @AutoLogOutput @Getter State goal = State.TRANSIT;
+    @AutoLogOutput @Getter Goals goal = Goals.TRANSIT;
 
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
@@ -153,12 +159,32 @@ public class Arm extends BlitzSubsystem {
         super("arm");
         this.io = io;
 
-        //        stateMap = Map.ofEntries(
-        //                State.INTAKE.asEntry(ArmState.of(toRadians(new
-        // LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE)))),
-        //                State.CLIMB.asEntry(ArmState.of(toRadians(new
-        // LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE))))
-        //        );
+        goalMap = new EnumMap<>(Goals.class);
+
+        goalMap = Map.ofEntries(
+                    Goals.INTAKE.asEntry(
+                            UnitDashboardNumber.radiansDegrees("Arm/IntakeDegrees", Positions.INTAKE)),
+                    Goals.CLIMB.asEntry(
+                            UnitDashboardNumber.radiansDegrees("Arm/ClimbDegrees", Positions.CLIMB)
+                    ), Goals.AMP_BACK.asEntry(
+                            UnitDashboardNumber.radiansDegrees("Arm/AMP_BACKDegrees", Positions.AMP_BACK)));
+
+
+
+
+
+        goalMap.put(
+                Goals.INTAKE,
+                toRadians(
+                        new LoggedTunableNumber(
+                                "Arm/IntakeDegrees", Units.radiansToDegrees(Positions.INTAKE))));
+
+        //                stateMap = Map.ofEntries(
+        //                        Goals.INTAKE.asEntry(ArmState.of(toRadians(new
+        //         LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE)))),
+        //                        Goals.CLIMB.asEntry(ArmState.of(toRadians(new
+        //         LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE))))
+        //                );
 
         //        INTAKE(new LoggedTunableNumber("Arm/IntakeDegrees", Positions.INTAKE), true),
         //                CLIMB(new LoggedTunableNumber("Arm/ClimbDegrees", Positions.CLIMB), true),
@@ -178,7 +204,7 @@ public class Arm extends BlitzSubsystem {
         //                CHARACTERIZING,
         //                MANUAL;
 
-        setDefaultCommand(setGoal(State.TRANSIT));
+        setDefaultCommand(setGoal(Goals.TRANSIT));
 
         feedforward =
                 new ArmFeedforward(
@@ -220,7 +246,7 @@ public class Arm extends BlitzSubsystem {
         ShuffleboardTab autoShootTab = Shuffleboard.getTab("AutoShoot");
         @SuppressWarnings("resource")
         GenericEntry testArm = autoShootTab.add("testArm", 0).getEntry();
-        autoShootTab.add("custom arm", setGoal(State.CUSTOM));
+        autoShootTab.add("custom arm", setGoal(Goals.CUSTOM));
     }
 
     @Override
@@ -251,7 +277,7 @@ public class Arm extends BlitzSubsystem {
             return;
         }
 
-        if (goal != State.MANUAL) {
+        if (goal != Goals.MANUAL) {
             setpointState =
                     profile.calculate(
                             Robot.defaultPeriodSecs,
@@ -284,8 +310,8 @@ public class Arm extends BlitzSubsystem {
         io.setArmSpeed(percent);
     }
 
-    public Command setGoal(@NonNull Arm.State goal) {
-        return runEnd(() -> this.goal = goal, () -> this.goal = State.TRANSIT)
+    public Command setGoal(@NonNull Arm.Goals goal) {
+        return runEnd(() -> this.goal = goal, () -> this.goal = Goals.TRANSIT)
                 .withName("Arm " + goal.toString().toLowerCase());
     }
 
@@ -298,7 +324,7 @@ public class Arm extends BlitzSubsystem {
     // Creates a SysIdRoutine
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction)
-                //                .deadlineWith(setGoal(State.CHARACTERIZING))
+                //                .deadlineWith(setGoal(Goals.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/quasistatic"
@@ -307,7 +333,7 @@ public class Arm extends BlitzSubsystem {
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return routine.dynamic(direction)
-                //                .deadlineWith(setGoal(State.CHARACTERIZING))
+                //                .deadlineWith(setGoal(Goals.CHARACTERIZING))
                 .withName(
                         logKey
                                 + "/dynamic"

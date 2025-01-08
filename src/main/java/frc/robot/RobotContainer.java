@@ -138,7 +138,7 @@ public class RobotContainer {
                                                     OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
                                         })
                                 .finallyDo(() -> arm.setArmRotationSpeed(0))
-                                .raceWith(arm.setGoal(Arm.State.MANUAL))
+                                .raceWith(arm.setGoal(Arm.Goals.MANUAL))
                                 .withName("arm/manual"));
     }
 
@@ -270,7 +270,7 @@ public class RobotContainer {
 
         OIConstants.Drive.AMP_ASSIST.whileTrue(
                 drive.useVelocityFilter(drive.ampAssistFilter)
-                        .alongWith(arm.setGoal(Arm.State.AMP_BACK)));
+                        .alongWith(arm.setGoal(Arm.Goals.AMP_BACK)));
         OIConstants.Drive.AUTO_PICKUP.whileTrue(drive.useVelocityFilter(drive.noteAssistFilter));
 
         OIConstants.Intake.FEED.whileTrue(intake.feedShooter());
@@ -294,8 +294,8 @@ public class RobotContainer {
                 ManipulatorCommands.shootSubwoofer(shooter, arm));
         OIConstants.Arm.SPEAKER_PODIUM.whileTrue(ManipulatorCommands.shootPodium(shooter, arm));
 
-        OIConstants.Arm.AMP_BACK.whileTrue(arm.setGoal(Arm.State.AMP_BACK));
-        OIConstants.Arm.AMP_FRONT.whileTrue(arm.setGoal(Arm.State.AMP_FRONT));
+        OIConstants.Arm.AMP_BACK.whileTrue(arm.setGoal(Arm.Goals.AMP_BACK));
+        OIConstants.Arm.AMP_FRONT.whileTrue(arm.setGoal(Arm.Goals.AMP_FRONT));
 
         OIConstants.Arm.AUTO_AIM_SPEAKER.whileTrue(
                 ManipulatorCommands.shootAim(shooter, arm, drive::getEstimatedPose));
@@ -315,8 +315,8 @@ public class RobotContainer {
                         .finallyDo(() -> Leds.getInstance().climbing = false));
 
         // Lower the arm when climbing
-        OIConstants.Climber.DOWN_BOTH.onTrue(arm.setGoal(Arm.State.CLIMB));
-        OIConstants.Climber.UP_BOTH.onTrue(arm.setGoal(Arm.State.CLIMB));
+        OIConstants.Climber.DOWN_BOTH.onTrue(arm.setGoal(Arm.Goals.CLIMB));
+        OIConstants.Climber.UP_BOTH.onTrue(arm.setGoal(Arm.Goals.CLIMB));
 
         // Stage avoidance
         arm.setStageSafety(OIConstants.Arm.TRANSIT_STAGE);
@@ -361,7 +361,7 @@ public class RobotContainer {
         InternalButton qShoot = new InternalButton();
 
         //        shoot.whileTrue(
-        //                arm.setGoal(Arm.State.SUBWOOFER)
+        //                arm.setGoal(Arm.Goals.SUBWOOFER)
         //                        .raceWith(Commands.waitSeconds(1))
         //                        .andThen(intake.feedShooter().asProxy().withTimeout(.5))
         //                        .raceWith(shooter.shootCommand())
@@ -369,7 +369,7 @@ public class RobotContainer {
         //                        .withName("auto/shoot"));
 
         shoot.whileTrue(
-                arm.setGoal(Arm.State.SUBWOOFER)
+                arm.setGoal(Arm.Goals.SUBWOOFER)
                         .raceWith(
                                 Commands.waitSeconds(1)
                                         .andThen(intake.feedShooter().asProxy().withTimeout(.5))
@@ -378,7 +378,7 @@ public class RobotContainer {
                         .withName("auto/shoot"));
 
         qShoot.whileTrue(
-                arm.setGoal(Arm.State.SUBWOOFER)
+                arm.setGoal(Arm.Goals.SUBWOOFER)
                         .alongWith(intake.feedShooter(.7).asProxy())
                         .raceWith(shooter.shootCommand())
                         .asProxy()
@@ -386,7 +386,7 @@ public class RobotContainer {
                         .withName("auto/qShoot"));
 
         readyShoot.whileTrue(
-                arm.setGoal(Arm.State.SUBWOOFER)
+                arm.setGoal(Arm.Goals.SUBWOOFER)
                         .asProxy()
                         .alongWith(shooter.shootCommand().asProxy())
                         .asProxy()
@@ -415,7 +415,7 @@ public class RobotContainer {
         // Does not end
         NamedCommands.registerCommand(
                 "intake",
-                arm.setGoal(Arm.State.INTAKE)
+                arm.setGoal(Arm.Goals.INTAKE)
                         .asProxy()
                         .alongWith(intake.intakeGroundAutomatic(.7).asProxy())
                         .alongWith(shooter.setSpeedCommand(-.1).asProxy()));

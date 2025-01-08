@@ -372,12 +372,11 @@ public final class Constants {
 
             public static final double GEAR_RATIO = (22.0 / 24.0);
 
-            public static final double VELOCITY_FACTOR_RPM_TO_MPS = GEAR_RATIO
-                    * (1.0 / 60.0)
-                    * (Math.PI * 2 * Units.inchesToMeters(2));
+            public static final double VELOCITY_FACTOR_RPM_TO_MPS =
+                    GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2));
 
-            public static final double POSITION_FACTOR_ROT_TO_M = GEAR_RATIO
-                    * (Math.PI * 2 * Units.inchesToMeters(2));
+            public static final double POSITION_FACTOR_ROT_TO_M =
+                    GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2));
         }
 
         public static class Talon {
