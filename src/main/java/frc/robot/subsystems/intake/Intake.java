@@ -23,7 +23,7 @@ public class Intake extends BlitzSubsystem {
         this.manualOverride = manualOverride;
         setDefaultCommand(automaticIndex());
 
-        //         State updating
+        //         Goals updating
         new Trigger(() -> intakeState == IntakeState.Feeding && noteState == NoteState.Indexed)
                 .whileTrue(
                         Commands.sequence(

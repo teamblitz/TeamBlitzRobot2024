@@ -1,9 +1,13 @@
 package frc.robot.subsystems.shooter;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -19,31 +23,44 @@ public class ShooterIOSpark implements ShooterIO {
     private SimpleMotorFeedforward feedforwardBottom;
 
     public ShooterIOSpark() {
-        top = new SparkMax(Constants.Shooter.Spark.SPARK_TOP, MotorType.kBrushless);
-        bottom = new SparkMax(Constants.Shooter.Spark.SPARK_BOTTOM, MotorType.kBrushless);
+        top = new SparkMax(Constants.Shooter.Spark.SPARK_TOP, SparkLowLevel.MotorType.kBrushless);
+        bottom =
+                new SparkMax(
+                        Constants.Shooter.Spark.SPARK_BOTTOM, SparkLowLevel.MotorType.kBrushless);
 
-        top.restoreFactoryDefaults();
-        top.setSmartCurrentLimit(Constants.Shooter.CURRENT_LIMIT);
-        top.setOpenLoopRampRate(0.5);
-        top.setClosedLoopRampRate(.2);
-        top.setIdleMode(SparkBaseConfig.IdleMode.kCoast);
+        SparkMaxConfig config = new SparkMaxConfig();
 
-        bottom.restoreFactoryDefaults();
-        bottom.setSmartCurrentLimit(Constants.Shooter.CURRENT_LIMIT);
-        bottom.setOpenLoopRampRate(0.5);
-        bottom.setClosedLoopRampRate(.2);
-        bottom.setIdleMode(SparkBaseConfig.IdleMode.kCoast);
+        config.smartCurrentLimit(Constants.Shooter.CURRENT_LIMIT)
+                .idleMode(SparkBaseConfig.IdleMode.kCoast)
+                .openLoopRampRate(.5)
+                .closedLoopRampRate(.2);
+
+        config.encoder
+                .velocityConversionFactor(Constants.Shooter.Spark.VELOCITY_FACTOR_RPM_TO_MPS)
+                .positionConversionFactor(Constants.Shooter.Spark.POSITION_FACTOR_ROT_TO_M);
+
+        top.configure(
+                config,
+                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.PersistMode.kPersistParameters);
+
+        bottom.configure(
+                config,
+                SparkBase.ResetMode.kResetSafeParameters,
+                SparkBase.PersistMode.kPersistParameters);
 
         pidTop = top.getClosedLoopController();
         pidBottom = bottom.getClosedLoopController();
 
-        pidTop.setP(Constants.Shooter.Spark.PID_TOP_P);
-        pidTop.setI(Constants.Shooter.Spark.PID_TOP_I);
-        pidTop.setD(Constants.Shooter.Spark.PID_TOP_D);
+        setTopPid(
+                Constants.Shooter.Spark.PID_TOP_P,
+                Constants.Shooter.Spark.PID_TOP_I,
+                Constants.Shooter.Spark.PID_TOP_D);
 
-        pidBottom.setP(Constants.Shooter.Spark.PID_BOTTOM_P);
-        pidBottom.setI(Constants.Shooter.Spark.PID_BOTTOM_I);
-        pidBottom.setD(Constants.Shooter.Spark.PID_BOTTOM_D);
+        setBottomPid(
+                Constants.Shooter.Spark.PID_BOTTOM_P,
+                Constants.Shooter.Spark.PID_BOTTOM_I,
+                Constants.Shooter.Spark.PID_BOTTOM_D);
 
         feedforwardTop =
                 new SimpleMotorFeedforward(
@@ -60,26 +77,6 @@ public class ShooterIOSpark implements ShooterIO {
         SmartDashboard.putNumber("MAX SHOOT Top", feedforwardTop.maxAchievableVelocity(12, 0));
         SmartDashboard.putNumber(
                 "MAX SHOOT Bottom", feedforwardBottom.maxAchievableVelocity(12, 0));
-
-        top.getEncoder()
-                .setVelocityConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (1.0 / 60.0)
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
-        bottom.getEncoder()
-                .setVelocityConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (1.0 / 60.0)
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
-
-        top.getEncoder()
-                .setPositionConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
-        bottom.getEncoder()
-                .setPositionConversionFactor(
-                        Constants.Shooter.Spark.GEAR_RATIO
-                                * (Math.PI * 2 * Units.inchesToMeters(2)));
     }
 
     @Override
@@ -120,17 +117,19 @@ public class ShooterIOSpark implements ShooterIO {
     }
 
     @Override
-    public void setTopPid(double kP, double kI, double kD) {
-        pidTop.setP(kP);
-        pidTop.setI(kI);
-        pidTop.setD(kD);
+    public void setTopPid(double p, double i, double d) {
+        top.configure(
+                new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
     }
 
     @Override
-    public void setBottomPid(double kP, double kI, double kD) {
-        pidBottom.setP(kP);
-        pidBottom.setI(kI);
-        pidBottom.setD(kD);
+    public void setBottomPid(double p, double i, double d) {
+        bottom.configure(
+                new SparkMaxConfig().apply(new ClosedLoopConfig().pid(p, i, d)),
+                SparkBase.ResetMode.kNoResetSafeParameters,
+                SparkBase.PersistMode.kNoPersistParameters);
     }
 
     @Override

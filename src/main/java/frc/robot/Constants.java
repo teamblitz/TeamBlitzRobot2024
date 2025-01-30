@@ -295,9 +295,6 @@ public final class Constants {
         public static final int QUAD_A = 1;
         public static final int QUAD_B = 2;
 
-        public static final int TOP_LIMIT_SWITCH = 2; // TODO CONFIG
-        public static final int BOTTOM_LIMIT_SWITCH = 3; // TODO CONFIG
-
         public static final double OPEN_LOOP_RAMP = 1;
 
         public static final int CURRENT_LIMIT = 60;
@@ -374,6 +371,12 @@ public final class Constants {
             public static final double FF_BOTTOM_KA = compBot() ? 0.060884 : 0.086385;
 
             public static final double GEAR_RATIO = (22.0 / 24.0);
+
+            public static final double VELOCITY_FACTOR_RPM_TO_MPS =
+                    GEAR_RATIO * (1.0 / 60.0) * (Math.PI * 2 * Units.inchesToMeters(2));
+
+            public static final double POSITION_FACTOR_ROT_TO_M =
+                    GEAR_RATIO * (Math.PI * 2 * Units.inchesToMeters(2));
         }
 
         public static class Talon {

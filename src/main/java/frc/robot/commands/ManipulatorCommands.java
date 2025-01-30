@@ -12,19 +12,19 @@ import java.util.function.Supplier;
 
 public final class ManipulatorCommands {
     public static Command intakeGround(Intake intake, Arm arm) {
-        return intake.intakeGroundAutomatic().deadlineWith(arm.setGoal(Arm.State.INTAKE));
+        return intake.intakeGroundAutomatic().deadlineWith(arm.setGoal(Arm.Goals.INTAKE));
     }
 
     public static Command shootSubwoofer(Shooter shooter, Arm arm) {
-        return arm.setGoal(Arm.State.SUBWOOFER).alongWith(shooter.shootCommand());
+        return arm.setGoal(Arm.Goals.SUBWOOFER).alongWith(shooter.shootCommand());
     }
 
     public static Command shootPodium(Shooter shooter, Arm arm) {
-        return arm.setGoal(Arm.State.PODIUM).alongWith(shooter.shootCommand());
+        return arm.setGoal(Arm.Goals.PODIUM).alongWith(shooter.shootCommand());
     }
 
     public static Command shootAim(Shooter shooter, Arm arm, Supplier<Pose2d> poseSupplier) {
-        return arm.setGoal(Arm.State.AIM)
+        return arm.setGoal(Arm.Goals.AIM)
                 .alongWith(
                         shooter.shootClosedLoopCommand(
                                 () ->
