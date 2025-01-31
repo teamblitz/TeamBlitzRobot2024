@@ -33,7 +33,6 @@ import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOKraken;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.gyro.GyroIO;
-import frc.robot.subsystems.drive.gyro.GyroIONavx;
 import frc.robot.subsystems.drive.gyro.GyroIOPigeon;
 import frc.robot.subsystems.drive.range.RangeSensorIO;
 import frc.robot.subsystems.drive.range.RangeSensorIOFusion;
@@ -130,70 +129,73 @@ public class RobotContainer {
                                                 : Double.NaN)
                         .withName("TeleopSwerve"));
 
-        new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
-                .whileTrue(
-                        Commands.run(
-                                        () -> {
-                                            arm.setArmRotationSpeed(
-                                                    OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
-                                        })
-                                .finallyDo(() -> arm.setArmRotationSpeed(0))
-                                .raceWith(arm.setGoal(Arm.Goals.MANUAL))
-                                .withName("arm/manual"));
+        // new Trigger(() -> Math.abs(OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble()) > .08)
+        //         .whileTrue(
+        //                 Commands.run(
+        //                                 () -> {
+        //                                     arm.setArmRotationSpeed(
+        //                                             OIConstants.Arm.MANUAL_ARM_SPEED.getAsDouble());
+        //                                 })
+        //                         .finallyDo(() -> arm.setArmRotationSpeed(0))
+        //                         .raceWith(arm.setGoal(Arm.Goals.MANUAL))
+        //                         .withName("arm/manual"));
     }
 
     private void configureSubsystems() {
         drive =
                 switch (Constants.ROBOT) {
-                    case CompBot -> new Drive(
-                            new SwerveModuleConfiguration(
-                                    SwerveModuleConfiguration.MotorType.KRAKEN,
-                                    SwerveModuleConfiguration.MotorType.NEO,
-                                    SwerveModuleConfiguration.EncoderType.CANCODER),
-                            Constants.Drive.Mod0.CONSTANTS,
-                            Constants.Drive.Mod1.CONSTANTS,
-                            Constants.Drive.Mod2.CONSTANTS,
-                            Constants.Drive.Mod3.CONSTANTS,
-                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
-                            new RangeSensorIOFusion(),
-                            new NoteVisionIOLimelight("limelight-intake"));
+                        case CompBot ->
+                        new Drive(
+                                new SwerveModuleConfiguration(
+                                        SwerveModuleConfiguration.MotorType.KRAKEN,
+                                        SwerveModuleConfiguration.MotorType.NEO,
+                                        SwerveModuleConfiguration.EncoderType.CANCODER),
+                                Constants.Drive.Mod0.CONSTANTS,
+                                Constants.Drive.Mod1.CONSTANTS,
+                                Constants.Drive.Mod2.CONSTANTS,
+                                Constants.Drive.Mod3.CONSTANTS,
+                                new GyroIOPigeon(),
+                                new RangeSensorIOFusion(),
+                                new NoteVisionIOLimelight("limelight-intake"));
 
-                    case DevBot -> new Drive(
-                            new SwerveModuleConfiguration(
-                                    SwerveModuleConfiguration.MotorType.NEO,
-                                    SwerveModuleConfiguration.MotorType.NEO,
-                                    SwerveModuleConfiguration.EncoderType.HELIUM),
-                            Constants.Drive.Mod0.CONSTANTS,
-                            Constants.Drive.Mod1.CONSTANTS,
-                            Constants.Drive.Mod2.CONSTANTS,
-                            Constants.Drive.Mod3.CONSTANTS,
-                            Constants.Drive.USE_PIGEON ? new GyroIOPigeon() : new GyroIONavx(),
-                            new RangeSensorIO() {},
-                            new NoteVisionIO() {});
-                    case SimBot -> new Drive(
-                            new SwerveModule(
-                                    Constants.Drive.FL,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new SwerveModule(
-                                    Constants.Drive.FR,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new SwerveModule(
-                                    Constants.Drive.BL,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new SwerveModule(
-                                    Constants.Drive.BR,
-                                    new AngleMotorIOSim(),
-                                    new DriveMotorIOSim(),
-                                    new EncoderIO() {}),
-                            new GyroIO() {},
-                            new RangeSensorIO() {},
-                            new NoteVisionIO() {});
+                case DevBot ->
+                        new Drive(
+                                new SwerveModuleConfiguration(
+                                        SwerveModuleConfiguration.MotorType.NEO,
+                                        SwerveModuleConfiguration.MotorType.NEO,
+                                        SwerveModuleConfiguration.EncoderType.HELIUM),
+                                Constants.Drive.Mod0.CONSTANTS,
+                                Constants.Drive.Mod1.CONSTANTS,
+                                Constants.Drive.Mod2.CONSTANTS,
+                                Constants.Drive.Mod3.CONSTANTS,
+                                new GyroIOPigeon(),
+                                new RangeSensorIO() {},
+                                new NoteVisionIO() {});
+                case SimBot ->
+                        new Drive(
+                                new SwerveModule(
+                                        Constants.Drive.FL,
+                                        new AngleMotorIOSim(),
+                                        new DriveMotorIOSim(),
+                                        new EncoderIO() {}),
+                                new SwerveModule(
+                                        Constants.Drive.FR,
+                                        new AngleMotorIOSim(),
+                                        new DriveMotorIOSim(),
+                                        new EncoderIO() {}),
+                                new SwerveModule(
+                                        Constants.Drive.BL,
+                                        new AngleMotorIOSim(),
+                                        new DriveMotorIOSim(),
+                                        new EncoderIO() {}),
+                                new SwerveModule(
+                                        Constants.Drive.BR,
+                                        new AngleMotorIOSim(),
+                                        new DriveMotorIOSim(),
+                                        new EncoderIO() {}),
+                                new GyroIO() {},
+                                new RangeSensorIO() {},
+                                new NoteVisionIO() {});
                 };
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);

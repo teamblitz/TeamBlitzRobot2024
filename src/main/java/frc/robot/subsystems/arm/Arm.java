@@ -9,7 +9,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.units.measure.measure.Voltage;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -276,29 +276,29 @@ public class Arm extends BlitzSubsystem {
             io.stop();
             return;
         }
-
-        if (goal != Goals.MANUAL) {
-            setpointState =
-                    profile.calculate(
-                            Robot.defaultPeriodSecs,
-                            setpointState,
-                            new TrapezoidProfile.State(
-                                    MathUtil.clamp(
-                                            goal.getRads(this),
-                                            MIN_ROT,
-                                            stageSafety.getAsBoolean() ? MAX_STAGE : MAX_ROT),
-                                    0));
-
-            if (goal.letRest
-                    && atGoal()) // Let rest goals will just let the arm fall down once the setpoint
-                // is reached.
-                io.stop();
-            else updateRotation(setpointState.position, setpointState.velocity);
-        } else {
-            //            setVoltage
-        }
-        // TODO, characterization should just work, but manual override still needs implementing
     }
+        // if (goal != Goals.MANUAL) {
+        //     setpointState =
+        //             profile.calculate(
+        //                     Robot.defaultPeriodSecs,
+        //                     setpointState,
+        //                     new TrapezoidProfile.State(
+        //                             MathUtil.clamp(
+        //                                     goal.getRads(this),
+        //                                     MIN_ROT,
+        //                                     stageSafety.getAsBoolean() ? MAX_STAGE : MAX_ROT),
+        //                             0));
+
+//             if (goal.letRest
+//                     && atGoal()) // Let rest goals will just let the arm fall down once the setpoint
+//                 // is reached.
+//                 io.stop();
+//             else updateRotation(setpointState.position, setpointState.velocity);
+//         } else {
+//             //            setVoltage
+//         }
+//         // TODO, characterization should just work, but manual override still needs implementing
+//     }
 
     public void updateRotation(double degrees, double velocity) {
         Logger.recordOutput(logKey + "/wanted_rotation", degrees);

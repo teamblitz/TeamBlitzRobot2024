@@ -271,8 +271,7 @@ public final class Constants {
                                         .DRIVE_STATOR, // TODO, WRONG PROBABLY, might be SUPPLY
                                 // limit, which we don't actualy set.,
                                 1),
-                        TRACK_WIDTH,
-                        WHEEL_BASE);
+                        TRACK_WIDTH);
     }
 
     public static final class Arm {

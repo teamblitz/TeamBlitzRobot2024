@@ -95,16 +95,10 @@ public class ShooterIOSpark implements ShooterIO {
     public void setSetpoint(double velocity) {
         pidTop.setReference(
                 velocity,
-                SparkBase.ControlType.kVelocity,
-                0,
-                feedforwardTop.calculate(velocity),
-                SparkClosedLoopController.ArbFFUnits.kVoltage);
+                SparkBase.ControlType.kVelocity);
         pidBottom.setReference(
                 velocity,
-                SparkBase.ControlType.kVelocity,
-                0,
-                feedforwardBottom.calculate(velocity),
-                SparkClosedLoopController.ArbFFUnits.kVoltage);
+                SparkBase.ControlType.kVelocity);
     }
 
     @Override
