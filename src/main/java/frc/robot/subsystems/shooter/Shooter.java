@@ -113,7 +113,7 @@ public class Shooter extends BlitzSubsystem {
     public void shootClosedLoop(double metersPerSecond) {
         setpoint = metersPerSecond;
         io.setSetpoint(metersPerSecond); // TODO, CONST
-        Logger.recordOutput(logKey + "/velocitySetpoint");
+        Logger.recordOutput(logKey + "/velocitySetpoint", metersPerSecond);
     }
 
     private void reverse() {
