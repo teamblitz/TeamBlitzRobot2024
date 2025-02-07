@@ -1,5 +1,5 @@
 {
-  "version": 1.0,
+  "version": "2025.0",
   "waypoints": [
     {
       "anchor": {
@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.601932822913265,
-        "y": 5.781484445174405
+        "x": 2.6019606768877828,
+        "y": 5.784455438056379
       },
       "isLocked": false,
       "linkedName": "note-CM-pickup"
@@ -20,7 +20,7 @@
         "y": 6.867018094225762
       },
       "prevControl": {
-        "x": 1.6667613077947891,
+        "x": 1.6667613077947894,
         "y": 6.500531646967152
       },
       "nextControl": null,
@@ -31,28 +31,29 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.5,
-      "rotationDegrees": 44.357731215288254,
-      "rotateFast": false
+      "rotationDegrees": 44.357731215288254
     }
   ],
   "constraintZones": [],
+  "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 32.195733934713225,
-    "rotateFast": false
+    "rotation": 32.195733934713225
   },
   "reversed": false,
   "folder": "note-to-note",
-  "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
