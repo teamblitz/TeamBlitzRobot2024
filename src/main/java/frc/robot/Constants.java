@@ -53,7 +53,7 @@ public final class Constants {
         SimBot
     }
 
-    public static final Robot ROBOT = Robot.SimBot;
+    public static final Robot ROBOT = Robot.CompBot;
 
     public static boolean compBot() {
         return ROBOT == Robot.CompBot;
@@ -271,17 +271,20 @@ public final class Constants {
                                         .DRIVE_STATOR, // TODO, WRONG PROBABLY, might be SUPPLY
                                 // limit, which we don't actualy set.,
                                 1),
-                        TRACK_WIDTH);
+                        CENTER_TO_MODULE.get(FL),
+                        CENTER_TO_MODULE.get(FR),
+                        CENTER_TO_MODULE.get(BL),
+                        CENTER_TO_MODULE.get(BR));
     }
 
     public static final class Arm {
-        public static final double MIN_ROT = Units.degreesToRadians(-10); // TODO, TUNE THIS
+        public static final double MIN_ROT = Units.degreesToRadians(1.8); // TODO, TUNE THIS
         public static final double MAX_ROT = Units.degreesToRadians(103);
         public static final double MAX_STAGE = Units.degreesToRadians(10); // TODO, tune this
 
         public static final double STARTING_POS =
-                Units.degreesToRadians(5.63); // 3.349 degrees, alternativly 5.63
-        public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(24.91 - 90);
+                Units.degreesToRadians(1.8); // 3.349 degrees, alternativly 5.63
+        public static final double ABS_ENCODER_OFFSET = Units.degreesToRadians(335 + 90);
 
         public static final double MAX_VELOCITY = Units.degreesToRadians(compBot() ? 120 : 150);
         public static final double MAX_ACCELERATION =
@@ -317,7 +320,7 @@ public final class Constants {
         public static final class Positions {
             public static final double INTAKE =
                     compBot()
-                            ? Units.degreesToRadians(-2)
+                            ? Units.degreesToRadians(1.8)
                             : STARTING_POS + Units.degreesToRadians(-5);
             public static final double CLIMB = MAX_STAGE;
             public static final double TRANSIT_NORMAL = Units.degreesToRadians(60);

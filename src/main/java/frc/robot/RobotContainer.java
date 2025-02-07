@@ -27,6 +27,7 @@ import frc.robot.Constants.AutoConstants.StartingPosition;
 import frc.robot.commands.ManipulatorCommands;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOSpark;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -200,7 +201,8 @@ public class RobotContainer {
 
         intake = new Intake(new IntakeIOSpark(), OIConstants.Overrides.INTAKE_OVERRIDE);
         shooter = new Shooter(new ShooterIOSpark());
-        arm = new Arm(new ArmIOSpark(true));
+        // arm = new Arm(new ArmIOSpark(true));
+        arm = new Arm(new ArmIO() {});
 
         arm.setAimGoal(
                 () ->

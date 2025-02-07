@@ -59,6 +59,8 @@ import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOCanCoder;
 import frc.robot.subsystems.drive.swerveModule.encoder.EncoderIOHelium;
 import frc.robot.subsystems.vision.notes.NoteVisionIO;
 import frc.robot.subsystems.vision.notes.NoteVisionInputsAutoLogged;
+
+import java.io.Console;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -382,14 +384,16 @@ public class Drive extends BlitzSubsystem {
                                 translation.getX(), translation.getY(), rotation, getYaw())
                         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
+
         drive(
-                velocityFilter != null ? velocityFilter.filterSpeeds(robotRel, false) : robotRel,
+                robotRel,
                 isOpenLoop);
     }
 
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
         SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(speeds);
 
+        Logger.recordOutput(logKey + "/commandedSpeeds", speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
 
         // Note: it is important to not discretize speeds before or after
@@ -401,7 +405,11 @@ public class Drive extends BlitzSubsystem {
                         Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in seconds
                         );
 
-        setModuleStates(previousSetpoint.moduleStates(), openLoop, false, false);
+        Logger.recordOutput(logKey + "/cmdmodstates", previousSetpoint.moduleStates());
+
+
+        // setModuleStates(previousSetpoint.moduleStates(), openLoop, false, false);
+        setModuleStates(KINEMATICS.toSwerveModuleStates(speeds), openLoop, false, false);
     }
 
     /* Used by SwerveControllerCommand in Auto */
