@@ -250,18 +250,37 @@ public final class Constants {
 
         public static final double MASS = Units.lbsToKilograms(150);
         public static final double MOI =
-                1
-                        / 12.
+                (1
+                        / 12.)
                         * MASS
                         * (WHEEL_BASE * WHEEL_BASE
                                 + TRACK_WIDTH * TRACK_WIDTH); // TODO: EMPIRICALLY MEASURE MOI
         public static final double MAX_MODULE_ANGULAR_VELOCITY =
                 Units.rotationsToRadians(10.0); // CONFIG
 
+//        public static final RobotConfig PHYSICAL_CONSTANTS =
+//                new RobotConfig(
+//                        MASS,
+//                        MOI,
+//                        new ModuleConfig(
+//                                WHEEL_CIRCUMFERENCE / (2 * Math.PI),
+//                                MAX_SPEED,
+//                                1.0, // TODO, MEASURE WHEEL COEFICENT OF FRICTION,
+//                                compBot() ? DCMotor.getKrakenX60Foc(1) : DCMotor.getNEO(1),
+//                                CurrentLimits.Kraken
+//                                        .DRIVE_STATOR, // TODO, WRONG PROBABLY, might be SUPPLY
+//                                // limit, which we don't actualy set.,
+//                                1),
+//                        CENTER_TO_MODULE.get(FL),
+//                        CENTER_TO_MODULE.get(FR),
+//                        CENTER_TO_MODULE.get(BL),
+//                        CENTER_TO_MODULE.get(BR));
+
+
         public static final RobotConfig PHYSICAL_CONSTANTS =
                 new RobotConfig(
-                        MASS,
-                        MOI,
+                        10,
+                        10,
                         new ModuleConfig(
                                 WHEEL_CIRCUMFERENCE / (2 * Math.PI),
                                 MAX_SPEED,

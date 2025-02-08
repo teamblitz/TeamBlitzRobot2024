@@ -29,6 +29,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -393,8 +394,8 @@ public class Drive extends BlitzSubsystem {
     public void drive(ChassisSpeeds speeds, boolean openLoop) {
         SwerveModuleState[] swerveModuleStates = KINEMATICS.toSwerveModuleStates(speeds);
 
-        Logger.recordOutput(logKey + "/commandedSpeeds", speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED);
+        Logger.recordOutput(logKey + "/commandedSpeeds", speeds);
 
         // Note: it is important to not discretize speeds before or after
         // using the setpoint generator, as it will discretize them for you
@@ -405,11 +406,13 @@ public class Drive extends BlitzSubsystem {
                         Constants.LOOP_PERIOD_SEC // The loop time of the robot code, in seconds
                         );
 
-        Logger.recordOutput(logKey + "/cmdmodstates", previousSetpoint.moduleStates());
+        Logger.recordOutput(logKey + "/setpointstates", previousSetpoint.moduleStates());
+        Logger.recordOutput(logKey + "/setpointspeeds", previousSetpoint.robotRelativeSpeeds());
+        Logger.recordOutput(logKey + "/voltsin", RobotController.getInputVoltage());
 
 
-        // setModuleStates(previousSetpoint.moduleStates(), openLoop, false, false);
-        setModuleStates(KINEMATICS.toSwerveModuleStates(speeds), openLoop, false, false);
+//         setModuleStates(previousSetpoint.moduleStates(), openLoop, false, false);
+         setModuleStates(PHYSICAL_CONSTANTS.toSwerveModuleStates(speeds), openLoop, false, false);
     }
 
     /* Used by SwerveControllerCommand in Auto */
