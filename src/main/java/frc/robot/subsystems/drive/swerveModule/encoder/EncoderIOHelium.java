@@ -3,7 +3,6 @@ package frc.robot.subsystems.drive.swerveModule.encoder;
 import com.reduxrobotics.sensors.canandmag.Canandmag;
 import com.reduxrobotics.sensors.canandmag.CanandmagSettings;
 
-
 public class EncoderIOHelium implements EncoderIO {
 
     private final Canandmag encoder;

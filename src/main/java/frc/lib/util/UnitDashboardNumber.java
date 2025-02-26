@@ -7,6 +7,6 @@ public class UnitDashboardNumber extends LoggedTunableNumber {
      * @param dashboardKey Key on dashboard
      */
     public UnitDashboardNumber(String dashboardKey) {
-       super(dashboardKey, 0);
+        super(dashboardKey, 0);
     }
 }

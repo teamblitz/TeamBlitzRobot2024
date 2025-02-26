@@ -93,12 +93,8 @@ public class ShooterIOSpark implements ShooterIO {
 
     @Override
     public void setSetpoint(double velocity) {
-        pidTop.setReference(
-                velocity,
-                SparkBase.ControlType.kVelocity);
-        pidBottom.setReference(
-                velocity,
-                SparkBase.ControlType.kVelocity);
+        pidTop.setReference(velocity, SparkBase.ControlType.kVelocity);
+        pidBottom.setReference(velocity, SparkBase.ControlType.kVelocity);
     }
 
     @Override

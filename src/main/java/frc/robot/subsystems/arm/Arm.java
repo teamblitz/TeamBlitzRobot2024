@@ -7,7 +7,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -129,8 +128,7 @@ public class Arm extends BlitzSubsystem {
 
     //    private final Map<S/tate, ArmState> stateMap;
 
-    @AutoLogOutput @Getter
-    Goals goal = Goals.TRANSIT;
+    @AutoLogOutput @Getter Goals goal = Goals.TRANSIT;
 
     private final ArmIO io;
     private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
