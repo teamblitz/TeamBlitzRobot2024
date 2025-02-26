@@ -232,15 +232,6 @@ public class Arm extends BlitzSubsystem {
         io.updateInputs(inputs);
         Logger.processInputs(logKey, inputs);
 
-        LoggedTunableNumber.ifChanged(
-                hashCode(), pid -> io.setPid(pid[0], pid[1], pid[2]), kP, kI, kD);
-        LoggedTunableNumber.ifChanged(
-                hashCode(),
-                kSGVA -> feedforward = new ArmFeedforward(kSGVA[0], kSGVA[1], kSGVA[2], kSGVA[3]),
-                kS,
-                kG,
-                kV,
-                kA);
 
         io.seedArmPosition(false); // TODO, try removing this.
 
